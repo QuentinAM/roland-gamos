@@ -1,6 +1,10 @@
 <script lang="ts">
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+	import * as cookie from 'cookie';
+	import type { CreateMessage } from 'src/websocket/wstypes';
+	import { goto } from '$app/navigation';
+	import { room } from '$lib/game/room';
 
 	let step1 = true;
 	let username: string;
@@ -15,11 +19,32 @@
 		step1 = !step1;
 	}
 
-	function createRoom() {
-		// Generate a random room id
-		const roomId: string =
-			Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-		window.location.href = `/join/${roomId.substring(0, 6)}`;
+	async function createRoom() {
+		let { websocket } = await import('$lib/websocket');
+
+		const unsubscribeWS = websocket.subscribe((ws) => {
+			if (!ws) return;
+
+			let cookieId = cookie.parse(document.cookie)['userId'];
+
+			let message: CreateMessage = {
+				type: 'CREATE',
+				body: {
+					username: username,
+					cookieId
+				}
+			};
+
+			ws.send(JSON.stringify(message));
+
+			let unsubscribeRoom = room.subscribe((room) => {
+				if (!room) return;
+
+				unsubscribeWS();
+				unsubscribeRoom();
+				goto(`/join/${room.id}`);
+			});
+		});
 	}
 </script>
 
