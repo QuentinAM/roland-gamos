@@ -1,12 +1,81 @@
 <script lang="ts">
-	import Hero from '../lib/components/Hero/index.svelte';
+	import Fa from 'svelte-fa';
+	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-	const createRoom = () => {
+	let step1 = true;
+	let username: string;
+	let usernameError = false;
+	let roomId: string;
+	function toggleSteps() {
+		if (step1 && !username) {
+			usernameError = true;
+			return;
+		}
+
+		step1 = !step1;
+	}
+
+	function createRoom() {
 		// Generate a random room id
 		const roomId: string =
 			Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-		window.location.href = `/lobby?id=${roomId.substring(0, 20)}`;
-	};
+		window.location.href = `/join/${roomId.substring(0, 6)}`;
+	}
 </script>
 
-<Hero {createRoom} />
+<div class="hero min-h-screen">
+	<div class="hero-content flex-col lg:flex-row-reverse">
+		<div class="text-center lg:text-left">
+			<h1 class="text-5xl font-bold w-max">Roland Gamos</h1>
+			<p class="pt-6 w-max">Le jeu du meilleur jeu rap au monde.</p>
+			<p class="text-sm">Jusqu'à preuve du contraire.</p>
+		</div>
+		<div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+			{#if step1}
+				<div class="card-body">
+					<div class="form-control">
+						<input
+							id="username"
+							type="text"
+							bind:value={username}
+							placeholder="Pseudo"
+							class="input input-bordered input-primary w-full max-w-xs"
+							class:input-error={usernameError}
+						/>
+					</div>
+					<div class="form-control">
+						<button class="btn btn-primary" on:click={toggleSteps}>Continuer</button>
+					</div>
+				</div>
+			{:else}
+				<div class="card-body">
+					<div class="form-control">
+						<button class="btn btn-ghost" on:click={toggleSteps}>
+							<Fa icon={faArrowLeft} />
+						</button>
+					</div>
+					<div class="form-control">
+						<input
+							id="roomId"
+							type="text"
+							bind:value={roomId}
+							placeholder="Code de la room"
+							class="input input-bordered input-primary w-full max-w-xs"
+						/>
+					</div>
+					<div class="form-control">
+						<button class="btn btn-primary">Rejoindre une room</button>
+					</div>
+					<div class="divider">
+						<span class="divider-text">Ou</span>
+					</div>
+					<div class="form-control">
+						<div class="form-control">
+							<button class="btn btn-primary" on:click={createRoom}>Créer une room</button>
+						</div>
+					</div>
+				</div>
+			{/if}
+		</div>
+	</div>
+</div>
