@@ -21,7 +21,7 @@
 
 		room.set(null);
 		// Not joined room => we are a player guest
-		websocket.subscribe((ws) => {
+		const unsubscribeWs = websocket.subscribe((ws) => {
 			if (!ws) return;
 
 			let userId = localStorage.getItem('userId') as string;
@@ -43,14 +43,18 @@
 
 			ws.send(JSON.stringify(message));
 
-			room.subscribe((room) => {
+			const unsubscribeRoom = room.subscribe((room) => {
 				if (room) {
 					goto(`/room/${room.id}`);
+					unsubscribeWs();
+					unsubscribeRoom();
 					return;
 				}
 
 				// Room is null => Room does not exist
 				error = true;
+				unsubscribeWs();
+				unsubscribeRoom();
 			});
 		});
 	}

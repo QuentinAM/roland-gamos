@@ -51,6 +51,7 @@ export interface JoinMessage extends Message {
 export interface LeaveMessage extends Message {
     type: 'LEAVE';
     body: {
+        roomId: string;
         userId: string;
     };
 }

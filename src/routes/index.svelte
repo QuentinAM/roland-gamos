@@ -25,7 +25,7 @@
 			room.set(null);
 		}
 
-		websocket.subscribe((ws) => {
+		const unsubscribeWs = websocket.subscribe((ws) => {
 			if (!ws) return;
 
 			let userId = localStorage.getItem('userId') as string;
@@ -46,9 +46,11 @@
 
 			ws.send(JSON.stringify(message));
 
-			room.subscribe((room) => {
+			const unsubscribeRoom = room.subscribe((room) => {
 				if (!room) return;
 
+				unsubscribeWs();
+				unsubscribeRoom();
 				goto(`/room/${room.id}`);
 			});
 		});
