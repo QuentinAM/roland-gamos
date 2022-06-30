@@ -1,6 +1,7 @@
 import { WebSocket } from 'ws';
-import { Room, Player, UpdateResponse, JoinMessage, ErrorResponse } from './wstypes';
+import { Room, Player, JoinMessage, ErrorResponse } from './wstypes';
 import { rooms, wss } from './index';
+import { sendRoomUpdate } from './sendRoomUpdate';
 
 export function handleJoin(ws: WebSocket, data: JoinMessage) {
     const body = data.body;
@@ -45,22 +46,7 @@ export function handleJoin(ws: WebSocket, data: JoinMessage) {
 
     console.log(`${body.username} joined room ${body.roomId}`);
 
-    const response: UpdateResponse = {
-        type: 'UPDATE',
-        body: {
-            room: rooms.get(body.roomId) as Room,
-        }
-    };
-
-    // Remove ws before sending response
-    response.body.room.players.forEach((player: Player) => {
-        delete player.ws;
-    });
-
     // Send response
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(response));
-        }
-    });
+    sendRoomUpdate(body.roomId, room);
 }
+

@@ -1,6 +1,7 @@
 import { WebSocket } from 'ws';
 import { LeaveMessage, ErrorResponse, UpdateResponse } from './wstypes';
 import { rooms } from './index';
+import { sendRoomUpdate } from './sendRoomUpdate';
 
 export function handleLeave(ws: WebSocket, data: LeaveMessage) {
     const body = data.body;
@@ -39,13 +40,8 @@ export function handleLeave(ws: WebSocket, data: LeaveMessage) {
     // Remove user from room
     room.players = room.players.filter(player => player.userId !== body.userId);
 
-    // Send update to all players
-    const response: UpdateResponse = {
-        type: 'UPDATE',
-        body: {
-            room: room,
-        }
-    };
+    // TODO: Change host if necessary
 
-    ws.send(JSON.stringify(response));
+    // Send response
+    sendRoomUpdate(body.roomId, room);
 }

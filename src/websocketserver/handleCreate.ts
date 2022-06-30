@@ -1,6 +1,7 @@
 import { WebSocket } from 'ws';
 import { Room, Player, UpdateResponse, CreateMessage } from './wstypes';
 import { rooms, wss } from './index';
+import { sendRoomUpdate } from './sendRoomUpdate';
 
 export function handleCreate(ws: WebSocket, data: CreateMessage) {
     const body = data.body;
@@ -22,7 +23,7 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         enteredArtists: [],
         currentPlayerIndex: 0,
         currentTurn: 0,
-        currentTurnStartTime: new Date(),
+        currentTurnStartTime: 0,
         currentPlayerHasGuessed: false,
         currentGuess: '',
     });
@@ -36,15 +37,7 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         }
     };
 
-    // Remove ws before sending response
-    response.body.room.players.forEach((player: Player) => {
-        delete player.ws;
-    });
-
     // Send response
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(response));
-        }
-    });
+    const room = rooms.get(roomId);
+    sendRoomUpdate(roomId, room as Room);
 }

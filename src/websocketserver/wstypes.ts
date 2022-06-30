@@ -7,7 +7,7 @@ export interface Room {
     eliminatedPlayers: Player[];
     currentPlayerIndex: number;
     currentTurn: number;
-    currentTurnStartTime: Date;
+    currentTurnStartTime: number;
     currentPlayerHasGuessed: boolean;
     currentGuess: string;
     enteredArtists: Artist[];
@@ -16,7 +16,7 @@ export interface Room {
 export interface Player {
     userId: string;
     username: string;
-    ws: WebSocket | undefined;
+    ws?: WebSocket;
 }
 
 export interface Artist {
@@ -51,8 +51,8 @@ export interface JoinMessage extends Message {
 export interface LeaveMessage extends Message {
     type: 'LEAVE';
     body: {
-        roomId: string;
         userId: string;
+        roomId: string;
     };
 }
 
@@ -60,6 +60,7 @@ export interface StartMessage extends Message {
     type: 'START';
     body: {
         userId: string;
+        roomId: string;
     };
 }
 
