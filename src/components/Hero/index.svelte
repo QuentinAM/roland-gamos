@@ -15,11 +15,6 @@
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <div class="card-body">
                 <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Create room</span>
-                        <input class="hidden"/> <!-- Otherwise svelte cry -->
-                    </label>
-                    <Input placeholder='ROOM_NAME'/>
                     <div class="form-control mt-6">
                         <button class="btn btn-primary">Create room</button>
                     </div>
