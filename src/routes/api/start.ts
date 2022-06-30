@@ -1,32 +1,21 @@
-export async function post({ request }: { request: Request; }) {
-    const body = await request.json();
+import { GetToken, GetArtistPicture } from './utils';
 
-    const response = await fetch(`https://api.spotify.com/v1/playlists/37i9dQZF1DWU4xkXueiKGW`, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + body.token,
-            'Content-Type': 'application/json',
-        }
-    });
+export async function get({ request }: { request: Request; }) {
 
-    const data = await response.json();
-
-    // Take random album from playlist
-    const artist = data.tracks.items[Math.floor(Math.random() * data.tracks.items.length)].track.artists[0];
-    console.log(artist);
+    const { artist, token } = await Start(request.headers.get('Authorization'));
 
     return {
         status: 200,
         body: {
             name: artist.name,
-            artistImage: await GetArtistPicture(artist.href, body.token)
+            artistImage: await GetArtistPicture(artist.href, token)
         }
     };
 }
 
-async function GetArtistPicture(request: string, token: string)
+async function Start(token: string | null): Promise<any>
 {
-    const response = await fetch(request, {
+    const response = await fetch(`https://api.spotify.com/v1/playlists/37i9dQZF1DWU4xkXueiKGW`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -35,5 +24,22 @@ async function GetArtistPicture(request: string, token: string)
     });
 
     const data = await response.json();
-    return data.images[0].url;
+
+    // Check for errors
+    if (data.error && data.error.status === 401)
+    {
+        // Change headers and call again
+        return Start(await GetToken());
+    }
+
+    // Take random album from playlist
+    const items = data.tracks.items;
+    const album = items[Math.floor(Math.random() * items.length)];
+    const artists = album.track.artists;
+    const artist = artists[Math.floor(Math.random() * artists.length)];
+
+    return {
+        artist: artist,
+        token: token
+    }
 }
