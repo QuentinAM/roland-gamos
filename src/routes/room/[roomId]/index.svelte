@@ -4,18 +4,49 @@
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { room, player } from '$lib/game/data';
 	import { faCrown } from '@fortawesome/free-solid-svg-icons';
+	import type { StartMessage } from 'src/websocketserver/wstypes';
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 
 	let roomId: string = $page.params.roomId;
 	let url: string;
 
-	onMount(async () => {
+	$: playerCount = $room?.players.length;
+	$: isHost =
+		$room &&
+		$player &&
+		$room?.hostPlayerIndex === $room?.players.findIndex((p) => p.userId === $player?.userId);
+
+	async function startGame() {
 		const { websocket } = await import('$lib/websocket');
+
+		const unsubscribeWs = websocket.subscribe((ws) => {
+			if (!ws) return;
+
+			let message: StartMessage = {
+				type: 'START',
+				body: {
+					userId: $player?.userId as string,
+					roomId
+				}
+			};
+
+			ws.send(JSON.stringify(message));
+		});
+	}
+
+	onMount(async () => {
 		url = window.location.href;
 
-		if ($room?.id === roomId) {
-			// Already joined room => good
+		if ($player && $room?.id === roomId) {
+			// Already joined room => checking for the start of the game
+			const unsubscribeRoom = room.subscribe((r) => {
+				if (r?.currentTurn != 0) {
+					// Game has started, redirect to game page
+					unsubscribeRoom();
+					goto('/room/' + roomId + '/game');
+				}
+			});
 		} else {
 			// Not joined room
 			room.set(null);
@@ -44,8 +75,8 @@
 						{#each $room.players as pl, i}
 							<span
 								class="inline-flex"
-								class:text-primary={pl.userId === $player.userId}
-								class:font-semibold={pl.userId === $player.userId}
+								class:text-primary={pl.userId === $player?.userId}
+								class:font-semibold={pl.userId === $player?.userId}
 							>
 								{#if i === $room.hostPlayerIndex}
 									<span class="mt-1 mr-1">
@@ -58,12 +89,25 @@
 					</div>
 				</div>
 			</div>
-			<button
-				class="btn btn-error"
-				on:click={() => {
-					goto('/');
-				}}>Annuler</button
-			>
+			<div class="form-control flex flex-row gap-4">
+				<button
+					class="btn btn-error"
+					on:click={() => {
+						goto('/');
+					}}
+				>
+					Partir
+				</button>
+				{#if isHost}
+					<button
+						class="btn btn-primary"
+						disabled={!!(playerCount && playerCount < 2)}
+						on:click={startGame}
+					>
+						Commencer
+					</button>
+				{/if}
+			</div>
 		{/if}
 	</div>
 </div>

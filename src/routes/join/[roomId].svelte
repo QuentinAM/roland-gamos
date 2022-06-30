@@ -18,9 +18,7 @@
 	let usernameError = false;
 	async function joinRoom() {
 		const { websocket } = await import('$lib/websocket');
-
 		room.set(null);
-		// Not joined room => we are a player guest
 		const unsubscribeWs = websocket.subscribe((ws) => {
 			if (!ws) return;
 
@@ -43,18 +41,15 @@
 
 			ws.send(JSON.stringify(message));
 
-			const unsubscribeRoom = room.subscribe((room) => {
-				if (room) {
-					goto(`/room/${room.id}`);
+			const unsubscribeRoom = room.subscribe((r) => {
+				if (r) {
+					goto(`/room/${r.id}`);
 					unsubscribeWs();
 					unsubscribeRoom();
 					return;
 				}
 
-				// Room is null => Room does not exist
 				error = true;
-				unsubscribeWs();
-				unsubscribeRoom();
 			});
 		});
 	}
