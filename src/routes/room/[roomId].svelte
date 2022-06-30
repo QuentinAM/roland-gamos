@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
-	import { room } from '$lib/game/data';
+	import { room, player } from '$lib/game/data';
 	import { faCrown } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
@@ -41,14 +41,18 @@
 				<div class="card-body">
 					<h2 class="text-xl font-semibold">Joueurs:</h2>
 					<div class="flex flex-col items-center">
-						{#each $room.players as player, i}
-							<span class="inline-flex">
+						{#each $room.players as pl, i}
+							<span
+								class="inline-flex"
+								class:text-primary={pl.userId === $player.userId}
+								class:font-semibold={pl.userId === $player.userId}
+							>
 								{#if i === $room.hostPlayerIndex}
 									<span class="mt-1 mr-1">
 										<Fa icon={faCrown} color="orange" />
 									</span>
 								{/if}
-								{player.username}
+								{pl.username}
 							</span>
 						{/each}
 					</div>
