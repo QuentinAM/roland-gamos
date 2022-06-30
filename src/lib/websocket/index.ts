@@ -1,6 +1,7 @@
+import { browser } from "$app/env";
 import type { Message, Room, UpdateResponse } from "src/websocket/wstypes";
 import { writable } from "svelte/store";
-import { room } from "../game/room"
+import { room } from "../game/data"
 
 const url = "ws://localhost:8080";
 let ws = new WebSocket(url);

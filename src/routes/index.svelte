@@ -1,10 +1,9 @@
 <script lang="ts">
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-	import * as cookie from 'cookie';
 	import type { CreateMessage } from 'src/websocket/wstypes';
 	import { goto } from '$app/navigation';
-	import { room } from '$lib/game/room';
+	import { player, room } from '$lib/game/data';
 
 	let step1 = true;
 	let username: string;
@@ -22,27 +21,35 @@
 	async function createRoom() {
 		let { websocket } = await import('$lib/websocket');
 
-		const unsubscribeWS = websocket.subscribe((ws) => {
+		if ($room != null) {
+			room.set(null);
+		}
+
+		websocket.subscribe((ws) => {
 			if (!ws) return;
 
-			let cookieId = cookie.parse(document.cookie)['userId'];
+			let userId = localStorage.getItem('userId') as string;
+
+			player.set({
+				userId,
+				username,
+				ws: undefined
+			});
 
 			let message: CreateMessage = {
 				type: 'CREATE',
 				body: {
 					username: username,
-					cookieId
+					userId
 				}
 			};
 
 			ws.send(JSON.stringify(message));
 
-			let unsubscribeRoom = room.subscribe((room) => {
+			room.subscribe((room) => {
 				if (!room) return;
 
-				unsubscribeWS();
-				unsubscribeRoom();
-				goto(`/join/${room.id}`);
+				goto(`/room/${room.id}`);
 			});
 		});
 	}

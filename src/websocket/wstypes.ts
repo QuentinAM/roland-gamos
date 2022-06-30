@@ -14,7 +14,7 @@ export interface Room {
 }
 
 export interface Player {
-    cookieId: string;
+    userId: string;
     username: string;
     ws: WebSocket | undefined;
 }
@@ -34,7 +34,7 @@ export interface Message {
 export interface CreateMessage extends Message {
     type: 'CREATE';
     body: {
-        cookieId: string;
+        userId: string;
         username: string;
     };
 }
@@ -42,7 +42,7 @@ export interface CreateMessage extends Message {
 export interface JoinMessage extends Message {
     type: 'JOIN';
     body: {
-        cookieId: string;
+        userId: string;
         username: string;
         roomId: string;
     };
@@ -51,21 +51,21 @@ export interface JoinMessage extends Message {
 export interface LeaveMessage extends Message {
     type: 'LEAVE';
     body: {
-        cookieId: string;
+        userId: string;
     };
 }
 
 export interface StartMessage extends Message {
     type: 'START';
     body: {
-        cookieId: string;
+        userId: string;
     };
 }
 
 export interface GuessMessage extends Message {
     type: 'GUESS';
     body: {
-        cookieId: string;
+        userId: string;
         guess: string;
     };
 }
@@ -73,7 +73,7 @@ export interface GuessMessage extends Message {
 export interface GuessingMessage extends Message {
     type: 'GUESSING';
     body: {
-        cookieId: string;
+        userId: string;
         currentGuess: string;
     };
 }
@@ -82,5 +82,12 @@ export interface UpdateResponse {
     type: 'UPDATE';
     body: {
         room: Room;
+    };
+}
+
+export interface ErrorResponse {
+    type: 'ERROR';
+    body: {
+        message: string;
     };
 }

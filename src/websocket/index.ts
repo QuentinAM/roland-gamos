@@ -1,5 +1,5 @@
 import { WebSocket, WebSocketServer } from 'ws';
-import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, Player, UpdateResponse, CreateMessage, JoinMessage } from './wstypes';
+import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, Player, UpdateResponse, CreateMessage, JoinMessage, ErrorResponse } from './wstypes';
 
 const rooms = new Map<string, Room>();
 
@@ -20,6 +20,7 @@ wss.on('connection', function connection(ws) {
                 handleCreate(ws, data as CreateMessage);
                 break;
             case 'JOIN':
+                handleJoin(ws, data as JoinMessage);
                 break;
             case 'START':
                 break;
@@ -43,7 +44,7 @@ function handleCreate(ws: WebSocket, data: CreateMessage) {
         (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).substring(0, 6);
 
     const player: Player = {
-        cookieId: body.cookieId,
+        userId: body.userId,
         username: body.username,
         ws: ws,
     }
@@ -70,10 +71,12 @@ function handleCreate(ws: WebSocket, data: CreateMessage) {
         }
     }
 
+    // Remove ws before sending response
     response.body.room.players.forEach((player: Player) => {
         delete player.ws;
     });
 
+    // Send response
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(response));
@@ -82,6 +85,66 @@ function handleCreate(ws: WebSocket, data: CreateMessage) {
 }
 
 function handleJoin(ws: WebSocket, data: JoinMessage) {
+    const body = data.body;
+
+    // Check if room exists
+    if (!rooms.has(body.roomId)) {
+        console.log(`Room ${body.roomId} does not exist.`);
+
+        const response: ErrorResponse = {
+            type: 'ERROR',
+            body: {
+                message: `Room ${body.roomId} does not exist.`,
+            }
+        }
+
+        ws.send(JSON.stringify(response));
+        return;
+    }
+
+    // Check if player is already in room
+    const room: Room = rooms.get(body.roomId) as Room;
+    if (room.players.find(player => player.userId === body.userId)) {
+        console.log(`Player ${body.username} with cid ${body.userId} is already in room ${body.roomId}.`);
+
+        const response: ErrorResponse = {
+            type: 'ERROR',
+            body: {
+                message: `Player ${body.username} is already in room ${body.roomId}.`,
+            }
+        }
+
+        ws.send(JSON.stringify(response));
+        return;
+    }
+
+    // Add player to room
+    room.players.push({
+        userId: body.userId,
+        username: body.username,
+        ws: ws,
+    });
+
+    console.log(`${body.username} joined room ${body.roomId}`);
+
+    const response: UpdateResponse = {
+        type: 'UPDATE',
+        body: {
+            room: rooms.get(body.roomId) as Room,
+        }
+    }
+
+    // Remove ws before sending response
+    response.body.room.players.forEach((player: Player) => {
+        delete player.ws;
+    });
+
+    // Send response
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(response));
+        }
+    });
 }
 
 function handleLeave(ws: WebSocket, data: LeaveMessage) {

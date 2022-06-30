@@ -1,63 +1,113 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
-	import { room } from '$lib/game/room';
-	import { faCrown } from '@fortawesome/free-solid-svg-icons';
+	import { room, player } from '$lib/game/data';
+	import type { JoinMessage } from 'src/websocket/wstypes';
 	import { onMount } from 'svelte';
-	import Fa from 'svelte-fa';
 
 	let roomId: string = $page.params.roomId;
-	let url: string;
+	let error = false;
 
-	onMount(() => {
-		url = window.location.href;
-
-		if ($room?.id === roomId) {
-			// Already joined room => we are the host
-		} else {
-			// Not joined room => we are a player guest
-			// TODO: Join room with roomId
+	onMount(async () => {
+		if ($player) {
+			joinRoom();
 		}
 	});
+
+	let username: string;
+	let usernameError = false;
+	async function joinRoom() {
+		const { websocket } = await import('$lib/websocket');
+
+		room.set(null);
+		// Not joined room => we are a player guest
+		websocket.subscribe((ws) => {
+			if (!ws) return;
+
+			let userId = localStorage.getItem('userId') as string;
+
+			player.set({
+				userId,
+				username,
+				ws: undefined
+			});
+
+			let message: JoinMessage = {
+				type: 'JOIN',
+				body: {
+					userId,
+					username,
+					roomId
+				}
+			};
+
+			ws.send(JSON.stringify(message));
+
+			room.subscribe((room) => {
+				if (room) {
+					goto(`/room/${room.id}`);
+					return;
+				}
+
+				// Room is null => Room does not exist
+				error = true;
+			});
+		});
+	}
 </script>
 
+{#if error}
+	<div class="absolute p-4 w-full">
+		<div class="alert alert-error shadow-lg">
+			<div>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="stroke-current flex-shrink-0 h-6 w-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+				<span>Erreur! Cette room n'existe peut être pas.</span>
+			</div>
+		</div>
+	</div>
+{/if}
 <div class="hero min-h-screen">
 	<div class="hero-content text-center flex flex-col">
-		<div>
-			<h1 class="text-4xl font-bold">
-				Room:
-				<span class="text-secondary">
-					{roomId}
-					<ClipBoard value={url} />
-				</span>
-			</h1>
-			<p class="py-6">Envoie le lien à tes freros pour qu'ils puissent rejoindre!</p>
-		</div>
-		{#if $room}
-			<div class="card shadow-xl">
+		{#if !$player}
+			<div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
 				<div class="card-body">
-					<h2 class="text-xl font-semibold">Joueurs:</h2>
-					<div class="flex flex-col items-center">
-						{#each $room.players as player, i}
-							<span class="inline-flex">
-								{#if i === $room.hostPlayerIndex}
-									<span class="mt-1 mr-1">
-										<Fa icon={faCrown} color="orange" />
-									</span>
-								{/if}
-								{player.username}
-							</span>
-						{/each}
+					<div class="form-control">
+						<input
+							id="username"
+							type="text"
+							bind:value={username}
+							placeholder="Pseudo"
+							class="input input-bordered input-primary w-full max-w-xs"
+							class:input-error={usernameError}
+						/>
+					</div>
+					<div class="form-control">
+						<button class="btn btn-primary" on:click={joinRoom}>Continuer</button>
 					</div>
 				</div>
 			</div>
-			<button
-				class="btn btn-error"
-				on:click={() => {
-					goto('/');
-				}}>Annuler</button
-			>
+		{:else}
+			<div class="text-center">
+				<h1 class="text-5xl font-bold">
+					Entrain de rejoindre la Room
+					<span class="text-secondary">
+						{roomId}
+					</span>
+					...
+				</h1>
+				<p class="pt-6">Ça arrive fort.</p>
+			</div>
 		{/if}
 	</div>
 </div>
