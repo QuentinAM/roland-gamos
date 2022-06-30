@@ -13,13 +13,23 @@ export async function post({ request }: { request: Request; }) {
 
     const data = await response.json();
 
-    const track = data.tracks.items[0];
-    console.log(track);
+    // Check for errors
+    if (data.error && data.error.status === 401)
+    {
+        return {
+            status: 200,
+            body: {
+                result: 'TOKEN_REFRESH'
+            }
+        }
+    }
 
-    if (IsValid(body.guess, track.artists))
+    const track = data.tracks.items[0];
+
+    if (track && IsValid(body.guess, track.artists))
     {   
-        const second_artist_guess: string = body.guess.split(',')[1].slice(1)
-        const second_artist: any = track.artists.find((artist: { name: any; }) => artist.name === second_artist_guess);
+        const second_artist_guess: string = body.guess.split(',')[1].slice(1);
+        const second_artist: any = track.artists.find((artist: { name: any; }) => levenshtein(artist.name, second_artist_guess) <= levenshtein_threshold);
         const artist_image = await GetArtistPicture(second_artist.href, body.token);
 
         return {
@@ -46,13 +56,16 @@ function IsValid(guess: string, artists: Array<any>)
     // Get both artists
     const guess_split: Array<string> = guess.split(",");
     const first_artist: string = guess_split[0];
-    const second_artist: string = guess_split[1];
+    const second_artist: string = guess_split[1].slice(1);
 
     // Check if both artists are in the list of artists
-    const first_artist_found = artists.find(artist => artist.name === first_artist);
-    const second_artist_found = artists.find(artist => artist.name === second_artist);
+    const first_artist_found = artists.find(artist => levenshtein(artist.name, first_artist) <= levenshtein_threshold);
+    const second_artist_found = artists.find(artist => levenshtein(artist.name, second_artist) <= levenshtein_threshold);
 
-    return first_artist_found !== null && second_artist_found !== null;
+    console.log(first_artist_found ? "First artist found" : "First artist not found");
+    console.log(second_artist_found ? "Second artist found" : "Second artist not found");
+
+    return first_artist_found !== undefined && second_artist_found !== undefined;
 }
 
 async function GetArtistPicture(request: string, token: string)
