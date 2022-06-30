@@ -1,24 +1,24 @@
 <script lang="ts">
-    import Fa from 'svelte-fa'
-    import { faCopy } from '@fortawesome/free-solid-svg-icons'
+	import Fa from 'svelte-fa';
+	import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-    export let value: string = '';
+	export let value: string = '';
 
-    // Tooltip 
-    let classes = 'tooltip';
-    let data_tip = 'Copy to clipboard';
+	// Tooltip
+	let classes = 'tooltip';
+	let data_tip = 'Copier';
 
-    const copyToClipBoard = (text: string) => {
-        navigator.clipboard.writeText(text);
+	const copyToClipBoard = (text: string) => {
+		navigator.clipboard.writeText(text);
 
-        // Update tooltip
-        classes += ' tooltip-success';
-        data_tip = 'Copied!';
-    }
+		// Update tooltip
+		classes += ' tooltip-success';
+		data_tip = 'Copié!';
+	};
 </script>
 
 <div class={classes} data-tip={data_tip}>
-    <button on:click={() => copyToClipBoard(value)}>
-        <Fa icon={faCopy}/>
-    </button>
+	<button on:click={() => copyToClipBoard(value)}>
+		<Fa icon={faCopy} />
+	</button>
 </div>
