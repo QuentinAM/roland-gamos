@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { room } from '$lib/game/data';
+	import { room, player } from '$lib/game/data';
 	import Fa from 'svelte-fa';
 	import { onMount } from 'svelte';
-	import { faArrowsRotate, faClock, faMusic } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowsRotate, faCheck, faClock, faMusic } from '@fortawesome/free-solid-svg-icons';
 
 	let turnDuration = 30_000;
 	let currentTime = Date.now();
@@ -11,12 +11,18 @@
 	$: players = $room?.players;
 	$: currentTurn = $room?.currentTurn;
 	$: currentArtist = $room?.enteredArtists[$room?.currentTurn - 1];
+	$: currentPlayerIndex = $room?.currentPlayerIndex;
 	$: currentTurnStartTime = $room?.currentTurnStartTime;
 	$: remainingTime = currentTurnStartTime
 		? new Date(currentTurnStartTime + turnDuration - currentTime).getTime()
 		: 0;
 	$: remainingTimeSeconds =
 		Math.floor(remainingTime / 1000) < 0 ? 0 : Math.floor(remainingTime / 1000);
+
+	$: isCurrentPlayer =
+		players && currentPlayerIndex != undefined
+			? players[currentPlayerIndex].userId === $player?.userId
+			: false;
 
 	onMount(async () => {
 		const { websocket } = await import('$lib/websocket');
@@ -68,11 +74,42 @@
 
 		{#if players}
 			<div class="grid grid-cols-4 grid-flow-row gap-8 mt-16 w-full">
-				{#each players as p}
+				{#each players as p, i}
 					<div class="flex flex-col justify-center items-center">
-						{p.username}
+						<p class="font-semibold">{p.username}</p>
+						<div
+							class="w-[50%]  h-2 rounded"
+							class:bg-primary={currentPlayerIndex === i}
+							class:bg-base-300={currentPlayerIndex !== i}
+						/>
+						<div
+							class="w-[40%] h-16 rounded-b shadow-lg"
+							class:bg-primary={currentPlayerIndex === i}
+							class:bg-base-300={currentPlayerIndex !== i}
+						/>
 					</div>
 				{/each}
+			</div>
+		{/if}
+
+		{#if isCurrentPlayer}
+			<div class="absolute bottom-0 p-16 w-full">
+				<div class="card shadow-lg">
+					<div class="card-body">
+						<div class="form-control flex-row">
+							<input
+								class="input input-primary w-full rounded-r-none"
+								type="text"
+								placeholder="Entre un artiste."
+							/>
+							<button class="btn btn-success rounded-l-none">
+								<span class="mr-2">
+									<Fa icon={faCheck} size={'lg'} />
+								</span> Valider
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		{/if}
 	</div>
