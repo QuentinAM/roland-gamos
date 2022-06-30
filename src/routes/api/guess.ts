@@ -1,36 +1,21 @@
+import { GetToken, GetArtistPicture } from "./utils";
 const levenshtein_threshold = 2;
 
-export async function post({ request }: { request: Request; }) {
+export async function post({ request }: { request: Request; }): Promise<any>
+{
     const body = await request.json();
 
-    const response = await fetch(`https://api.spotify.com/v1/search?limit=1&type=track&q=${body.guess}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + body.token,
-            'Content-Type': 'application/json',
-        }
-    });
+    // Get both artists
+    const guess_split: Array<string> = body.guess.split(",");
+    const first_artist: string = guess_split[0];
+    const second_artist: string = guess_split[1];
 
-    const data = await response.json();
+    const { track, token } = await GuessEndpoint(first_artist, second_artist, request.headers.get('Authorization'));    
 
-    // Check for errors
-    if (data.error && data.error.status === 401)
-    {
-        return {
-            status: 200,
-            body: {
-                result: 'TOKEN_REFRESH'
-            }
-        }
-    }
-
-    const track = data.tracks.items[0];
-
-    if (track && IsValid(body.guess, track.artists))
+    if (track && IsValid(first_artist, second_artist, track.artists))
     {   
-        const second_artist_guess: string = body.guess.split(',')[1].slice(1);
-        const second_artist: any = track.artists.find((artist: { name: any; }) => levenshtein(artist.name, second_artist_guess) <= levenshtein_threshold);
-        const artist_image = await GetArtistPicture(second_artist.href, body.token);
+        const second_artist_obj: any = track.artists.find((artist: { name: any; }) => levenshtein(artist.name, second_artist) <= levenshtein_threshold);
+        const artist_image = await GetArtistPicture(second_artist_obj.href, token);
 
         return {
             status: 200,
@@ -51,26 +36,9 @@ export async function post({ request }: { request: Request; }) {
     }
 }
 
-function IsValid(guess: string, artists: Array<any>)
+async function GuessEndpoint(first_artist: string, second_artist: string, token: string | null): Promise<any>
 {
-    // Get both artists
-    const guess_split: Array<string> = guess.split(",");
-    const first_artist: string = guess_split[0];
-    const second_artist: string = guess_split[1].slice(1);
-
-    // Check if both artists are in the list of artists
-    const first_artist_found = artists.find(artist => levenshtein(artist.name, first_artist) <= levenshtein_threshold);
-    const second_artist_found = artists.find(artist => levenshtein(artist.name, second_artist) <= levenshtein_threshold);
-
-    console.log(first_artist_found ? "First artist found" : "First artist not found");
-    console.log(second_artist_found ? "Second artist found" : "Second artist not found");
-
-    return first_artist_found !== undefined && second_artist_found !== undefined;
-}
-
-async function GetArtistPicture(request: string, token: string)
-{
-    const response = await fetch(request, {
+    const response = await fetch(`https://api.spotify.com/v1/search?limit=1&type=track&q=${`${first_artist} ${second_artist}`}`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -79,10 +47,30 @@ async function GetArtistPicture(request: string, token: string)
     });
 
     const data = await response.json();
-    return data.images[0].url;
+
+    // Check for errors
+    if (data.error && data.error.status === 401)
+    {
+        // Change headers and call again
+        return GuessEndpoint(first_artist, second_artist, await GetToken());
+    }
+
+    return {
+        track: data.tracks.items[0],
+        token: token
+    }
 }
 
-function levenshtein(s: string, t: string) {
+function IsValid(first_artist: string, second_artist: string, artists: Array<any>)
+{
+    // Check if both artists are in the list of artists
+    const first_artist_found = artists.find(artist => levenshtein(artist.name, first_artist) <= levenshtein_threshold);
+    const second_artist_found = artists.find(artist => levenshtein(artist.name, second_artist) <= levenshtein_threshold);
+    return first_artist_found !== undefined && second_artist_found !== undefined;
+}
+
+function levenshtein(s: string, t: string)
+{
     if (s === t) {
         return 0;
     }
