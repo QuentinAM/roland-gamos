@@ -66,10 +66,6 @@ function IsValid(first_artist: string, second_artist: string, artists: Array<any
     // Check if both artists are in the list of artists
     const first_artist_found = artists.find(artist => levenshtein(artist.name, first_artist) <= levenshtein_threshold);
     const second_artist_found = artists.find(artist => levenshtein(artist.name, second_artist) <= levenshtein_threshold);
-
-    console.log(first_artist_found ? "First artist found" : "First artist not found");
-    console.log(second_artist_found ? "Second artist found" : "Second artist not found");
-
     return first_artist_found !== undefined && second_artist_found !== undefined;
 }
 
