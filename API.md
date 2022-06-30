@@ -30,7 +30,7 @@ Body:
 }
 ```
 
-Response : (random artist from Fresh Rap playlist)
+Response : (status 404 if not true)
 ```json
 {
     "name": "VOIR AILLEURS (feat. Zamdane)",
