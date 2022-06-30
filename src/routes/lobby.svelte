@@ -1,10 +1,23 @@
 <script lang="ts">
-
     import ClipBoard from '../components/ClipBoard/index.svelte'
-    import Input from "../components/Input/index.svelte";
 
-    // Generate a random room id
-    const roomId: string = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    import { onMount } from 'svelte/internal';
+
+    let roomId: string = '';
+    
+    onMount(() => {
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+        const idParams: string | null = urlParams.get('id');
+        
+        if (!idParams || idParams?.length !== 20)
+        {
+            window.location.href = '/';
+        }
+        else
+        {
+            roomId = idParams;
+        }
+    });
 </script>
 
 <div class="hero min-h-screen bg-base-200">

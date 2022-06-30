@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
     import Input from "../Input/index.svelte";
+    export let createRoom = () => {};
 </script>
 
 <div class="hero min-h-screen bg-base-200">
@@ -15,12 +16,6 @@
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <div class="card-body">
                 <div class="form-control">
-                    <div class="form-control mt-6">
-                        <button class="btn btn-primary">Create room</button>
-                    </div>
-                </div>
-                <div class="divider"></div> 
-                <div class="form-control">
                     <label class="label">
                         <span class="label-text">Join room</span>
                         <input class="hidden"/> <!-- Otherwise svelte cry -->
@@ -28,6 +23,14 @@
                     <Input placeholder='ROOM_ID'/>
                     <div class="form-control mt-6">
                         <button class="btn btn-primary">Join room</button>
+                    </div>
+                </div>
+                <div class="divider"></div> 
+                <div class="form-control">
+                    <div class="form-control">
+                        <button class="btn btn-primary" on:click={createRoom}>
+                            Create room
+                        </button>
                     </div>
                 </div>
             </div>

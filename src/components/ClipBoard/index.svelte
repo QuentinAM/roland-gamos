@@ -2,7 +2,7 @@
     import Fa from 'svelte-fa'
     import { faCopy } from '@fortawesome/free-solid-svg-icons'
 
-    export let value = '';
+    export let value: string = '';
 
     // Tooltip 
     let classes = 'tooltip';
