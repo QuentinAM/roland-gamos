@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-	import type { CreateMessage } from 'src/websocket/wstypes';
+	import type { CreateMessage } from 'src/websocketserver/wstypes';
 	import { goto } from '$app/navigation';
 	import { player, room } from '$lib/game/data';
 

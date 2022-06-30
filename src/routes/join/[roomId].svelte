@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { room, player } from '$lib/game/data';
-	import type { JoinMessage } from 'src/websocket/wstypes';
+	import type { JoinMessage } from 'src/websocketserver/wstypes';
 	import { onMount } from 'svelte';
 
 	let roomId: string = $page.params.roomId;
