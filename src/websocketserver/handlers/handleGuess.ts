@@ -73,7 +73,7 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
     clearInterval(room.interval);
 
     // Check if artist have already been said
-    let already_said_artist = room.enteredArtists.find(artist => artist.name === body.guess) !== undefined;
+    let already_said_artist = room.enteredArtists.find(artist => artist.name.toLowerCase().replace(' ', '') === body.guess.toLowerCase().replace(' ', '')) !== undefined;
 
     // Check if guess is valid
     let currentArtist = room.enteredArtists[room.enteredArtists.length - 1];
