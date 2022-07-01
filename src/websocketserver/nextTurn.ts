@@ -23,7 +23,6 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
     if (room.players.length > 1) {
         // Go to the next turn
         room.currentPlayerIndex = (room.currentPlayerIndex + 1) % room.players.length;
-        room.currentTurn = room.currentTurn + 1;
         room.currentTurnStartTime = Date.now();
         room.currentPlayerHasGuessed = false;
         room.currentPlayerHasAttemptedGuess = false;
