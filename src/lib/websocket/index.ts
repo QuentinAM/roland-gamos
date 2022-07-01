@@ -1,9 +1,9 @@
-import { browser } from "$app/env";
-import type { Message, Room, UpdateResponse } from "src/websocket/wstypes";
+import { browser, dev } from "$app/env";
+import type { Message, Room, UpdateResponse } from "../../websocketserver/wstypes";
 import { writable } from "svelte/store";
 import { room } from "../game/data"
 
-const url = "ws://localhost:8080";
+const url = dev ? "ws://localhost:8080" : "ws://box.begue.cc:8080";
 let ws = new WebSocket(url);
 export const websocket = writable<WebSocket | null>(null);
 
