@@ -9,7 +9,6 @@
 </script>
 
 <svelte:head>
-	<script defer src="../../node_modules/@fortawesome/fontawesome-free/js/all.min.js"></script>
 	<title>Rolland Gamos</title>
 </svelte:head>
 
