@@ -17,6 +17,7 @@
 	$: currentPlayerHasAttemptedGuess = $room?.currentPlayerHasAttemptedGuess;
 	$: currentPlayerHasGuessed = $room?.currentPlayerHasGuessed;
 	$: currentTurnStartTime = $room?.currentTurnStartTime;
+	$: eliminatedPlayers = $room?.eliminatedPlayers;
 	$: remainingTime = currentTurnStartTime
 		? new Date(currentTurnStartTime + turnDuration - currentTime).getTime()
 		: 0;
@@ -28,6 +29,8 @@
 			? players[currentPlayerIndex]?.userId === $player?.userId
 			: false;
 	$: isGameOver = $room?.players?.length === 1;
+
+	$: tracks = $room?.tracks;
 
 	let guess = '';
 	// Send the final guess attempt to the server
@@ -99,115 +102,176 @@
 		// Update the remaining time every second
 		setInterval(() => {
 			if (!currentPlayerHasAttemptedGuess) currentTime = Date.now();
+			console.log($room);
 		}, 1_000);
 	});
 </script>
 
-<div class="hero min-h-screen">
-	<div class="hero-content flex flex-row justify-start items-start h-full w-full">
-		<div class="flex flex-col w-full justify-start">
-			<div class="stats shadow">
-				<div class="stat bg-primary">
-					<div class="stat-figure text-primary-content" />
-					<div class="stat-title text-primary-content">Tour</div>
-					<div class="stat-value text-primary-content inline-flex">
-						<span class="mr-4">
-							<i class="fa-solid fa-arrows-rotate" />
-						</span>
-						{currentTurn}
-					</div>
+{#if isGameOver}
+	<div class="hero min-h-screen">
+		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
+			<div class="flex flex-col w-full justify-start">
+				<h1 class="font-bold">Partie terminée</h1>
+				<div class="overflow-x-auto">
+					<table class="table w-full">
+						<!-- head -->
+						<thead>
+							<tr>
+							<th></th>
+							<th>Joueur</th>
+							<th>Dernier tour</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- row 1 -->
+							<tr class="active">
+								<th>1er</th>
+								<td>{$room?.players[0].username}</td>
+								<td></td>
+							</tr>
+							{#if eliminatedPlayers}
+								{#each eliminatedPlayers.reverse() as p, i}
+									<tr>
+										<th>{i + 2}</th>
+										<td>{p.username}</td>
+										<td>{p.turn}</td>
+									</tr>
+								{/each}
+							{/if}
+						</tbody>
+					</table>
 				</div>
-				<div class="stat bg-secondary">
-					<div class="stat-title text-secondary-content">Temps Restant</div>
-					<div class="stat-value text-secondary-content inline-flex">
-						<span class="mr-4">
-							<i class="fa-solid fa-clock" />
-						</span>
-						{remainingTimeSeconds}s
-					</div>
-				</div>
-				<div class="stat bg-accent">
-					<div class="stat-title text-accent-content">Artiste</div>
-					<div class="stat-value text-accent-content inline-flex">
-						<span class="mr-4">
-							<i class="fa-solid fa-music" />
-						</span>
-						{currentArtist?.name ?? 'Aucun'}
-					</div>
+				<div class="h-[33rem] carousel carousel-vertical rounded-box">
+					{#if tracks}
+						{#each tracks as track, i}
+							<Featuring
+								audioUrl={track.previewUrl}
+								title={track.name}
+								imgUrl={track.trackImage}
+								releaseDate={track.releaseDate}
+								artist1ImageUrl={track.artist.imageUrl}
+								artist2ImageUrl={$room?.enteredArtists[$room?.enteredArtists.indexOf(track.artist) - 1].imageUrl}
+							/>
+						{/each}
+					{/if}
 				</div>
 			</div>
-
-			{#if players}
-				<div class="grid grid-cols-4 grid-flow-row gap-8 mt-16 w-full">
-					{#each players as p, i}
-						<div class="flex flex-col justify-center items-center">
-							<p class="font-semibold">{p.username}</p>
-							<div
-								class="w-[50%]  h-2 rounded"
-								class:bg-primary={currentPlayerIndex === i}
-								class:bg-base-300={currentPlayerIndex !== i}
-							/>
-							<div
-								class="w-[40%] h-16 rounded-b shadow-lg"
-								class:bg-primary={currentPlayerIndex === i}
-								class:bg-base-300={currentPlayerIndex !== i}
-							>
-								{#if currentPlayerIndex === i}
-									<div
-										class="p-2 m-2 text-2xs text-center rounded"
-										class:bg-base-100={!currentPlayerHasGuessed && remainingTimeSeconds > 0}
-										class:bg-success={currentPlayerHasGuessed}
-										class:bg-error={(!currentPlayerHasGuessed && remainingTimeSeconds <= 0) ||
-											(currentPlayerHasAttemptedGuess && !currentPlayerHasGuessed)}
-									>
-										{currentGuess || '‎'}
-									</div>
-								{/if}
-							</div>
-						</div>
-					{/each}
-				</div>
+			{#if $room?.hostPlayerId}
+				{#if $room?.hostPlayerId === $player?.userId}
+					<button class="btn btn-primary" on:click={() => {}}>
+						Rejouer
+					</button>
+				{/if}
 			{/if}
 		</div>
-
-		{#if currentTrack}
-			<Featuring
-				audioUrl={currentTrack.previewUrl}
-				artist1ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
-					currentArtist?.imageUrl ??
-					''}
-				artist2ImageUrl={currentTrack.artist.imageUrl}
-				imgUrl={currentTrack.trackImage}
-				releaseDate={currentTrack.releaseDate}
-				title={currentTrack.name}
-			/>
-		{/if}
 	</div>
-</div>
-{#if isCurrentPlayer}
-	<div class="absolute bottom-0 p-16 w-full">
-		<div class="card shadow-lg">
-			<div class="card-body">
-				<div class="form-control flex-row">
-					<input
-						class="input input-primary w-full rounded-r-none"
-						type="text"
-						placeholder="Entre un artiste."
-						bind:value={guess}
-						on:input={guessing}
-						disabled={currentPlayerHasAttemptedGuess}
-					/>
-					<button
-						class="btn btn-success rounded-l-none"
-						on:click={submitGuess}
-						disabled={currentPlayerHasAttemptedGuess}
-					>
-						<span class="mr-2">
-							<i class="fa-solid fa-check" />
-						</span> Valider
-					</button>
+{:else}
+	<div class="hero min-h-screen">
+		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
+			<div class="flex flex-col w-full justify-start">
+				<div class="stats shadow">
+					<div class="stat bg-primary">
+						<div class="stat-figure text-primary-content" />
+						<div class="stat-title text-primary-content">Tour</div>
+						<div class="stat-value text-primary-content inline-flex">
+							<span class="mr-4">
+								<i class="fa-solid fa-arrows-rotate" />
+							</span>
+							{currentTurn}
+						</div>
+					</div>
+					<div class="stat bg-secondary">
+						<div class="stat-title text-secondary-content">Temps Restant</div>
+						<div class="stat-value text-secondary-content inline-flex">
+							<span class="mr-4">
+								<i class="fa-solid fa-clock" />
+							</span>
+							{remainingTimeSeconds}s
+						</div>
+					</div>
+					<div class="stat bg-accent">
+						<div class="stat-title text-accent-content">Artiste</div>
+						<div class="stat-value text-accent-content inline-flex">
+							<span class="mr-4">
+								<i class="fa-solid fa-music" />
+							</span>
+							{currentArtist?.name ?? 'Aucun'}
+						</div>
+					</div>
+				</div>
+
+				{#if players}
+					<div class="grid grid-cols-4 grid-flow-row gap-8 mt-16 w-full">
+						{#each players as p, i}
+							<div class="flex flex-col justify-center items-center">
+								<p class="font-semibold">{p.username}</p>
+								<div
+									class="w-[50%]  h-2 rounded"
+									class:bg-primary={currentPlayerIndex === i}
+									class:bg-base-300={currentPlayerIndex !== i}
+								/>
+								<div
+									class="w-[40%] h-16 rounded-b shadow-lg"
+									class:bg-primary={currentPlayerIndex === i}
+									class:bg-base-300={currentPlayerIndex !== i}
+								>
+									{#if currentPlayerIndex === i}
+										<div
+											class="p-2 m-2 text-2xs text-center rounded"
+											class:bg-base-100={!currentPlayerHasGuessed && remainingTimeSeconds > 0}
+											class:bg-success={currentPlayerHasGuessed}
+											class:bg-error={(!currentPlayerHasGuessed && remainingTimeSeconds <= 0) ||
+												(currentPlayerHasAttemptedGuess && !currentPlayerHasGuessed)}
+										>
+											{currentGuess || '‎'}
+										</div>
+									{/if}
+								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
+			{#if currentTrack}
+				<Featuring
+					audioUrl={currentTrack.previewUrl}
+					artist1ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
+						currentArtist?.imageUrl ??
+						''}
+					artist2ImageUrl={currentTrack.artist.imageUrl}
+					imgUrl={currentTrack.trackImage}
+					releaseDate={currentTrack.releaseDate}
+					title={currentTrack.name}
+				/>
+			{/if}
+		</div>
+	</div>
+	{#if isCurrentPlayer}
+		<div class="absolute bottom-0 p-16 w-full">
+			<div class="card shadow-lg">
+				<div class="card-body">
+					<div class="form-control flex-row">
+						<input
+							class="input input-primary w-full rounded-r-none"
+							type="text"
+							placeholder="Entre un artiste."
+							bind:value={guess}
+							on:input={guessing}
+							disabled={currentPlayerHasAttemptedGuess}
+						/>
+						<button
+							class="btn btn-success rounded-l-none"
+							on:click={submitGuess}
+							disabled={currentPlayerHasAttemptedGuess}
+						>
+							<span class="mr-2">
+								<i class="fa-solid fa-check" />
+							</span> Valider
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 {/if}

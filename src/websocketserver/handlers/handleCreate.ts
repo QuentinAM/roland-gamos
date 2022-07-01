@@ -18,6 +18,7 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
     rooms.set(roomId, {
         id: roomId,
         players: [player],
+        hostPlayerId: player.userId,
         hostPlayerIndex: 0,
         eliminatedPlayers: [],
         enteredArtists: [],
