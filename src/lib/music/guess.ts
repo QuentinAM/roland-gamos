@@ -1,43 +1,36 @@
-import { GetToken, GetArtistPicture } from "./utils";
+import type { Track } from "src/websocketserver/wstypes";
+import { getToken, getArtistPicture, spToken } from "./utils";
 const levenshtein_threshold = 2;
 
-export async function post({ request }: { request: Request; }): Promise<any>
-{
-    const body = await request.json();
-
+export async function guess(guess: string): Promise<Track | undefined> {
     // Get both artists
-    const guess_split: Array<string> = body.guess.split(",");
+    const guess_split: Array<string> = guess.split(",");
     const first_artist: string = guess_split[0];
     const second_artist: string = guess_split[1];
 
-    const { track, token } = await GuessEndpoint(first_artist, second_artist, request.headers.get('Authorization'));    
+    const { track, token } = await GuessEndpoint(first_artist, second_artist, spToken);
 
-    if (track && IsValid(first_artist, second_artist, track.artists))
-    {   
+    if (track && IsValid(first_artist, second_artist, track.artists)) {
         const second_artist_obj: any = track.artists.find((artist: { name: any; }) => levenshtein(artist.name, second_artist) <= levenshtein_threshold);
-        const artist_image = await GetArtistPicture(second_artist_obj.href, token);
+        const artist_image = await getArtistPicture(second_artist_obj.href, token);
 
         return {
-            status: 200,
-            body: {
-                name: track.name,
-                trackImage : track.album.images[0].url,
-                releaseDate: track.album.release_date,
-                previewUrl: track.preview_url,
-                artistImage : artist_image
+            name: track.name,
+            trackImage: track.album.images[0].url,
+            releaseDate: track.album.release_date,
+            previewUrl: track.preview_url,
+            artist: {
+                name: second_artist_obj.name,
+                imageUrl: artist_image
             }
         };
     }
-    else
-    {
-        return {
-            status: 404
-        }
+    else {
+        return;
     }
 }
 
-async function GuessEndpoint(first_artist: string, second_artist: string, token: string | null): Promise<any>
-{
+async function GuessEndpoint(first_artist: string, second_artist: string, token: string | null): Promise<any> {
     const response = await fetch(`https://api.spotify.com/v1/search?limit=1&type=track&q=${`${first_artist} ${second_artist}`}`, {
         method: 'GET',
         headers: {
@@ -49,11 +42,13 @@ async function GuessEndpoint(first_artist: string, second_artist: string, token:
     const data = await response.json();
 
     // Check for errors
-    if (data.error && data.error.status === 401)
-    {
+    if (data.error && data.error.status === 401 || data.error && data.error.status === 400) {
         // Change headers and call again
-        return GuessEndpoint(first_artist, second_artist, await GetToken());
+        return GuessEndpoint(first_artist, second_artist, await getToken());
     }
+
+    console.log(data);
+
 
     return {
         track: data.tracks.items[0],
@@ -61,16 +56,14 @@ async function GuessEndpoint(first_artist: string, second_artist: string, token:
     }
 }
 
-function IsValid(first_artist: string, second_artist: string, artists: Array<any>)
-{
+function IsValid(first_artist: string, second_artist: string, artists: Array<any>) {
     // Check if both artists are in the list of artists
     const first_artist_found = artists.find(artist => levenshtein(artist.name, first_artist) <= levenshtein_threshold);
     const second_artist_found = artists.find(artist => levenshtein(artist.name, second_artist) <= levenshtein_threshold);
     return first_artist_found !== undefined && second_artist_found !== undefined;
 }
 
-function levenshtein(s: string, t: string)
-{
+function levenshtein(s: string, t: string) {
     if (s === t) {
         return 0;
     }

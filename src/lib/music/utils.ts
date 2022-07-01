@@ -1,5 +1,6 @@
+export let spToken = "";
 
-export async function GetToken() {
+export async function getToken() {
     const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
     const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
 
@@ -14,10 +15,11 @@ export async function GetToken() {
         })
     });
     const data = await response.json();
+    spToken = data.access_token;
     return data.access_token;
 }
 
-export async function GetArtistPicture(request: string, token: string | null) {
+export async function getArtistPicture(request: string, token: string | null) {
     const response = await fetch(request, {
         method: 'GET',
         headers: {

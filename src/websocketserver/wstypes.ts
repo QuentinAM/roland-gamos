@@ -21,6 +21,14 @@ export interface Player {
     ws?: WebSocket;
 }
 
+export interface Track {
+    name: string;
+    trackImage: string;
+    releaseDate: string;
+    previewUrl: string;
+    artist: Artist;
+}
+
 export interface Artist {
     name: string;
     imageUrl: string;
