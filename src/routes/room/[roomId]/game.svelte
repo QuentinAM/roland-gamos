@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import Featuring from '$lib/components/Featuring/index.svelte';
 	import { CutTrackName } from '$lib/game/util';
-	import type { GuessingMessage, GuessMessage } from 'src/websocketserver/wstypes';
+	import type { GuessingMessage, GuessMessage, RestartMessage } from 'src/websocketserver/wstypes';
 
 	let turnDuration = 30_000;
 	let currentTime = Date.now();
@@ -59,7 +59,6 @@
 			guess = '';
 		});
 		if (success) {
-			console.log('Unsubscribed');
 			unsubscribe();
 		}
 	}
@@ -87,7 +86,30 @@
 			success = true;
 		});
 		if (success) {
-			console.log('Unsubscribed');
+			unsubscribe();
+		}
+	}
+
+	async function restart() {
+		const { websocket } = await import('$lib/websocket');
+
+		let success = false;
+		const unsubscribe = websocket.subscribe((ws) => {
+			if (!ws) return;
+
+			let message: RestartMessage = {
+				type: 'RESTART',
+				body: {
+					playlistStart: $room?.playlistStart as string,
+					roomId: $room?.id as string,
+					userId: $player?.userId as string
+				}
+			};
+
+			ws.send(JSON.stringify(message));
+			success = true;
+		});
+		if (success) {
 			unsubscribe();
 		}
 	}
@@ -222,7 +244,7 @@
 					</button>
 					{#if $room?.hostPlayerId}
 						{#if $room?.hostPlayerId === $player?.userId}
-							<button class="btn btn-primary m-1" on:click={() => {}}> Rejouer </button>
+							<button class="btn btn-primary m-1" on:click={restart}> Rejouer </button>
 						{/if}
 					{/if}
 				</div>

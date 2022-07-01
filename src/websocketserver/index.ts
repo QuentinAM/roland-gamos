@@ -5,9 +5,11 @@ import { handleGuessing } from './handlers/handleGuessing';
 import { handleJoin } from './handlers/handleJoin';
 import { handleLeave } from './handlers/handleLeave';
 import { handleStart } from './handlers/handleStart';
+import { handleRestart } from './handlers/handleRestart';
 import { createServer } from 'https';
 import { readFileSync } from 'fs';
-import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, UpdateResponse } from './wstypes';
+import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, UpdateResponse, RestartMessage } from './wstypes';
+
 import 'dotenv/config'
 import 'isomorphic-fetch';
 
@@ -62,6 +64,8 @@ wss.on('connection', function connection(ws) {
             case 'LEAVE':
                 handleLeave(ws, data as LeaveMessage);
                 break;
+            case 'RESTART':
+                handleRestart(ws, data as RestartMessage);
             default:
                 break;
         }

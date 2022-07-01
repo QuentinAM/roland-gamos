@@ -6,6 +6,7 @@ export interface Room {
     hostPlayerId: string;
     players: Player[];
     eliminatedPlayers: Player[];
+    playlistStart?: string;
     currentPlayerIndex: number;
     currentTurn: number;
     currentTurnStartTime: number;
@@ -37,7 +38,7 @@ export interface Artist {
     imageUrl: string;
 }
 
-export type MessageType = 'CREATE' | 'JOIN' | 'LEAVE' | 'START' | 'GUESS' | 'GUESSING';
+export type MessageType = 'CREATE' | 'JOIN' | 'LEAVE' | 'START' | 'GUESS' | 'GUESSING' | 'RESTART';
 
 export interface Message {
     type: MessageType;
@@ -71,6 +72,15 @@ export interface LeaveMessage extends Message {
 
 export interface StartMessage extends Message {
     type: 'START';
+    body: {
+        playlistStart: string;
+        userId: string;
+        roomId: string;
+    };
+}
+
+export interface RestartMessage extends Message {
+    type: 'RESTART';
     body: {
         playlistStart: string;
         userId: string;

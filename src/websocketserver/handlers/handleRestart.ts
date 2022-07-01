@@ -1,15 +1,17 @@
+import { RestartMessage, ErrorResponse } from '../wstypes';
 import { WebSocket } from 'ws';
 import { sendRoomUpdate } from '../sendRoomUpdate';
-import { StartMessage, ErrorResponse } from '../wstypes';
-import { rooms } from '../index';
 import { nextTurn } from '../nextTurn';
 import { start } from '../music/start';
+import { rooms } from '../index';
 
-export async function handleStart(ws: WebSocket, data: StartMessage) {
+export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     const body = data.body;
 
+    const room = rooms.get(body.roomId);
+
     // Check if room exists
-    if (!rooms.has(body.roomId)) {
+    if (!room) {
         console.log(`Room ${body.roomId} does not exist.`);
 
         const response: ErrorResponse = {
@@ -23,10 +25,17 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
         return;
     }
 
+    // Reset players
+    room.eliminatedPlayers.forEach(p => {
+        room.players.push(p);
+    });
+    room.eliminatedPlayers = [];
+    room.enteredArtists = [];
+    room.tracks = [];
+
     // Check if user is in the room and the host
-    const room = rooms.get(body.roomId);
     if (!room?.players.find(player => player.userId === body.userId)
-        || room?.players.findIndex(player => player.userId === body.userId) != room.hostPlayerIndex) {
+        || body.userId != room.hostPlayerId) {
         console.log(`User ${body.userId} is not the host of room ${body.roomId}.`);
 
         const response: ErrorResponse = {
@@ -42,12 +51,13 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
 
     console.log(`Starting game in room ${body.roomId}`);
 
-    // Start game
+    // Retart game
     room.currentPlayerIndex = 0;
     room.currentTurn = 1;
-    room.currentTurnStartTime = Date.now() + 5_000;
+    room.currentTurnStartTime = Date.now() + 5000;
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
+    room.currentGuess = '';
     room.enteredArtists = [await start(body.playlistStart)];
     room.playlistStart = body.playlistStart;
 
@@ -56,5 +66,5 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
     // Set the next turn
     room.interval = setInterval(() => {
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-    }, 35_000);
+    }, 30000);
 }
