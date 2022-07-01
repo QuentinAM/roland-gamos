@@ -53,6 +53,10 @@
 			});
 		});
 	}
+
+	onMount(() => {
+		username = localStorage.getItem('username') ?? '';
+	});
 </script>
 
 {#if error}

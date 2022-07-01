@@ -113,18 +113,18 @@
 			<div class="flex flex-col w-full justify-start">
 				<h1 class="font-bold">Partie terminée</h1>
 				<div class="overflow-auto h-64">
-					<table class="table w-full">
+					<table class="table w-full max-h-[50%]">
 						<!-- head -->
 						<thead>
-							<tr>
-							<th></th>
-							<th>Joueur</th>
-							<th>Dernier tour</th>
+							<tr class="bg-base-400">
+								<th />
+								<th>Joueur</th>
+								<th>Dernier tour</th>
 							</tr>
 						</thead>
 						<tbody>
 							<!-- row 1 -->
-							<tr class="active">
+							<tr>
 								<th class="text-primary text-bold text-xl">1er</th>
 								<td class="text-primary text-bold text-xl">{$room?.players[0].username}</td>
 								<td class="text-primary text-bold text-xl">{$room?.currentTurn}</td>
@@ -143,80 +143,77 @@
 				</div>
 				<div class="flex flex-row">
 					<div>
-						<h1 class="font-bold">
-							Titres joués
-						</h1>
+						<h1 class="font-bold">Titres joués</h1>
 						<div class="h-[33rem] carousel carousel-vertical rounded-box">
 							{#if tracks}
 								{#each tracks as track, i}
-								<div class="carousel-item h-full">
-									<Featuring
-										number={`${i + 1}/${tracks.length}`}
-										audioUrl={track.previewUrl}
-										title={track.name}
-										imgUrl={track.trackImage}
-										releaseDate={track.releaseDate}
-										artist1ImageUrl={track.artist.imageUrl}
-										artist2ImageUrl={$room?.enteredArtists[i]?.imageUrl}
-										artist1Name={track.artist.name}
-										artist2Name={$room?.enteredArtists[i]?.name}
-									/>
+									<div class="carousel-item h-full">
+										<Featuring
+											number={`${i + 1}/${tracks.length}`}
+											audioUrl={track.previewUrl}
+											title={track.name}
+											imgUrl={track.trackImage}
+											releaseDate={track.releaseDate}
+											artist1ImageUrl={track.artist.imageUrl}
+											artist2ImageUrl={$room?.enteredArtists[i]?.imageUrl}
+											artist1Name={track.artist.name}
+											artist2Name={$room?.enteredArtists[i]?.name}
+										/>
 									</div>
 								{/each}
 							{/if}
 						</div>
 					</div>
 					<div class="ml-20">
-						<h1 class="font-bold">
-							Statistiques
-						</h1>
+						<h1 class="font-bold">Statistiques</h1>
 						<div class="stats stats-vertical shadow">
-	
 							{#if $room?.currentTurnStartTime}
 								<div class="stat">
 									<div class="stat-title">Durée</div>
-									<div class="stat-value">{(new Date().getTime() - new Date($room?.currentTurnStartTime * 1000).getTime())/60000}</div>
+									<div class="stat-value">
+										{Math.round(((currentTurn ?? 1) * (turnDuration + 5_000)) / 1000 / 60)}
+									</div>
 									<div class="stat-desc">Minutes</div>
 								</div>
 							{/if}
-								
+
 							{#if tracks && tracks.length > 0}
 								<div class="stat">
 									<div class="stat-title">Morceau le plus ancien</div>
 									<div class="stat-value">
-										{tracks.reduce(function(prev, curr) {
+										{tracks.reduce(function (prev, curr) {
 											return prev.releaseDate < curr.releaseDate ? prev : curr;
 										}).name}
 									</div>
 									<div class="stat-desc">
-										{tracks.reduce(function(prev, curr) {
+										{tracks.reduce(function (prev, curr) {
 											return prev.releaseDate < curr.releaseDate ? prev : curr;
-										}).releaseDate}	
+										}).releaseDate}
 									</div>
 								</div>
 							{/if}
-								
+
 							{#if tracks && tracks.length > 0}
 								<div class="stat">
 									<div class="stat-title">Morceau le plus récent</div>
 									<div class="stat-value">
-										{tracks.reduce(function(prev, curr) {
+										{tracks.reduce(function (prev, curr) {
 											return prev.releaseDate > curr.releaseDate ? prev : curr;
 										}).name}
 									</div>
 									<div class="stat-desc">
-										{tracks.reduce(function(prev, curr) {
+										{tracks.reduce(function (prev, curr) {
 											return prev.releaseDate > curr.releaseDate ? prev : curr;
-										}).releaseDate}	
+										}).releaseDate}
 									</div>
 								</div>
 							{/if}
-							
 						</div>
 					</div>
 				</div>
-				<div class="flex flex-row">
-					<button class="btn btn-error m-1" 
+				<div class="flex flex-row justify-center">
+					<button
+						class="btn btn-error m-1"
 						on:click={() => {
 							goto('/');
 						}}
@@ -225,9 +222,7 @@
 					</button>
 					{#if $room?.hostPlayerId}
 						{#if $room?.hostPlayerId === $player?.userId}
-							<button class="btn btn-primary m-1" on:click={() => {}}>
-								Rejouer
-							</button>
+							<button class="btn btn-primary m-1" on:click={() => {}}> Rejouer </button>
 						{/if}
 					{/if}
 				</div>

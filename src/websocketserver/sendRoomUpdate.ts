@@ -4,10 +4,10 @@ import { Room, UpdateResponse } from './wstypes';
 export function sendRoomUpdate(roomId: string, room: Room) {
     let resRoom = { ...room };
     resRoom.interval = undefined;
-    resRoom.players = resRoom.players.map(player => {
+    resRoom.players = resRoom.players?.map(player => {
         return { userId: player.userId, username: player.username };
     });
-    resRoom.eliminatedPlayers = resRoom.eliminatedPlayers.map(player => {
+    resRoom.eliminatedPlayers = resRoom.eliminatedPlayers?.map(player => {
         return { userId: player.userId, username: player.username, turn: room.currentTurn };
     });
 

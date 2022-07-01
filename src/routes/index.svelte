@@ -2,6 +2,7 @@
 	import type { CreateMessage } from 'src/websocketserver/wstypes';
 	import { goto } from '$app/navigation';
 	import { player, room } from '$lib/game/data';
+	import { onMount } from 'svelte';
 
 	let step1 = true;
 	let username: string;
@@ -53,6 +54,19 @@
 			});
 		});
 	}
+
+	function joinRoom() {
+		localStorage.setItem('username', username);
+		player.set({
+			username: username,
+			userId: localStorage.getItem('userId') as string
+		});
+		goto(`/room/${roomId}`);
+	}
+
+	onMount(() => {
+		username = localStorage.getItem('username') ?? '';
+	});
 </script>
 
 <div class="hero min-h-screen">
@@ -96,7 +110,7 @@
 						/>
 					</div>
 					<div class="form-control">
-						<button class="btn btn-primary">Rejoindre une room</button>
+						<button class="btn btn-primary" on:click={joinRoom}>Rejoindre une room</button>
 					</div>
 					<div class="divider">
 						<span class="divider-text">Ou</span>
