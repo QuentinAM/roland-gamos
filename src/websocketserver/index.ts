@@ -14,7 +14,6 @@ import 'isomorphic-fetch';
 export const prod = process.execArgv[0] != '-r';
 export const rooms = new Map<string, Room>();
 
-
 export let wss: WebSocketServer;
 if (prod) {
     console.log('Starting production server');
@@ -33,7 +32,7 @@ else {
 
     wss = new WebSocketServer({ port: 8080 });
 }
-import { guess } from './music/guess';
+
 // Log server startup
 wss.on('listening', () => {
     console.log('Server started');
