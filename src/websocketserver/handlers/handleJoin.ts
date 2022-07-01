@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
-import { Room, Player, JoinMessage, ErrorResponse } from './wstypes';
-import { rooms, wss } from './index';
-import { sendRoomUpdate } from './sendRoomUpdate';
+import { Room, Player, JoinMessage, ErrorResponse } from '../wstypes';
+import { rooms, wss } from '../index';
+import { sendRoomUpdate } from '../sendRoomUpdate';
 
 export function handleJoin(ws: WebSocket, data: JoinMessage) {
     const body = data.body;

@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
-import { LeaveMessage, ErrorResponse, UpdateResponse } from './wstypes';
-import { rooms } from './index';
-import { sendRoomUpdate } from './sendRoomUpdate';
+import { LeaveMessage, ErrorResponse, UpdateResponse } from '../wstypes';
+import { rooms } from '../index';
+import { sendRoomUpdate } from '../sendRoomUpdate';
 
 export function handleLeave(ws: WebSocket, data: LeaveMessage) {
     const body = data.body;

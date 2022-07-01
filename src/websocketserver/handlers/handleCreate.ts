@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
-import { Room, Player, UpdateResponse, CreateMessage } from './wstypes';
-import { rooms, wss } from './index';
-import { sendRoomUpdate } from './sendRoomUpdate';
+import { Room, Player, UpdateResponse, CreateMessage } from '../wstypes';
+import { rooms, wss } from '../index';
+import { sendRoomUpdate } from '../sendRoomUpdate';
 
 export function handleCreate(ws: WebSocket, data: CreateMessage) {
     const body = data.body;

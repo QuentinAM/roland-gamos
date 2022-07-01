@@ -1,9 +1,11 @@
-import { WebSocket, WebSocketServer } from 'ws';
-import { handleCreate } from './handleCreate';
-import { handleJoin } from './handleJoin';
-import { handleLeave } from './handleLeave';
-import { sendRoomUpdate } from './sendRoomUpdate';
-import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, ErrorResponse, UpdateResponse } from './wstypes';
+import { WebSocketServer } from 'ws';
+import { handleGuess } from './handlers/handleGuess';
+import { handleCreate } from './handlers/handleCreate';
+import { handleGuessing } from './handlers/handleGuessing';
+import { handleJoin } from './handlers/handleJoin';
+import { handleLeave } from './handlers/handleLeave';
+import { handleStart } from './handlers/handleStart';
+import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, UpdateResponse } from './wstypes';
 
 export const rooms = new Map<string, Room>();
 
@@ -30,8 +32,10 @@ wss.on('connection', function connection(ws) {
                 handleStart(ws, data as StartMessage);
                 break;
             case 'GUESS':
+                handleGuess(ws, data as GuessMessage);
                 break;
             case 'GUESSING':
+                handleGuessing(ws, data as GuessingMessage);
                 break;
             case 'LEAVE':
                 handleLeave(ws, data as LeaveMessage);
@@ -41,57 +45,3 @@ wss.on('connection', function connection(ws) {
         }
     });
 });
-
-function handleStart(ws: WebSocket, data: StartMessage) {
-    const body = data.body;
-
-    // Check if room exists
-    if (!rooms.has(body.roomId)) {
-        console.log(`Room ${body.roomId} does not exist.`);
-
-        const response: ErrorResponse = {
-            type: 'ERROR',
-            body: {
-                message: `Room ${body.roomId} does not exist.`,
-            }
-        };
-
-        ws.send(JSON.stringify(response));
-        return;
-    }
-
-    // Check if user is in the room and the host
-    const room = rooms.get(body.roomId);
-    if (!room?.players.find(player => player.userId === body.userId)
-        || room?.players.findIndex(player => player.userId === body.userId) != room.hostPlayerIndex) {
-        console.log(`User ${body.userId} is not the host of room ${body.roomId}.`);
-
-        const response: ErrorResponse = {
-            type: 'ERROR',
-            body: {
-                message: `User ${body.userId} is not the host of room ${body.roomId}.`,
-            }
-        };
-
-        ws.send(JSON.stringify(response));
-        return;
-    }
-
-    console.log(`Starting game in room ${body.roomId}`);
-
-    // Start game
-    room.currentPlayerIndex = 0;
-    room.currentTurn = 1;
-    room.currentTurnStartTime = new Date().getTime();
-    room.currentPlayerHasGuessed = false;
-
-    // Send update to all players in the room
-    sendRoomUpdate(body.roomId, room);
-}
-
-function handleGuess(ws: WebSocket, data: GuessMessage) {
-}
-
-function handleGuessing(ws: WebSocket, data: GuessingMessage) {
-}
-

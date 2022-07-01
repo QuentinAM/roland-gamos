@@ -11,6 +11,7 @@ export interface Room {
     currentPlayerHasGuessed: boolean;
     currentGuess: string;
     enteredArtists: Artist[];
+    interval?: NodeJS.Timeout;
 }
 
 export interface Player {
@@ -68,6 +69,7 @@ export interface GuessMessage extends Message {
     type: 'GUESS';
     body: {
         userId: string;
+        roomId: string;
         guess: string;
     };
 }
@@ -76,6 +78,7 @@ export interface GuessingMessage extends Message {
     type: 'GUESSING';
     body: {
         userId: string;
+        roomId: string;
         currentGuess: string;
     };
 }
