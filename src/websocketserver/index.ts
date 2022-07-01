@@ -25,7 +25,8 @@ if (prod) {
         key: readFileSync(`${certDir}/${domain}/privkey.pem`),
         cert: readFileSync(`${certDir}/${domain}/fullchain.pem`)
     });
-    wss = new WebSocketServer({ server, port: 8080 });
+    wss = new WebSocketServer({ server });
+    server.listen(8080);
 }
 else {
     console.log('Starting developement server');
