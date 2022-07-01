@@ -8,7 +8,7 @@ export function sendRoomUpdate(roomId: string, room: Room) {
         return { userId: player.userId, username: player.username };
     });
     resRoom.eliminatedPlayers = resRoom.eliminatedPlayers?.map(player => {
-        return { userId: player.userId, username: player.username, turn: room.currentTurn };
+        return { userId: player.userId, username: player.username, turn: player.turn };
     });
 
     const response: UpdateResponse = {

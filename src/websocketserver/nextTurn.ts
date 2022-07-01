@@ -16,7 +16,7 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
     if (!room.currentPlayerHasGuessed) {
         // Guess is incorrect, eliminate player
         console.log(`Player ${room.players[currentPlayerIndex]?.userId} was eliminated in room ${roomId}.`);
-
+        room.players[currentPlayerIndex].turn = currentTurn;
         room.eliminatedPlayers.push(room.players.splice(currentPlayerIndex, 1)[0]);
     }
 
