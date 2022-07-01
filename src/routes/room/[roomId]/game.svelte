@@ -14,7 +14,7 @@
 	$: currentTurn = $room?.currentTurn;
 	$: currentGuess = $room?.currentGuess;
 	$: currentArtist = $room?.enteredArtists[$room?.currentTurn - 1];
-	$: currentTrack = $room?.currentTrack;
+	$: currentTrack = $room?.tracks[$room?.tracks.length - 1];
 	$: currentPlayerIndex = $room?.currentPlayerIndex;
 	$: currentPlayerHasAttemptedGuess = $room?.currentPlayerHasAttemptedGuess;
 	$: currentPlayerHasGuessed = $room?.currentPlayerHasGuessed;
@@ -175,7 +175,9 @@
 		{#if currentTrack}
 			<Featuring
 				audioUrl={currentTrack.previewUrl}
-				artist1ImageUrl={currentArtist?.imageUrl ?? ''}
+				artist1ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
+					currentArtist?.imageUrl ??
+					''}
 				artist2ImageUrl={currentTrack.artist.imageUrl}
 				imgUrl={currentTrack.trackImage}
 				releaseDate={currentTrack.releaseDate}

@@ -85,7 +85,7 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
         // Guess is correct, send update to all players in the room
         room.currentGuess = body.guess;
         room.currentPlayerHasGuessed = true;
-        room.currentTrack = res;
+        room.tracks.push(res);
         room.enteredArtists.push(res.artist);
         sendRoomUpdate(body.roomId, room);
     } else {
