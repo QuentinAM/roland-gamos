@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Rolland Gamos</title>
+	<title>Roland Gamos</title>
 </svelte:head>
 
 <slot />
