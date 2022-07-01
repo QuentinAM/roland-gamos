@@ -12,7 +12,7 @@
 
 <div class="card card-compact w-96 bg-base-100 shadow-xl">
 	<figure>
-		<img src={imgUrl} width="640" height="640" alt="Picture"/>
+		<img src={imgUrl} width="640" height="640" alt="e"/>
 	</figure>
 	{#if number}
 		<div class="absolute top-2 left-2 p-1 bg-primary rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
@@ -20,7 +20,7 @@
 		</div>
 	{/if}
 	<div class="card-body">
-		<h2 class="card-title">{title}</h2>
+		<h2 class="card-title truncate">{title}</h2>
 		<p class="-mt-3">{artist1Name} & {artist2Name}</p>
 		<p>{releaseDate}</p>
 	</div>
