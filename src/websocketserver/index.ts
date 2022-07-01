@@ -5,13 +5,33 @@ import { handleGuessing } from './handlers/handleGuessing';
 import { handleJoin } from './handlers/handleJoin';
 import { handleLeave } from './handlers/handleLeave';
 import { handleStart } from './handlers/handleStart';
+import { createServer } from 'https';
+import { readFileSync } from 'fs';
 import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, UpdateResponse } from './wstypes';
 import 'dotenv/config'
 import 'isomorphic-fetch';
 
+export const prod = process.execArgv[0] != '-r';
 export const rooms = new Map<string, Room>();
 
-export const wss = new WebSocketServer({ port: 8080 });
+
+export let wss: WebSocketServer;
+if (prod) {
+    console.log('Starting production server');
+
+    const certDir = `/etc/letsencrypt/live`;
+    const domain = `box.begue.cc`;
+    const server = createServer({
+        key: readFileSync(`${certDir}/${domain}/privkey.pem`),
+        cert: readFileSync(`${certDir}/${domain}/fullchain.pem`)
+    });
+    wss = new WebSocketServer({ server });
+}
+else {
+    console.log('Starting developement server');
+
+    wss = new WebSocketServer({ port: 8080 });
+}
 
 // Log server startup
 wss.on('listening', () => {
