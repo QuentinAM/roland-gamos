@@ -77,10 +77,9 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
 
     // Check if guess is valid
     let currentArtist = room.enteredArtists[room.enteredArtists.length - 1];
-    
+
     let res;
-    if (!already_said_artist)
-    {
+    if (!already_said_artist) {
         res = await guess(currentArtist.name + "," + body.guess) as Track | undefined;
     }
 
@@ -94,6 +93,8 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
         room.currentPlayerHasGuessed = true;
         room.tracks.push(res);
         room.enteredArtists.push(res.artist);
+        room.currentTurn = room.currentTurn + 1;
+
         sendRoomUpdate(body.roomId, room);
     } else {
         room.currentPlayerHasGuessed = false;
