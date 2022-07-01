@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { room, player } from '$lib/game/data';
-	import Fa from 'svelte-fa';
 	import { onMount } from 'svelte';
-	import { faArrowsRotate, faCheck, faClock, faMusic } from '@fortawesome/free-solid-svg-icons';
 	import Featuring from '$lib/components/Featuring/index.svelte';
 	import type { GuessingMessage, GuessMessage } from 'src/websocketserver/wstypes';
 
@@ -113,28 +111,28 @@
 					<div class="stat-figure text-primary-content" />
 					<div class="stat-title text-primary-content">Tour</div>
 					<div class="stat-value text-primary-content inline-flex">
-						{currentTurn}
-						<span class="ml-4 mt-2">
-							<Fa icon={faArrowsRotate} size={'xs'} />
+						<span class="mr-4">
+							<i class="fa-solid fa-arrows-rotate" />
 						</span>
+						{currentTurn}
 					</div>
 				</div>
 				<div class="stat bg-secondary">
 					<div class="stat-title text-secondary-content">Temps Restant</div>
 					<div class="stat-value text-secondary-content inline-flex">
-						{remainingTimeSeconds}s
-						<span class="ml-4 mt-2">
-							<Fa icon={faClock} size={'xs'} />
+						<span class="mr-4">
+							<i class="fa-solid fa-clock" />
 						</span>
+						{remainingTimeSeconds}s
 					</div>
 				</div>
 				<div class="stat bg-accent">
 					<div class="stat-title text-accent-content">Artiste</div>
 					<div class="stat-value text-accent-content inline-flex">
-						{currentArtist?.name ?? 'Aucun'}
-						<span class="ml-4 mt-2">
-							<Fa icon={faMusic} size={'xs'} />
+						<span class="mr-4">
+							<i class="fa-solid fa-music" />
 						</span>
+						{currentArtist?.name ?? 'Aucun'}
 					</div>
 				</div>
 			</div>
@@ -205,7 +203,7 @@
 						disabled={currentPlayerHasAttemptedGuess}
 					>
 						<span class="mr-2">
-							<Fa icon={faCheck} size={'lg'} />
+							<i class="fa-solid fa-check" />
 						</span> Valider
 					</button>
 				</div>

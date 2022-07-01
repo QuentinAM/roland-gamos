@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Fa from 'svelte-fa';
-	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import type { CreateMessage } from 'src/websocketserver/wstypes';
 	import { goto } from '$app/navigation';
 	import { player, room } from '$lib/game/data';
@@ -85,7 +83,7 @@
 				<div class="card-body">
 					<div class="form-control">
 						<button class="btn btn-ghost" on:click={toggleSteps}>
-							<Fa icon={faArrowLeft} />
+							<i class="fa-solid fa-arrow-left" />
 						</button>
 					</div>
 					<div class="form-control">

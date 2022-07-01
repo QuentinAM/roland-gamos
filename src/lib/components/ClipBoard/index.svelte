@@ -1,7 +1,4 @@
 <script lang="ts">
-	import Fa from 'svelte-fa';
-	import { faCopy } from '@fortawesome/free-solid-svg-icons';
-
 	export let value: string = '';
 
 	// Tooltip
@@ -19,6 +16,6 @@
 
 <div class={classes} data-tip={data_tip}>
 	<button on:click={() => copyToClipBoard(value)}>
-		<Fa icon={faCopy} />
+		<i class="fa-solid fa-copy" />
 	</button>
 </div>

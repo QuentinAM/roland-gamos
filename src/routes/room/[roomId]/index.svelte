@@ -3,10 +3,8 @@
 	import { page } from '$app/stores';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { room, player } from '$lib/game/data';
-	import { faCrown } from '@fortawesome/free-solid-svg-icons';
 	import type { StartMessage } from 'src/websocketserver/wstypes';
 	import { onMount } from 'svelte';
-	import Fa from 'svelte-fa';
 
 	let roomId: string = $page.params.roomId;
 	let url: string;
@@ -79,8 +77,8 @@
 								class:font-semibold={pl.userId === $player?.userId}
 							>
 								{#if i === $room.hostPlayerIndex}
-									<span class="mt-1 mr-1">
-										<Fa icon={faCrown} color="orange" />
+									<span class="mr-1">
+										<i class="fa-solid fa-crown text-primary" />
 									</span>
 								{/if}
 								{pl.username}
