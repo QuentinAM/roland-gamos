@@ -1,4 +1,5 @@
 <script lang="ts">
+	import UsernameInput from '$lib/components/inputs/UsernameInput.svelte';
 	import type { CreateMessage } from 'src/websocketserver/wstypes';
 	import { goto } from '$app/navigation';
 	import { player, room } from '$lib/game/data';
@@ -80,14 +81,7 @@
 			{#if step1}
 				<div class="card-body">
 					<div class="form-control">
-						<input
-							id="username"
-							type="text"
-							bind:value={username}
-							placeholder="Pseudo"
-							class="input input-bordered input-primary w-full max-w-xs"
-							class:input-error={usernameError}
-						/>
+						<UsernameInput bind:username bind:usernameError onSubmit={toggleSteps} />
 					</div>
 					<div class="form-control">
 						<button class="btn btn-primary" on:click={toggleSteps}>Continuer</button>

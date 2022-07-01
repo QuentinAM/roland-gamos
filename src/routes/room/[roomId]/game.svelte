@@ -230,6 +230,7 @@
 		</div>
 	</div>
 {:else}
+	<!-- In Progress Game -->
 	<div class="hero min-h-screen">
 		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
 			<div class="flex flex-col w-full justify-start">
@@ -317,6 +318,7 @@
 		</div>
 	</div>
 	{#if isCurrentPlayer}
+		<!-- Guess Input -->
 		<div class="absolute bottom-0 p-16 w-full">
 			<div class="card shadow-lg">
 				<div class="card-body">
@@ -327,6 +329,11 @@
 							placeholder="Entre un artiste."
 							bind:value={guess}
 							on:input={guessing}
+							on:keydown={(e) => {
+								if (e.key === 'Enter') {
+									submitGuess();
+								}
+							}}
 							disabled={currentPlayerHasAttemptedGuess}
 						/>
 						<button

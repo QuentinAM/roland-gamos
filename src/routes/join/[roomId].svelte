@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import UsernameInput from '$lib/components/inputs/UsernameInput.svelte';
 	import { room, player } from '$lib/game/data';
 	import type { JoinMessage } from 'src/websocketserver/wstypes';
 	import { onMount } from 'svelte';
@@ -17,6 +18,8 @@
 	let username: string;
 	let usernameError = false;
 	async function joinRoom() {
+		console.log(username);
+
 		const { websocket } = await import('$lib/websocket');
 		room.set(null);
 		const unsubscribeWs = websocket.subscribe((ws) => {
@@ -86,14 +89,7 @@
 			<div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
 				<div class="card-body">
 					<div class="form-control">
-						<input
-							id="username"
-							type="text"
-							bind:value={username}
-							placeholder="Pseudo"
-							class="input input-bordered input-primary w-full max-w-xs"
-							class:input-error={usernameError}
-						/>
+						<UsernameInput bind:username bind:usernameError onSubmit={joinRoom} />
 					</div>
 					<div class="form-control">
 						<button class="btn btn-primary" on:click={joinRoom}>Continuer</button>
