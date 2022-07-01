@@ -72,6 +72,7 @@ export interface LeaveMessage extends Message {
 export interface StartMessage extends Message {
     type: 'START';
     body: {
+        playlistStart: string;
         userId: string;
         roomId: string;
     };

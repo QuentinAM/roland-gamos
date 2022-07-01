@@ -72,14 +72,21 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
     // Stop the current timer
     clearInterval(room.interval);
 
+    // Check if artist have already been said
+    let already_said_artist = room.enteredArtists.find(artist => artist.name === body.guess) !== undefined;
+
     // Check if guess is valid
     let currentArtist = room.enteredArtists[room.enteredArtists.length - 1];
-    let res = await guess(currentArtist.name + "," + body.guess) as Track | undefined;
-
+    
+    let res;
+    if (!already_said_artist)
+    {
+        res = await guess(currentArtist.name + "," + body.guess) as Track | undefined;
+    }
 
     // Send update to all players in the room
     room.currentPlayerHasAttemptedGuess = true;
-    if (res) {
+    if (!already_said_artist && res) {
         console.log(`Correct guess in room ${body.roomId} by user ${body.userId}: ${body.guess}`);
 
         // Guess is correct, send update to all players in the room

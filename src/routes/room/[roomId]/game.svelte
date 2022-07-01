@@ -166,7 +166,7 @@
 							{/if}
 						</div>
 					</div>
-					<div class="ml-40">
+					<div class="ml-20">
 						<h1 class="font-bold">
 							Statistiques
 						</h1>
@@ -180,43 +180,47 @@
 								</div>
 							{/if}
 								
-							{#if tracks}
-							<div class="stat">
-								<div class="stat-title">Morceau le plus ancien</div>
-								<div class="stat-value">
-									{tracks.reduce(function(prev, curr) {
-										return prev.releaseDate < curr.releaseDate ? prev : curr;
-									}).name}
+							{#if tracks && tracks.length > 0}
+								<div class="stat">
+									<div class="stat-title">Morceau le plus ancien</div>
+									<div class="stat-value">
+										{tracks.reduce(function(prev, curr) {
+											return prev.releaseDate < curr.releaseDate ? prev : curr;
+										}).name}
+									</div>
+									<div class="stat-desc">
+										{tracks.reduce(function(prev, curr) {
+											return prev.releaseDate < curr.releaseDate ? prev : curr;
+										}).releaseDate}	
+									</div>
 								</div>
-								<div class="stat-desc">
-									{tracks.reduce(function(prev, curr) {
-										return prev.releaseDate < curr.releaseDate ? prev : curr;
-									}).releaseDate}	
-								</div>
-							</div>
 							{/if}
 								
 							{#if tracks}
-							<div class="stat">
-								<div class="stat-title">Morceau le plus récent</div>
-								<div class="stat-value">
-									{tracks.reduce(function(prev, curr) {
-										return prev.releaseDate > curr.releaseDate ? prev : curr;
-									}).name}
+								<div class="stat">
+									<div class="stat-title">Morceau le plus récent</div>
+									<div class="stat-value">
+										{tracks.reduce(function(prev, curr) {
+											return prev.releaseDate > curr.releaseDate ? prev : curr;
+										}).name}
+									</div>
+									<div class="stat-desc">
+										{tracks.reduce(function(prev, curr) {
+											return prev.releaseDate > curr.releaseDate ? prev : curr;
+										}).releaseDate}	
+									</div>
 								</div>
-								<div class="stat-desc">
-									{tracks.reduce(function(prev, curr) {
-										return prev.releaseDate > curr.releaseDate ? prev : curr;
-									}).releaseDate}	
-								</div>
-							</div>
 							{/if}
 							
 						</div>
 					</div>
 				</div>
 				<div class="flex flex-row">
-					<button class="btn btn-error m-1" on:click={() => {}}>
+					<button class="btn btn-error m-1" 
+						on:click={() => {
+							goto('/');
+						}}
+					>
 						Quitter
 					</button>
 					{#if $room?.hostPlayerId}
@@ -271,12 +275,12 @@
 							<div class="flex flex-col justify-center items-center">
 								<p class="font-semibold">{p.username}</p>
 								<div
-									class="w-[50%]  h-2 rounded"
+									class="w-[60%] h-2 rounded"
 									class:bg-primary={currentPlayerIndex === i}
 									class:bg-base-300={currentPlayerIndex !== i}
 								/>
 								<div
-									class="w-[40%] h-16 rounded-b shadow-lg"
+									class="w-[50%] h-16 rounded-b shadow-lg"
 									class:bg-primary={currentPlayerIndex === i}
 									class:bg-base-300={currentPlayerIndex !== i}
 								>

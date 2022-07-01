@@ -48,7 +48,7 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
     room.currentTurnStartTime = Date.now() + 5_000;
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
-    room.enteredArtists = [await start()];
+    room.enteredArtists = [await start(body.playlistStart)];
 
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);
