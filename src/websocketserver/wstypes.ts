@@ -3,6 +3,7 @@ import { WebSocket } from 'ws';
 export interface Room {
     id: string;
     hostPlayerIndex: number;
+    hostPlayerId: string;
     players: Player[];
     eliminatedPlayers: Player[];
     currentPlayerIndex: number;
@@ -20,6 +21,7 @@ export interface Player {
     userId: string;
     username: string;
     ws?: WebSocket;
+    turn?: number;
 }
 
 export interface Track {
