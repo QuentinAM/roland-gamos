@@ -25,15 +25,19 @@
 		},
 		{
 			name: 'Latino',
-			url: ''
+			url: 'https://open.spotify.com/playlist/37i9dQZF1DWVGjWxwGtpup'
 		},
 		{
 			name: 'Hip-Hop',
-			url: ''
+			url: 'https://open.spotify.com/playlist/37i9dQZF1DX9oh43oAzkyx'
 		},
 		{
 			name: 'Rock',
-			url: ''
+			url: 'https://open.spotify.com/playlist/37i9dQZF1DWWSuZL7uNdVA'
+		},
+		{
+			name: 'K-Pop',
+			url: 'https://open.spotify.com/playlist/37i9dQZF1DX9tPFwDMOaN1'
 		},
 		{
 			name: 'Autre',
