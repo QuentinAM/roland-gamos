@@ -8,6 +8,7 @@ export interface Room {
     currentPlayerIndex: number;
     currentTurn: number;
     currentTurnStartTime: number;
+    currentPlayerHasAttemptedGuess: boolean;
     currentPlayerHasGuessed: boolean;
     currentGuess: string;
     enteredArtists: Artist[];

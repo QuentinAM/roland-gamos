@@ -46,6 +46,7 @@ export function handleStart(ws: WebSocket, data: StartMessage) {
     room.currentTurn = 1;
     room.currentTurnStartTime = Date.now() + 5_000;
     room.currentPlayerHasGuessed = false;
+    room.currentPlayerHasAttemptedGuess = false;
 
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);

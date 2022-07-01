@@ -52,6 +52,21 @@ export function handleGuessing(ws: WebSocket, data: GuessingMessage) {
         return;
     }
 
+    // Check if user has already attempted a guess
+    if (room.currentPlayerHasAttemptedGuess) {
+        console.log(`User ${body.userId} has already attempted a guess in room ${body.roomId}.`);
+
+        const response: ErrorResponse = {
+            type: 'ERROR',
+            body: {
+                message: `User ${body.userId} has already attempted a guess in room ${body.roomId}.`,
+            }
+        };
+
+        ws.send(JSON.stringify(response));
+        return;
+    }
+
     // Send update to all players in the room
     room.currentGuess = body.currentGuess;
     sendRoomUpdate(body.roomId, room);

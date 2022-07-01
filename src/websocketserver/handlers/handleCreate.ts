@@ -25,6 +25,7 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         currentTurn: 0,
         currentTurnStartTime: 0,
         currentPlayerHasGuessed: false,
+        currentPlayerHasAttemptedGuess: false,
         currentGuess: '',
     });
 

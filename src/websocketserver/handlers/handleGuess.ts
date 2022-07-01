@@ -53,10 +53,29 @@ export function handleGuess(ws: WebSocket, data: GuessMessage) {
         return;
     }
 
+    // Check if user has already attempted a guess
+    if (room.currentPlayerHasAttemptedGuess) {
+        console.log(`User ${body.userId} has already attempted a guess in room ${body.roomId}.`);
+
+        const response: ErrorResponse = {
+            type: 'ERROR',
+            body: {
+                message: `User ${body.userId} has already attempted a guess in room ${body.roomId}.`,
+            }
+        };
+
+        ws.send(JSON.stringify(response));
+        return;
+    }
+
+    // Stop the current timer
+    clearInterval(room.interval);
+
     // TODO: Check if guess is valid
     let valid = true;
 
     // Send update to all players in the room
+    room.currentPlayerHasAttemptedGuess = true;
     if (valid) {
         // Guess is correct, send update to all players in the room
         room.currentGuess = body.guess;
@@ -71,7 +90,6 @@ export function handleGuess(ws: WebSocket, data: GuessMessage) {
     }
 
     setTimeout(() => {
-        clearInterval(room.interval);
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
         room.interval = setInterval(() => {
             nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);

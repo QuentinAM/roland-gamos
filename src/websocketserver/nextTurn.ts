@@ -18,12 +18,19 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
         room.eliminatedPlayers.push(room.players.splice(currentPlayerIndex, 1)[0]);
     }
 
-    // Go to the next turn
-    room.currentPlayerIndex = (room.currentPlayerIndex + 1) % room.players.length;
-    room.currentTurn = room.currentTurn + 1;
-    room.currentTurnStartTime = Date.now();
-    room.currentPlayerHasGuessed = false;
-    room.currentGuess = '';
+    if (room.players.length > 1) {
+        // Go to the next turn
+        room.currentPlayerIndex = (room.currentPlayerIndex + 1) % room.players.length;
+        room.currentTurn = room.currentTurn + 1;
+        room.currentTurnStartTime = Date.now();
+        room.currentPlayerHasGuessed = false;
+        room.currentPlayerHasAttemptedGuess = false;
+        room.currentGuess = '';
 
-    sendRoomUpdate(roomId, room);
+        sendRoomUpdate(roomId, room);
+    } else {
+        // Game is over
+        // TODO: Game finished logic
+        clearInterval(room.interval);
+    }
 }

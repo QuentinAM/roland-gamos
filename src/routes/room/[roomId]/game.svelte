@@ -15,6 +15,7 @@
 	$: currentGuess = $room?.currentGuess;
 	$: currentArtist = $room?.enteredArtists[$room?.currentTurn - 1];
 	$: currentPlayerIndex = $room?.currentPlayerIndex;
+	$: currentPlayerHasAttemptedGuess = $room?.currentPlayerHasAttemptedGuess;
 	$: currentPlayerHasGuessed = $room?.currentPlayerHasGuessed;
 	$: currentTurnStartTime = $room?.currentTurnStartTime;
 	$: remainingTime = currentTurnStartTime
@@ -49,7 +50,9 @@
 			};
 
 			ws.send(JSON.stringify(message));
+			currentPlayerHasAttemptedGuess = true;
 			success = true;
+			guess = '';
 		});
 		if (success) {
 			console.log('Unsubscribed');
@@ -95,7 +98,7 @@
 
 		// Update the remaining time every second
 		setInterval(() => {
-			currentTime = Date.now();
+			if (!currentPlayerHasAttemptedGuess) currentTime = Date.now();
 		}, 1_000);
 	});
 </script>
@@ -153,7 +156,8 @@
 									class="p-2 m-2 text-2xs text-center rounded"
 									class:bg-base-100={!currentPlayerHasGuessed && remainingTimeSeconds > 0}
 									class:bg-success={currentPlayerHasGuessed}
-									class:bg-error={!currentPlayerHasGuessed && remainingTimeSeconds <= 0}
+									class:bg-error={(!currentPlayerHasGuessed && remainingTimeSeconds <= 0) ||
+										(currentPlayerHasAttemptedGuess && !currentPlayerHasGuessed)}
 								>
 									{currentGuess || '‎'}
 								</div>
@@ -175,8 +179,13 @@
 								placeholder="Entre un artiste."
 								bind:value={guess}
 								on:input={guessing}
+								disabled={currentPlayerHasAttemptedGuess}
 							/>
-							<button class="btn btn-success rounded-l-none" on:click={submitGuess}>
+							<button
+								class="btn btn-success rounded-l-none"
+								on:click={submitGuess}
+								disabled={currentPlayerHasAttemptedGuess}
+							>
 								<span class="mr-2">
 									<Fa icon={faCheck} size={'lg'} />
 								</span> Valider
