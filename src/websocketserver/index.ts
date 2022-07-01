@@ -6,6 +6,8 @@ import { handleJoin } from './handlers/handleJoin';
 import { handleLeave } from './handlers/handleLeave';
 import { handleStart } from './handlers/handleStart';
 import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, UpdateResponse } from './wstypes';
+import 'dotenv/config'
+import 'isomorphic-fetch';
 
 export const rooms = new Map<string, Room>();
 

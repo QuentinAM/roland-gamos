@@ -15,6 +15,8 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
 
     if (!room.currentPlayerHasGuessed) {
         // Guess is incorrect, eliminate player
+        console.log(`Player ${room.players[currentPlayerIndex].userId} was eliminated in room ${roomId}.`);
+
         room.eliminatedPlayers.push(room.players.splice(currentPlayerIndex, 1)[0]);
     }
 
@@ -30,7 +32,9 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
         sendRoomUpdate(roomId, room);
     } else {
         // Game is over
+        console.log(`Game is over in room ${roomId}.`);
         // TODO: Game finished logic
         clearInterval(room.interval);
+        sendRoomUpdate(roomId, room);
     }
 }

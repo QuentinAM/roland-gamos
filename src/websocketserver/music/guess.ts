@@ -1,4 +1,4 @@
-import type { Track } from "src/websocketserver/wstypes";
+import type { Track } from "../wstypes";
 import { getToken, getArtistPicture, spToken } from "./utils";
 const levenshtein_threshold = 2;
 
@@ -39,16 +39,13 @@ async function GuessEndpoint(first_artist: string, second_artist: string, token:
         }
     });
 
-    const data = await response.json();
+    const data = await response.json() as any;
 
     // Check for errors
     if (data.error && data.error.status === 401 || data.error && data.error.status === 400) {
         // Change headers and call again
         return GuessEndpoint(first_artist, second_artist, await getToken());
     }
-
-    console.log(data);
-
 
     return {
         track: data.tracks.items[0],

@@ -7,7 +7,7 @@
         "coverage/"
     ],
     "watch": [
-        "src/",
+        "./**/*.ts",
         ".env"
     ],
     "execMap": {

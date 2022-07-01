@@ -1,7 +1,7 @@
-import type { Artist } from 'src/websocketserver/wstypes';
+import type { Artist } from '../wstypes';
 import { getToken, getArtistPicture } from './utils';
 
-export async function start(token: string | null): Promise<Artist> {
+export async function start(token?: string): Promise<Artist> {
     const response = await fetch(`https://api.spotify.com/v1/playlists/37i9dQZF1DWU4xkXueiKGW`, {
         method: 'GET',
         headers: {
@@ -10,7 +10,7 @@ export async function start(token: string | null): Promise<Artist> {
         }
     });
 
-    const data = await response.json();
+    const data = await response.json() as any;
 
     // Check for errors
     if (data.error && data.error.status === 401) {

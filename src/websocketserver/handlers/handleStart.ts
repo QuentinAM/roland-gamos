@@ -3,8 +3,9 @@ import { sendRoomUpdate } from '../sendRoomUpdate';
 import { StartMessage, ErrorResponse } from '../wstypes';
 import { rooms } from '../index';
 import { nextTurn } from '../nextTurn';
+import { start } from '../music/start';
 
-export function handleStart(ws: WebSocket, data: StartMessage) {
+export async function handleStart(ws: WebSocket, data: StartMessage) {
     const body = data.body;
 
     // Check if room exists
@@ -47,6 +48,7 @@ export function handleStart(ws: WebSocket, data: StartMessage) {
     room.currentTurnStartTime = Date.now() + 5_000;
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
+    room.enteredArtists = [await start()];
 
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);

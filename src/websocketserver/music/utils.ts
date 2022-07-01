@@ -1,8 +1,8 @@
 export let spToken = "";
 
 export async function getToken() {
-    const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-    const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
+    const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+    const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
     const response = await fetch(`https://accounts.spotify.com/api/token`, {
         method: 'POST',
@@ -14,12 +14,12 @@ export async function getToken() {
             'grant_type': 'client_credentials'
         })
     });
-    const data = await response.json();
+    const data = await response.json() as any;
     spToken = data.access_token;
     return data.access_token;
 }
 
-export async function getArtistPicture(request: string, token: string | null) {
+export async function getArtistPicture(request: string, token?: string) {
     const response = await fetch(request, {
         method: 'GET',
         headers: {
@@ -28,6 +28,6 @@ export async function getArtistPicture(request: string, token: string | null) {
         }
     });
 
-    const data = await response.json();
+    const data = await response.json() as any;
     return data.images[0].url;
 }

@@ -11,6 +11,7 @@ export interface Room {
     currentPlayerHasAttemptedGuess: boolean;
     currentPlayerHasGuessed: boolean;
     currentGuess: string;
+    currentTrack?: Track;
     enteredArtists: Artist[];
     interval?: NodeJS.Timeout;
 }

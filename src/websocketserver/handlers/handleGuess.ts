@@ -1,10 +1,11 @@
 import { WebSocket } from 'ws';
 import { nextTurn } from '../nextTurn';
 import { sendRoomUpdate } from '../sendRoomUpdate';
-import { GuessMessage, ErrorResponse } from '../wstypes';
+import { GuessMessage, ErrorResponse, Track } from '../wstypes';
 import { rooms } from '../index';
+import { guess } from '../music/guess'
 
-export function handleGuess(ws: WebSocket, data: GuessMessage) {
+export async function handleGuess(ws: WebSocket, data: GuessMessage) {
     const body = data.body;
 
     // Check if room exists
@@ -71,21 +72,25 @@ export function handleGuess(ws: WebSocket, data: GuessMessage) {
     // Stop the current timer
     clearInterval(room.interval);
 
-    // TODO: Check if guess is valid
-    let valid = true;
+    // Check if guess is valid
+    let currentArtist = room.enteredArtists[room.enteredArtists.length - 1];
+    let res = await guess(currentArtist.name + "," + body.guess) as Track | undefined;
+
 
     // Send update to all players in the room
     room.currentPlayerHasAttemptedGuess = true;
-    if (valid) {
+    if (res) {
+        console.log(`Correct guess in room ${body.roomId} by user ${body.userId}: ${body.guess}`);
+
         // Guess is correct, send update to all players in the room
         room.currentGuess = body.guess;
         room.currentPlayerHasGuessed = true;
-        // room.enteredArtists.push();
+        room.currentTrack = res;
+        room.enteredArtists.push(res.artist);
         sendRoomUpdate(body.roomId, room);
     } else {
-
         room.currentPlayerHasGuessed = false;
-        // room.enteredArtists.push();
+
         sendRoomUpdate(body.roomId, room);
     }
 
