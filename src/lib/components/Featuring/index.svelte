@@ -1,18 +1,27 @@
 <script lang="ts">
+	export let number: string | undefined;
 	export let imgUrl: string;
 	export let title: string;
 	export let releaseDate: string;
 	export let audioUrl: string | undefined;
 	export let artist1ImageUrl: string | undefined;
 	export let artist2ImageUrl: string | undefined;
+	export let artist1Name: string | undefined;
+	export let artist2Name: string | undefined;
 </script>
 
 <div class="card card-compact w-96 bg-base-100 shadow-xl">
 	<figure>
-		<img src={imgUrl} alt="Shoes" />
+		<img src={imgUrl} width="640" height="640" alt="Picture"/>
 	</figure>
+	{#if number}
+		<div class="absolute top-2 left-2 p-1 bg-primary rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+			<h1 class="text-base font-semibold">{number}</h1>
+		</div>
+	{/if}
 	<div class="card-body">
 		<h2 class="card-title">{title}</h2>
+		<p class="-mt-3">{artist1Name} & {artist2Name}</p>
 		<p>{releaseDate}</p>
 	</div>
 	{#if audioUrl}
@@ -22,18 +31,18 @@
 	{/if}
 	<div class="avatar-group absolute bottom-10 right-0 -space-x-3">
 		{#if artist1ImageUrl}
-		<div class="avatar">
-			<div class="w-12">
-				<img src={artist2ImageUrl} alt="artist1" />
+			<div class="avatar">
+				<div class="w-12">
+					<img src={artist1ImageUrl} alt="artist1" />
+				</div>
 			</div>
-		</div>
 		{/if}
 		{#if artist2ImageUrl}
-		<div class="avatar">
-			<div class="w-12">
-				<img src={artist2ImageUrl} alt="artist1" />
+			<div class="avatar">
+				<div class="w-12">
+					<img src={artist2ImageUrl} alt="artist1" />
+				</div>
 			</div>
-		</div>
 		{/if}
 	</div>
 </div>

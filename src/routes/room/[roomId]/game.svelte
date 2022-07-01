@@ -3,6 +3,7 @@
 	import { room, player } from '$lib/game/data';
 	import { onMount } from 'svelte';
 	import Featuring from '$lib/components/Featuring/index.svelte';
+	import { CutTrackName } from '$lib/game/util';
 	import type { GuessingMessage, GuessMessage } from 'src/websocketserver/wstypes';
 
 	let turnDuration = 30_000;
@@ -102,7 +103,6 @@
 		// Update the remaining time every second
 		setInterval(() => {
 			if (!currentPlayerHasAttemptedGuess) currentTime = Date.now();
-			console.log($room);
 		}, 1_000);
 	});
 </script>
@@ -112,7 +112,7 @@
 		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
 			<div class="flex flex-col w-full justify-start">
 				<h1 class="font-bold">Partie terminée</h1>
-				<div class="overflow-x-auto">
+				<div class="overflow-auto h-64">
 					<table class="table w-full">
 						<!-- head -->
 						<thead>
@@ -125,14 +125,14 @@
 						<tbody>
 							<!-- row 1 -->
 							<tr class="active">
-								<th>1er</th>
-								<td>{$room?.players[0].username}</td>
-								<td></td>
+								<th class="text-primary text-bold text-xl">1er</th>
+								<td class="text-primary text-bold text-xl">{$room?.players[0].username}</td>
+								<td class="text-primary text-bold text-xl">{$room?.currentTurn}</td>
 							</tr>
 							{#if eliminatedPlayers}
 								{#each eliminatedPlayers.reverse() as p, i}
 									<tr>
-										<th>{i + 2}</th>
+										<th>{i + 2}ème</th>
 										<td>{p.username}</td>
 										<td>{p.turn}</td>
 									</tr>
@@ -141,28 +141,93 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="h-[33rem] carousel carousel-vertical rounded-box">
-					{#if tracks}
-						{#each tracks as track, i}
-							<Featuring
-								audioUrl={track.previewUrl}
-								title={track.name}
-								imgUrl={track.trackImage}
-								releaseDate={track.releaseDate}
-								artist1ImageUrl={track.artist.imageUrl}
-								artist2ImageUrl={$room?.enteredArtists[$room?.enteredArtists.indexOf(track.artist) - 1].imageUrl}
-							/>
-						{/each}
+				<div class="flex flex-row">
+					<div>
+						<h1 class="font-bold">
+							Titres joués
+						</h1>
+						<div class="h-[33rem] carousel carousel-vertical rounded-box">
+							{#if tracks}
+								{#each tracks as track, i}
+								<div class="carousel-item h-full">
+									<Featuring
+										number={`${i + 1}/${tracks.length}`}
+										audioUrl={track.previewUrl}
+										title={track.name}
+										imgUrl={track.trackImage}
+										releaseDate={track.releaseDate}
+										artist1ImageUrl={track.artist.imageUrl}
+										artist2ImageUrl={$room?.enteredArtists[i]?.imageUrl}
+										artist1Name={track.artist.name}
+										artist2Name={$room?.enteredArtists[i]?.name}
+									/>
+									</div>
+								{/each}
+							{/if}
+						</div>
+					</div>
+					<div class="ml-40">
+						<h1 class="font-bold">
+							Statistiques
+						</h1>
+						<div class="stats stats-vertical shadow">
+	
+							{#if $room?.currentTurnStartTime}
+								<div class="stat">
+									<div class="stat-title">Durée</div>
+									<div class="stat-value">{(new Date().getTime() - new Date($room?.currentTurnStartTime * 1000).getTime())/60000}</div>
+									<div class="stat-desc">Minutes</div>
+								</div>
+							{/if}
+								
+							{#if tracks}
+							<div class="stat">
+								<div class="stat-title">Morceau le plus ancien</div>
+								<div class="stat-value">
+									{tracks.reduce(function(prev, curr) {
+										return prev.releaseDate < curr.releaseDate ? prev : curr;
+									}).name}
+								</div>
+								<div class="stat-desc">
+									{tracks.reduce(function(prev, curr) {
+										return prev.releaseDate < curr.releaseDate ? prev : curr;
+									}).releaseDate}	
+								</div>
+							</div>
+							{/if}
+								
+							{#if tracks}
+							<div class="stat">
+								<div class="stat-title">Morceau le plus récent</div>
+								<div class="stat-value">
+									{tracks.reduce(function(prev, curr) {
+										return prev.releaseDate > curr.releaseDate ? prev : curr;
+									}).name}
+								</div>
+								<div class="stat-desc">
+									{tracks.reduce(function(prev, curr) {
+										return prev.releaseDate > curr.releaseDate ? prev : curr;
+									}).releaseDate}	
+								</div>
+							</div>
+							{/if}
+							
+						</div>
+					</div>
+				</div>
+				<div class="flex flex-row">
+					<button class="btn btn-error m-1" on:click={() => {}}>
+						Quitter
+					</button>
+					{#if $room?.hostPlayerId}
+						{#if $room?.hostPlayerId === $player?.userId}
+							<button class="btn btn-primary m-1" on:click={() => {}}>
+								Rejouer
+							</button>
+						{/if}
 					{/if}
 				</div>
 			</div>
-			{#if $room?.hostPlayerId}
-				{#if $room?.hostPlayerId === $player?.userId}
-					<button class="btn btn-primary" on:click={() => {}}>
-						Rejouer
-					</button>
-				{/if}
-			{/if}
 		</div>
 	</div>
 {:else}
@@ -235,14 +300,19 @@
 
 			{#if currentTrack}
 				<Featuring
+					number={undefined}
 					audioUrl={currentTrack.previewUrl}
-					artist1ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
+					artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
 						currentArtist?.imageUrl ??
 						''}
-					artist2ImageUrl={currentTrack.artist.imageUrl}
+					artist2Name={$room?.enteredArtists[$room?.currentTurn - 2]?.name ??
+						currentArtist?.name ??
+						''}
+					artist1ImageUrl={currentTrack.artist.imageUrl}
+					artist1Name={currentTrack.artist.name}
 					imgUrl={currentTrack.trackImage}
 					releaseDate={currentTrack.releaseDate}
-					title={currentTrack.name}
+					title={CutTrackName(currentTrack.name)}
 				/>
 			{/if}
 		</div>
