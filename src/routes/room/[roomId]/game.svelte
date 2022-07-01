@@ -4,14 +4,18 @@
 	import Fa from 'svelte-fa';
 	import { onMount } from 'svelte';
 	import { faArrowsRotate, faCheck, faClock, faMusic } from '@fortawesome/free-solid-svg-icons';
+	import type { GuessingMessage, GuessMessage } from 'src/websocketserver/wstypes';
+	import type { Unsubscriber } from 'svelte/store';
 
 	let turnDuration = 30_000;
 	let currentTime = Date.now();
 
 	$: players = $room?.players;
 	$: currentTurn = $room?.currentTurn;
+	$: currentGuess = $room?.currentGuess;
 	$: currentArtist = $room?.enteredArtists[$room?.currentTurn - 1];
 	$: currentPlayerIndex = $room?.currentPlayerIndex;
+	$: currentPlayerHasGuessed = $room?.currentPlayerHasGuessed;
 	$: currentTurnStartTime = $room?.currentTurnStartTime;
 	$: remainingTime = currentTurnStartTime
 		? new Date(currentTurnStartTime + turnDuration - currentTime).getTime()
@@ -24,18 +28,75 @@
 			? players[currentPlayerIndex].userId === $player?.userId
 			: false;
 
+	let guess = '';
+	// Send the final guess attempt to the server
+	async function submitGuess() {
+		const { websocket } = await import('$lib/websocket');
+
+		console.log('currentGuess: ', guess);
+
+		let success = false;
+		const unsubscribe = websocket.subscribe((ws) => {
+			if (!ws) return;
+
+			let message: GuessMessage = {
+				type: 'GUESS',
+				body: {
+					guess: guess,
+					roomId: $room?.id as string,
+					userId: $player?.userId as string
+				}
+			};
+
+			ws.send(JSON.stringify(message));
+			success = true;
+		});
+		if (success) {
+			console.log('Unsubscribed');
+			unsubscribe();
+		}
+	}
+
+	// Send the current guess attempt to the server
+	async function guessing() {
+		const { websocket } = await import('$lib/websocket');
+
+		console.log('currentGuess: ', guess);
+
+		let success = false;
+		const unsubscribe = websocket.subscribe((ws) => {
+			if (!ws) return;
+
+			let message: GuessingMessage = {
+				type: 'GUESSING',
+				body: {
+					currentGuess: guess,
+					roomId: $room?.id as string,
+					userId: $player?.userId as string
+				}
+			};
+
+			ws.send(JSON.stringify(message));
+			success = true;
+		});
+		if (success) {
+			console.log('Unsubscribed');
+			unsubscribe();
+		}
+	}
+
 	onMount(async () => {
 		const { websocket } = await import('$lib/websocket');
 
+		// Check if a room is present
 		if (!$room) {
 			goto('/');
 		}
 
+		// Update the remaining time every second
 		setInterval(() => {
 			currentTime = Date.now();
 		}, 1_000);
-
-		console.log($room);
 	});
 </script>
 
@@ -86,7 +147,18 @@
 							class="w-[40%] h-16 rounded-b shadow-lg"
 							class:bg-primary={currentPlayerIndex === i}
 							class:bg-base-300={currentPlayerIndex !== i}
-						/>
+						>
+							{#if currentPlayerIndex === i}
+								<div
+									class="p-2 m-2 text-2xs text-center rounded"
+									class:bg-base-100={!currentPlayerHasGuessed && remainingTimeSeconds > 0}
+									class:bg-success={currentPlayerHasGuessed}
+									class:bg-error={!currentPlayerHasGuessed && remainingTimeSeconds <= 0}
+								>
+									{currentGuess || '‎'}
+								</div>
+							{/if}
+						</div>
 					</div>
 				{/each}
 			</div>
@@ -101,8 +173,10 @@
 								class="input input-primary w-full rounded-r-none"
 								type="text"
 								placeholder="Entre un artiste."
+								bind:value={guess}
+								on:input={guessing}
 							/>
-							<button class="btn btn-success rounded-l-none">
+							<button class="btn btn-success rounded-l-none" on:click={submitGuess}>
 								<span class="mr-2">
 									<Fa icon={faCheck} size={'lg'} />
 								</span> Valider
