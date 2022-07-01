@@ -53,7 +53,7 @@
 
 	async function startGame() {
 
-		if (IsSpotifyPlaylist(actualCategory.url))
+		if (!IsSpotifyPlaylist(actualCategory.url))
 		{
 			return;
 		}
