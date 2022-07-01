@@ -196,7 +196,7 @@
 								</div>
 							{/if}
 								
-							{#if tracks}
+							{#if tracks && tracks.length > 0}
 								<div class="stat">
 									<div class="stat-title">Morceau le plus récent</div>
 									<div class="stat-value">
