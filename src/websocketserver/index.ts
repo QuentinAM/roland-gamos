@@ -35,8 +35,9 @@ else {
     wss = new WebSocketServer({ port: 8080 });
 }
 
+import { guess } from './music/guess';
 // Log server startup
-wss.on('listening', () => {
+wss.on('listening', async () => {
     console.log('Server started');
 });
 
