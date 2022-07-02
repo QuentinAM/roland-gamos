@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { scale } from 'svelte/transition';
 	import UsernameInput from '$lib/components/inputs/UsernameInput.svelte';
 	import { room, player } from '$lib/game/data';
 	import type { SendMessage } from '$lib/websocket';
@@ -101,6 +102,9 @@
 				</h1>
 				<p class="pt-6">Ça arrive fort.</p>
 			</div>
+			<button class="btn btn-primary absolute bottom-1 w-1/2" on:click={() => goto('/')} transition:scale>
+				Quitter
+			</button>
 		{/if}
 	</div>
 </div>
