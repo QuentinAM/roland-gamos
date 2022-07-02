@@ -7,10 +7,11 @@
 	import type { SendMessage } from '$lib/websocket';
 
 	let sendMessage: SendMessage;
-	let step1 = true;
+	let step1: boolean = true;
 	let username: string;
-	let usernameError = false;
+	let usernameError: boolean = false;
 	let roomId: string;
+	let roomIdError: boolean = false;
 	function toggleSteps() {
 		if (step1 && !username) {
 			usernameError = true;
@@ -51,6 +52,11 @@
 	}
 
 	function joinRoom() {
+
+		if (roomIdError || roomId === ''){
+			return;
+		}
+
 		localStorage.setItem('username', username);
 		player.set({
 			username: username,
@@ -108,7 +114,9 @@
 							id="roomId"
 							type="text"
 							bind:value={roomId}
+							on:change={() => roomIdError = roomId.length !== 6}
 							placeholder="Code de la room"
+							class:input-error={roomIdError}
 							class="input input-bordered input-primary w-full max-w-xs"
 						/>
 					</div>

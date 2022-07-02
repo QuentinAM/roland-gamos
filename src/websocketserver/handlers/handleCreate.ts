@@ -30,7 +30,8 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         currentGuess: '',
         tracks: [],
         mode: 'NORMAL',
-        timeBetweenRound: 30
+        timeBetweenRound: 30,
+        playlistStart: 'https://open.spotify.com/playlist/4l1CEhc7ZPbaEtiPdCSGbl'
     });
 
     console.log(`${body.username} created room ${roomId}`);

@@ -8,7 +8,7 @@ export interface Room {
     hostPlayerId: string;
     players: Player[];
     eliminatedPlayers: Player[];
-    playlistStart?: string;
+    playlistStart: string;
     currentPlayerIndex: number;
     currentTurn: number;
     currentTurnStartTime: number;
@@ -88,7 +88,6 @@ export interface StartMessage extends Message {
 export interface RestartMessage extends Message {
     type: 'RESTART';
     body: {
-        playlistStart: string;
         userId: string;
         roomId: string;
         timeBetweenRound: number;

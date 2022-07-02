@@ -7,10 +7,9 @@
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import { CutTrackName } from '$lib/game/util';
-	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage } from 'src/websocketserver/wstypes';
+	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage, LeaveMessage } from 'src/websocketserver/wstypes';
 	import type { SendMessage } from '$lib/websocket';
 	import Timer from '$lib/components/ui/Timer.svelte';
-import { mode } from '$app/env';
 
 	let sendMessage: SendMessage;
 	let turnDuration = 30_000;
@@ -46,7 +45,7 @@ import { mode } from '$app/env';
 		$room &&
 		$player &&
 		$room?.hostPlayerId === $player?.userId;
-	let modeTv = $room?.mode === 'TV';
+	$: modeTv = $room?.mode === 'TV';
 
 	let guess = '';
 	// Send the final guess attempt to the server
@@ -78,17 +77,24 @@ import { mode } from '$app/env';
 	}
 
 	async function restart() {
-		if (!IsSpotifyPlaylist(chosenCategory.url)) {
-			return;
-		}
-
 		let message: RestartMessage = {
 			type: 'RESTART',
 			body: {
-				playlistStart: chosenCategory.url as string,
 				roomId: $room?.id as string,
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number
+			}
+		};
+		sendMessage(message);
+	}
+
+	async function handleLeave() {
+		// Send settings to server
+		let message: LeaveMessage = {
+			type: 'LEAVE',
+			body: {
+				roomId: $room?.id as string,
+				userId: $player?.userId as string
 			}
 		};
 		sendMessage(message);
@@ -107,14 +113,6 @@ import { mode } from '$app/env';
 			}
 		};
 		sendMessage(message);
-	}
-
-	function validTimeBetweenTime(node: any, value: any){
-		return {
-			update(value: any) {
-				timeBetweenRound = value === null || timeBetweenRound < node.min ? timeBetweenRound : parseInt(value);
-			}
-		}
 	}
 
 	onMount(async () => {
@@ -276,7 +274,7 @@ import { mode } from '$app/env';
 											<input 
 												disabled={!isHost}
 												type="checkbox"
-												checked={isHost ? modeTv : $room?.mode === 'TV'}
+												checked={modeTv}
 												on:change={(e) => {
 													modeTv = e.target?.checked;
 													updateSettings();
@@ -289,7 +287,8 @@ import { mode } from '$app/env';
 								<div class="flex flex-row justify-center">
 									<button
 										class="btn btn-error m-1 w-1/3"
-										on:click={() => {
+										on:click={async () => {
+											await handleLeave();
 											goto('/');
 										}}
 									>

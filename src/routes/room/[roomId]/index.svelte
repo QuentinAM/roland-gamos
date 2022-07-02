@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { room, player } from '$lib/game/data';
-	import type { ModeType, SettingMessage, StartMessage } from 'src/websocketserver/wstypes';
+	import type { LeaveMessage, ModeType, SettingMessage, StartMessage } from 'src/websocketserver/wstypes';
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import type { SendMessage } from '$lib/websocket';
@@ -56,7 +56,20 @@
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number,
 				mode: modeTv ? 'TV' : 'NORMAL' as ModeType,
-				playlistStart: chosenCategory.url as string,
+				playlistStart: chosenCategory.url as string
+			}
+		};
+		sendMessage(message);
+	}
+
+	async function handleLeave() {
+
+		// Send settings to server
+		let message: LeaveMessage = {
+			type: 'LEAVE',
+			body: {
+				roomId,
+				userId: $player?.userId as string
 			}
 		};
 		sendMessage(message);
@@ -188,7 +201,8 @@
 				<div class="form-control flex flex-row gap-4">
 					<button
 						class="btn btn-error"
-						on:click={() => {
+						on:click={async () => {
+							await handleLeave();
 							goto('/');
 						}}
 					>

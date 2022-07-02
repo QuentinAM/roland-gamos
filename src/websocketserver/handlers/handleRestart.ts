@@ -58,8 +58,7 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
     room.currentGuess = '';
-    room.enteredArtists = [await start(body.playlistStart)];
-    room.playlistStart = body.playlistStart;
+    room.enteredArtists = [await start(room.playlistStart)];
 
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);
