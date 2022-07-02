@@ -1,4 +1,5 @@
 <script lang="ts">
+	export let autoplay = false;
 	export let number: string | undefined;
 	export let imgUrl: string;
 	export let title: string;
@@ -12,10 +13,12 @@
 
 <div class="card card-compact w-96 bg-base-100 shadow-xl">
 	<figure>
-		<img src={imgUrl} width="640" height="640" alt="e"/>
+		<img src={imgUrl} width="640" height="640" alt="e" />
 	</figure>
 	{#if number}
-		<div class="absolute top-2 left-2 p-1 bg-primary rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+		<div
+			class="absolute top-2 left-2 p-1 bg-primary rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
+		>
 			<h1 class="text-base font-semibold">{number}</h1>
 		</div>
 	{/if}
@@ -25,7 +28,7 @@
 		<p>{releaseDate}</p>
 	</div>
 	{#if audioUrl}
-		<audio class="w-full" src={audioUrl} controls>
+		<audio class="w-full" src={audioUrl} controls {autoplay}>
 			<track kind="captions" />
 		</audio>
 	{/if}

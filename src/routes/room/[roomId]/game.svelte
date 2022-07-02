@@ -3,10 +3,11 @@
 	import { scale, slide } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import { room, player } from '$lib/game/data';
-	import Featuring from '$lib/components/Featuring/index.svelte';
+	import Featuring from '$lib/components/ui/Featuring.svelte';
 	import { CutTrackName } from '$lib/game/util';
 	import type { GuessingMessage, GuessMessage, RestartMessage } from 'src/websocketserver/wstypes';
 	import type { SendMessage } from '$lib/websocket';
+	import Timer from '$lib/components/ui/Timer.svelte';
 
 	let sendMessage: SendMessage;
 	let turnDuration = 30_000;
@@ -63,7 +64,6 @@
 			}
 		};
 		sendMessage(message);
-		guess = '';
 	}
 
 	async function restart() {
@@ -94,6 +94,9 @@
 	});
 </script>
 
+{#if currentPlayerHasAttemptedGuess}
+	<Timer />
+{/if}
 {#if isGameOver}
 	<div class="hero min-h-screen">
 		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
@@ -288,6 +291,7 @@
 			{#if currentTrack}
 				<div transition:slide>
 					<Featuring
+						autoplay={true}
 						number={undefined}
 						audioUrl={currentTrack.previewUrl}
 						artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
