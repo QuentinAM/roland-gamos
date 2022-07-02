@@ -32,7 +32,7 @@
 		<input class="hidden" />
 	</label>
 	<div
-		class="tooltip tooltip-top"
+		class="tooltip lg:tooltip-right md:tooltip-top"
 		data-tip="L'artiste de départ est prit au hasard dans la playlist du genre musical sélectionné."
 	>
 		<select class="select select-primary select-bordered w-full" bind:value={chosenCategory}>
@@ -49,7 +49,7 @@
 					<input class="hidden" />
 				</label>
 				<div
-					class="tooltip tooltip-bottom"
+					class="tooltip lg:tooltip-right md:tooltip-bottom"
 					data-tip="Exemple: https://open.spotify.com/playlist/37i9dQZF1DWU4xkXueiKGW"
 				>
 					<input

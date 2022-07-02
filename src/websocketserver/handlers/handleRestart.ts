@@ -66,5 +66,5 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     // Set the next turn
     room.interval = setInterval(() => {
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-    }, 30000);
+    }, 30_000);
 }

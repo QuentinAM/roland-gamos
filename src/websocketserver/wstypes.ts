@@ -76,6 +76,7 @@ export interface StartMessage extends Message {
         playlistStart: string;
         userId: string;
         roomId: string;
+        timeBetweenRound: number;
     };
 }
 
@@ -85,6 +86,7 @@ export interface RestartMessage extends Message {
         playlistStart: string;
         userId: string;
         roomId: string;
+        timeBetweenRound: number;
     };
 }
 

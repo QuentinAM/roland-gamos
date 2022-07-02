@@ -4,6 +4,8 @@
 	import { goto } from '$app/navigation';
 	import { room, player } from '$lib/game/data';
 	import Featuring from '$lib/components/ui/Featuring.svelte';
+	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
+	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import { CutTrackName } from '$lib/game/util';
 	import type { GuessingMessage, GuessMessage, RestartMessage } from 'src/websocketserver/wstypes';
 	import type { SendMessage } from '$lib/websocket';
@@ -12,6 +14,9 @@
 	let sendMessage: SendMessage;
 	let turnDuration = 30_000;
 	let currentTime = Date.now();
+	let chosenCategory: any;
+	let autoplay: boolean = localStorage.getItem('autoplay') === 'true' ?? true;
+	let timeBetweenRound = 30;
 
 	$: players = $room?.players;
 	$: currentTurn = $room?.currentTurn;
@@ -67,15 +72,28 @@
 	}
 
 	async function restart() {
+		if (!IsSpotifyPlaylist(chosenCategory.url)) {
+			return;
+		}
+
 		let message: RestartMessage = {
 			type: 'RESTART',
 			body: {
-				playlistStart: $room?.playlistStart as string,
+				playlistStart: chosenCategory.url as string,
 				roomId: $room?.id as string,
-				userId: $player?.userId as string
+				userId: $player?.userId as string,
+				timeBetweenRound: timeBetweenRound as number
 			}
 		};
 		sendMessage(message);
+	}
+
+	function validTimeBetweenTime(node: any, value: any){
+		return {
+			update(value: any) {
+				timeBetweenRound = value === null || timeBetweenRound < node.min ? timeBetweenRound : parseInt(value);
+			}
+		}
 	}
 
 	onMount(async () => {
@@ -154,67 +172,93 @@
 							{/if}
 						</div>
 					</div>
-					<div class="ml-20">
-						<h1 class="font-bold">Statistiques</h1>
-						<div class="stats stats-vertical shadow">
-							{#if $room?.currentTurnStartTime}
-								<div class="stat">
-									<div class="stat-title">Durée</div>
-									<div class="stat-value">
-										{Math.round(((currentTurn ?? 1) * (turnDuration + 5_000)) / 1000 / 60)}
+					<div class="flex flex-col space-y-4">
+						<div class="ml-20">
+							<h1 class="font-bold">Statistiques</h1>
+							<div class="stats stats-vertical shadow">
+								{#if $room?.currentTurnStartTime}
+									<div class="stat">
+										<div class="stat-title">Durée</div>
+										<div class="stat-value">
+											{Math.round(((currentTurn ?? 1) * (turnDuration + 5_000)) / 1000 / 60)}
+										</div>
+										<div class="stat-desc">Minutes</div>
 									</div>
-									<div class="stat-desc">Minutes</div>
-								</div>
-							{/if}
+								{/if}
 
-							{#if tracks && tracks.length > 0}
-								<div class="stat">
-									<div class="stat-title">Morceau le plus ancien</div>
-									<div class="stat-value">
-										{tracks.reduce(function (prev, curr) {
-											return prev.releaseDate < curr.releaseDate ? prev : curr;
-										}).name}
+								{#if tracks && tracks.length > 0}
+									<div class="stat">
+										<div class="stat-title">Morceau le plus ancien</div>
+										<div class="stat-value truncate">
+											{tracks.reduce(function (prev, curr) {
+												return prev.releaseDate < curr.releaseDate ? prev : curr;
+											}).name}
+										</div>
+										<div class="stat-desc">
+											{tracks.reduce(function (prev, curr) {
+												return prev.releaseDate < curr.releaseDate ? prev : curr;
+											}).releaseDate}
+										</div>
 									</div>
-									<div class="stat-desc">
-										{tracks.reduce(function (prev, curr) {
-											return prev.releaseDate < curr.releaseDate ? prev : curr;
-										}).releaseDate}
-									</div>
-								</div>
-							{/if}
+								{/if}
 
-							{#if tracks && tracks.length > 0}
-								<div class="stat">
-									<div class="stat-title">Morceau le plus récent</div>
-									<div class="stat-value">
-										{tracks.reduce(function (prev, curr) {
-											return prev.releaseDate > curr.releaseDate ? prev : curr;
-										}).name}
+								{#if tracks && tracks.length > 0}
+									<div class="stat">
+										<div class="stat-title">Morceau le plus récent</div>
+										<div class="stat-value truncate">
+											{tracks.reduce(function (prev, curr) {
+												return prev.releaseDate > curr.releaseDate ? prev : curr;
+											}).name}
+										</div>
+										<div class="stat-desc">
+											{tracks.reduce(function (prev, curr) {
+												return prev.releaseDate > curr.releaseDate ? prev : curr;
+											}).releaseDate}
+										</div>
 									</div>
-									<div class="stat-desc">
-										{tracks.reduce(function (prev, curr) {
-											return prev.releaseDate > curr.releaseDate ? prev : curr;
-										}).releaseDate}
-									</div>
+								{/if}
+							</div>
+						</div>
+						<div class="flex justify-center">
+							<div class="form-control w-full max-w-xs">
+									{#if $room?.hostPlayerId}
+										{#if $room?.hostPlayerId === $player?.userId}
+											<PlaylistInput bind:chosenCategory/>
+											<div class="form-control w-full max-w-xs">
+												<label class="label">
+													<span class="label-text">Durée entre chaque round</span>
+													<input class="hidden"/>
+												</label>
+												<div class="tooltip tooltip-right" data-tip="Temps entre chaque guess">
+													<input
+														type='number'
+														class="input input-primary w-full"
+														min=1
+														use:validTimeBetweenTime={timeBetweenRound}
+														bind:value={timeBetweenRound}
+													/>
+												</div>
+											</div>
+										{/if}
+									{/if}
+								<div class="flex flex-row justify-center">
+									<button
+										class="btn btn-error m-1 w-1/3"
+										on:click={() => {
+											goto('/');
+										}}
+									>
+										Quitter
+									</button>
+									{#if $room?.hostPlayerId}
+										{#if $room?.hostPlayerId === $player?.userId}
+											<button class="btn btn-primary m-1 w-1/3" on:click={restart}> Rejouer </button>
+										{/if}
+									{/if}
 								</div>
-							{/if}
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="flex flex-row justify-center">
-					<button
-						class="btn btn-error m-1"
-						on:click={() => {
-							goto('/');
-						}}
-					>
-						Quitter
-					</button>
-					{#if $room?.hostPlayerId}
-						{#if $room?.hostPlayerId === $player?.userId}
-							<button class="btn btn-primary m-1" on:click={restart}> Rejouer </button>
-						{/if}
-					{/if}
 				</div>
 			</div>
 		</div>
@@ -291,7 +335,7 @@
 			{#if currentTrack}
 				<div transition:slide>
 					<Featuring
-						autoplay={true}
+						{autoplay}
 						number={undefined}
 						audioUrl={currentTrack.previewUrl}
 						artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
@@ -306,6 +350,17 @@
 						releaseDate={currentTrack.releaseDate}
 						title={CutTrackName(currentTrack.name)}
 					/>
+					<div class="form-control">
+						<label class="label">
+						  <span class="label-text">Autoplay</span> 
+						  <input 
+						  	type="checkbox" 
+							class="checkbox checkbox-primary"
+							bind:checked={autoplay} 
+							on:change={() => localStorage.setItem('autoplay', autoplay ? 'true' : 'false')}
+						/>
+						</label>
+					  </div>
 				</div>
 			{/if}
 		</div>

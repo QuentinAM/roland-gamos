@@ -14,6 +14,7 @@
 	let roomId: string = $page.params.roomId;
 	let url: string;
 	let chosenCategory: any;
+	let timeBetweenRound = 30;
 
 	$: playerCount = $room?.players.length;
 	$: isHost =
@@ -34,10 +35,19 @@
 			body: {
 				playlistStart: chosenCategory.url as string,
 				userId: $player?.userId as string,
-				roomId
+				roomId,
+				timeBetweenRound: timeBetweenRound as number
 			}
 		};
 		sendMessage(message);
+	}
+
+	function validTimeBetweenTime(node: any, value: any){
+		return {
+			update(value: any) {
+				timeBetweenRound = value === null || timeBetweenRound < node.min ? timeBetweenRound : parseInt(value);
+			}
+		}
 	}
 
 	onMount(async () => {
@@ -111,7 +121,23 @@
 					</div>
 				</div>
 				{#if isHost}
-					<PlaylistInput bind:chosenCategory />
+					<p class="text-sm">Seul l'host de la room peut changer les paramètres.</p>
+					<PlaylistInput bind:chosenCategory/>
+					<div class="form-control w-full max-w-xs">
+						<label class="label">
+							<span class="label-text">Durée entre chaque round</span>
+							<input class="hidden"/>
+						</label>
+						<div class="tooltip tooltip-right" data-tip="">
+							<input
+								type='number'
+								class="input input-primary w-full"
+								min=1
+								use:validTimeBetweenTime={timeBetweenRound}
+								bind:value={timeBetweenRound}
+							/>
+						</div>
+					</div>
 				{/if}
 				<div class="form-control flex flex-row gap-4">
 					<button

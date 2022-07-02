@@ -70,9 +70,21 @@
 <div class="hero min-h-screen">
 	<div class="hero-content flex-col lg:flex-row-reverse">
 		<div class="text-center lg:text-left">
-			<h1 class="text-5xl font-bold w-max">Roland Gamos</h1>
-			<p class="pt-6 w-max">Le jeu du meilleur jeu rap au monde.</p>
+			<h1 class="text-5xl font-bold">Roland Gamos</h1>
+			<p class="pt-6">Le jeu du meilleur jeu rap au monde.</p>
 			<p class="text-sm">Jusqu'à preuve du contraire.</p>
+			<div class="pt-5 w-max">
+				<p class="text-base">🎵 Le but du jeu ? Un ping-pong featuring musical.</p>
+				<p class="text-sm">
+					🎙️ Un artiste de départ est pris dans la playlist de ton choix.
+					<br/>
+					🎧 Chacun votre tour vous devrez donner un feat avec l'artiste précédent.
+					<br/>
+					⚠️ Un artiste ne peut être cité qu'une fois !
+					<br/>
+					🥇 Que le meilleur gagne !
+				</p>
+			</div>
 		</div>
 		<div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
 			{#if step1}
