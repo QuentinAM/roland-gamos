@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	export let chosenCategory: any;
+	export let isHost: boolean | null;
+	export let nonHostValue: string | undefined;
+	export let onChange: any;
 
 	const categories: Array<any> = [
 		{
@@ -32,12 +35,17 @@
 		<input class="hidden" />
 	</label>
 	<div
-		class="tooltip lg:tooltip-right md:tooltip-top"
+		class="tooltip tooltip-primary lg:tooltip-right md:tooltip-top"
 		data-tip="L'artiste de départ est prit au hasard dans la playlist du genre musical sélectionné."
 	>
-		<select class="select select-primary select-bordered w-full" bind:value={chosenCategory}>
+		<select on:change={onChange} disabled={!isHost} class="select select-primary select-bordered w-full" bind:value={chosenCategory}>
 			{#each categories as category, i}
-				<option value={category}>{category.name}</option>
+				<option 
+					value={category}
+					selected={!isHost && nonHostValue === category.url}
+				>	
+					{category.name}
+				</option>
 			{/each}
 		</select>
 	</div>
@@ -57,6 +65,7 @@
 						class:input-error={!IsSpotifyPlaylist(chosenCategory.url) && chosenCategory.url}
 						type="text"
 						placeholder="URL Spotify de la playlist"
+						disabled={!isHost}
 						bind:value={chosenCategory.url}
 					/>
 				</div>

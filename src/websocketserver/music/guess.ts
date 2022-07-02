@@ -22,7 +22,7 @@ export async function guess(guess: string): Promise<Track | undefined> {
 async function CheckTrack(track: any, first_artist: string, second_artist: string, token: string)
 {
     if (track && IsValid(first_artist, second_artist, track.artists)) {
-        const second_artist_obj: any = track.artists.find((artist: { name: any; }) => levenshtein(artist.name.toLowerCase().replace(' ', ''), second_artist.toLowerCase().replace(' ', '')) <= levenshtein_threshold);
+        const second_artist_obj: any = track.artists.find((artist: { name: any; }) => levenshtein(FormatName(artist.name), FormatName(second_artist)) <= levenshtein_threshold);
         const artist_image = await getArtistPicture(second_artist_obj.href, token);
 
         return {
@@ -66,12 +66,26 @@ async function GuessEndpoint(first_artist: string, second_artist: string, token:
 
 function IsValid(first_artist: string, second_artist: string, artists: Array<any>) {
     // Check if both artists are in the list of artists
-    const first_artist_found = artists.find(artist => levenshtein(artist.name.toLowerCase().replace(' ', ''), first_artist.toLowerCase().replace(' ', '')) <= levenshtein_threshold);
-    const second_artist_found = artists.find(artist => levenshtein(artist.name.toLowerCase().replace(' ', ''), second_artist.toLowerCase().replace(' ', '')) <= levenshtein_threshold);
+    const first_artist_found = artists.find(artist => levenshtein(FormatName(artist.name), FormatName(first_artist)) <= levenshtein_threshold);
+    const second_artist_found = artists.find(artist => levenshtein(FormatName(artist.name), FormatName(second_artist)) <= levenshtein_threshold);
     return first_artist_found !== undefined && second_artist_found !== undefined;
 }
 
+function FormatName(name: string){
+    // Lowercase
+    name = name.toLowerCase();
+
+    // Remove spaces
+    name = name.replace(' ', '');
+
+    // Remove accents
+    name = name.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+    return name;
+}
+
 function levenshtein(s: string, t: string) {
+    console.log(s, t);
     if (s === t) {
         return 0;
     }

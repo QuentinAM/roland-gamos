@@ -1,5 +1,7 @@
 import { WebSocket } from 'ws';
 
+export type ModeType = 'NORMAL' | 'TV';
+
 export interface Room {
     id: string;
     hostPlayerIndex: number;
@@ -16,6 +18,10 @@ export interface Room {
     tracks: Track[];
     enteredArtists: Artist[];
     interval?: NodeJS.Timeout;
+
+    // Setting
+    mode: ModeType;
+    timeBetweenRound: number;
 }
 
 export interface Player {
@@ -38,7 +44,7 @@ export interface Artist {
     imageUrl: string;
 }
 
-export type MessageType = 'CREATE' | 'JOIN' | 'LEAVE' | 'START' | 'GUESS' | 'GUESSING' | 'RESTART';
+export type MessageType = 'CREATE' | 'JOIN' | 'LEAVE' | 'START' | 'GUESS' | 'GUESSING' | 'RESTART' | 'SETTING';
 
 export interface Message {
     type: MessageType;
@@ -73,7 +79,6 @@ export interface LeaveMessage extends Message {
 export interface StartMessage extends Message {
     type: 'START';
     body: {
-        playlistStart: string;
         userId: string;
         roomId: string;
         timeBetweenRound: number;
@@ -105,6 +110,17 @@ export interface GuessingMessage extends Message {
         userId: string;
         roomId: string;
         currentGuess: string;
+    };
+}
+
+export interface SettingMessage extends Message {
+    type: 'SETTING';
+    body: {
+        userId: string;
+        roomId: string;
+        mode: ModeType;
+        timeBetweenRound: number;
+        playlistStart: string;
     };
 }
 

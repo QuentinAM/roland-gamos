@@ -22,5 +22,5 @@ export function CutTrackName(trackname: string)
 
 function isLetterOrDigit(char: string)
 {
-    return char.match(/[a-zA-Z0-9]/);
+    return char.match(/[a-zA-Z0-9]/) || char === 'é';
 }

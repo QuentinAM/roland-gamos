@@ -48,8 +48,14 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
     room.currentTurnStartTime = Date.now() + 5_000;
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
-    room.enteredArtists = [await start(body.playlistStart)];
-    room.playlistStart = body.playlistStart;
+    room.enteredArtists = [await start(room.playlistStart)];
+
+    // If is tv mode, eliminate the host
+    if (room.mode === 'TV') {
+        const hostPlayer = room.players.splice(room.hostPlayerIndex, 1)[0];
+        hostPlayer.turn = 0;
+        room.eliminatedPlayers.push(hostPlayer);
+    }
 
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);

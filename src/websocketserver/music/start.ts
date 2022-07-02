@@ -1,11 +1,19 @@
 import type { Artist } from '../wstypes';
 import { getToken, getArtistPicture } from './utils';
 
-export async function start(playlistStart: string, token?: string): Promise<Artist> {
+export async function start(playlistStart: string | undefined, token?: string): Promise<Artist> {
     // Get playlist id by splitig playlistStart with '/'
-    const playlist_split = playlistStart.split('/');
+    const playlist_split = playlistStart?.split('/');
 
-    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlist_split[playlist_split.length - 1]}`, {
+    if (playlist_split === undefined)
+    {
+        return {
+            name: 'Nekfeu',
+            imageUrl: ''
+        }
+    }
+
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlist_split[playlist_split?.length - 1]}`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,

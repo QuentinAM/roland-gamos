@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { room, player } from '$lib/game/data';
-	import type { StartMessage } from 'src/websocketserver/wstypes';
+	import type { ModeType, SettingMessage, StartMessage } from 'src/websocketserver/wstypes';
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import type { SendMessage } from '$lib/websocket';
@@ -14,7 +14,8 @@
 	let roomId: string = $page.params.roomId;
 	let url: string;
 	let chosenCategory: any;
-	let timeBetweenRound = 30;
+	let timeBetweenRound: number = 30;
+	let modeTv: boolean = false;
 
 	$: playerCount = $room?.players.length;
 	$: isHost =
@@ -33,10 +34,29 @@
 		let message: StartMessage = {
 			type: 'START',
 			body: {
-				playlistStart: chosenCategory.url as string,
 				userId: $player?.userId as string,
 				roomId,
 				timeBetweenRound: timeBetweenRound as number
+			}
+		};
+		sendMessage(message);
+	}
+
+	async function updateSettings() {
+
+		if (!isHost){
+			return;
+		}
+
+		// Send settings to server
+		let message: SettingMessage = {
+			type: 'SETTING',
+			body: {
+				roomId,
+				userId: $player?.userId as string,
+				timeBetweenRound: timeBetweenRound as number,
+				mode: modeTv ? 'TV' : 'NORMAL' as ModeType,
+				playlistStart: chosenCategory.url as string,
 			}
 		};
 		sendMessage(message);
@@ -120,25 +140,51 @@
 						</div>
 					</div>
 				</div>
-				{#if isHost}
-					<p class="text-sm">Seul l'host de la room peut changer les paramètres.</p>
-					<PlaylistInput bind:chosenCategory/>
-					<div class="form-control w-full max-w-xs">
-						<label class="label">
-							<span class="label-text">Durée entre chaque round</span>
-							<input class="hidden"/>
-						</label>
-						<div class="tooltip tooltip-right" data-tip="">
-							<input
-								type='number'
-								class="input input-primary w-full"
-								min=1
-								use:validTimeBetweenTime={timeBetweenRound}
-								bind:value={timeBetweenRound}
-							/>
-						</div>
+				<p class="text-sm">Seul l'host de la room peut changer les paramètres.</p>
+				<PlaylistInput
+					bind:chosenCategory
+					nonHostValue={$room.playlistStart} 
+					onChange={() => {
+						updateSettings()
+					}} {isHost}
+				/>
+				<div class="form-control w-full max-w-xs">
+					<label class="label">
+						<span class="label-text">Temps de réponse ({$room?.timeBetweenRound}s)</span>
+						<input class="hidden"/>
+					</label>
+					<div class="tooltip tooltip-primary tooltip-right" data-tip="Délais avant lequel il faut donner votre réponse.">
+						<input 
+							type="range"
+							disabled={!isHost}
+							value={isHost ? timeBetweenRound : $room.timeBetweenRound} 
+							min=1 
+							max=60
+							step=1
+							class="range"
+							class:range-primary={isHost} 
+							on:change={(e) => {
+								timeBetweenRound = e.target?.value;
+								updateSettings();
+							}}
+						/>
 					</div>
-				{/if}
+					<div class="tooltip tooltip-primary tooltip-right" data-tip="La partie est uniquement retransmise sur l'écran de l'host.">
+						<label class="label">
+							<span class="label-text">Mode TV</span> 
+							<input 
+								disabled={!isHost}
+								type="checkbox"
+								checked={isHost ? modeTv : $room.mode === 'TV'}
+								on:change={(e) => {
+									modeTv = e?.target?.checked;
+									updateSettings();
+								}} 
+								class="checkbox checkbox-primary"
+							/>
+						</label>
+					</div>
+				</div>
 				<div class="form-control flex flex-row gap-4">
 					<button
 						class="btn btn-error"

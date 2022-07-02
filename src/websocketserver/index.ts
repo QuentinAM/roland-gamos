@@ -8,7 +8,7 @@ import { handleStart } from './handlers/handleStart';
 import { handleRestart } from './handlers/handleRestart';
 import { createServer } from 'https';
 import { readFileSync } from 'fs';
-import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, UpdateResponse, RestartMessage } from './wstypes';
+import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Room, CreateMessage, JoinMessage, UpdateResponse, RestartMessage, SettingMessage } from './wstypes';
 
 import 'dotenv/config'
 import 'isomorphic-fetch';
@@ -36,6 +36,7 @@ else {
 }
 
 import { guess } from './music/guess';
+import { handleSetting } from './handlers/handleSetting';
 // Log server startup
 wss.on('listening', async () => {
     console.log('Server started');
@@ -67,6 +68,8 @@ wss.on('connection', function connection(ws) {
                 break;
             case 'RESTART':
                 handleRestart(ws, data as RestartMessage);
+            case 'SETTING':
+                handleSetting(ws, data as SettingMessage);
             default:
                 break;
         }

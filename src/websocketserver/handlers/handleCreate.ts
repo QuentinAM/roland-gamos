@@ -29,6 +29,8 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         currentPlayerHasAttemptedGuess: false,
         currentGuess: '',
         tracks: [],
+        mode: 'NORMAL',
+        timeBetweenRound: 30
     });
 
     console.log(`${body.username} created room ${roomId}`);

@@ -7,9 +7,10 @@
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import { CutTrackName } from '$lib/game/util';
-	import type { GuessingMessage, GuessMessage, RestartMessage } from 'src/websocketserver/wstypes';
+	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage } from 'src/websocketserver/wstypes';
 	import type { SendMessage } from '$lib/websocket';
 	import Timer from '$lib/components/ui/Timer.svelte';
+import { mode } from '$app/env';
 
 	let sendMessage: SendMessage;
 	let turnDuration = 30_000;
@@ -41,6 +42,11 @@
 	$: isGameOver = $room?.players?.length === 1;
 
 	$: tracks = $room?.tracks;
+	$: isHost =
+		$room &&
+		$player &&
+		$room?.hostPlayerId === $player?.userId;
+	let modeTv = $room?.mode === 'TV';
 
 	let guess = '';
 	// Send the final guess attempt to the server
@@ -83,6 +89,21 @@
 				roomId: $room?.id as string,
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number
+			}
+		};
+		sendMessage(message);
+	}
+
+	async function updateSettings() {
+		// Send settings to server
+		let message: SettingMessage = {
+			type: 'SETTING',
+			body: {
+				roomId: $room?.id as string,
+				userId: $player?.userId as string,
+				timeBetweenRound: timeBetweenRound as number,
+				mode: modeTv ? 'TV' : 'NORMAL' as ModeType,
+				playlistStart: chosenCategory.url as string
 			}
 		};
 		sendMessage(message);
@@ -221,26 +242,50 @@
 						</div>
 						<div class="flex justify-center">
 							<div class="form-control w-full max-w-xs">
-									{#if $room?.hostPlayerId}
-										{#if $room?.hostPlayerId === $player?.userId}
-											<PlaylistInput bind:chosenCategory/>
-											<div class="form-control w-full max-w-xs">
-												<label class="label">
-													<span class="label-text">Durée entre chaque round</span>
-													<input class="hidden"/>
-												</label>
-												<div class="tooltip tooltip-right" data-tip="Temps entre chaque guess">
-													<input
-														type='number'
-														class="input input-primary w-full"
-														min=1
-														use:validTimeBetweenTime={timeBetweenRound}
-														bind:value={timeBetweenRound}
-													/>
-												</div>
-											</div>
-										{/if}
-									{/if}
+								<PlaylistInput
+									bind:chosenCategory
+									nonHostValue={$room?.playlistStart} 
+									onChange={() => {
+										updateSettings()
+									}} {isHost}
+								/>
+								<div class="form-control w-full max-w-xs">
+									<label class="label">
+										<span class="label-text">Temps de réponse ({$room?.timeBetweenRound}s)</span>
+										<input class="hidden"/>
+									</label>
+									<div class="tooltip tooltip-primary tooltip-right" data-tip="Délais avant lequel il faut donner votre réponse.">
+										<input 
+											type="range"
+											disabled={!isHost}
+											value={isHost ? timeBetweenRound : $room?.timeBetweenRound} 
+											min=1 
+											max=60
+											step=1
+											class="range"
+											class:range-primary={isHost} 
+											on:change={(e) => {
+												timeBetweenRound = e.target?.value;
+												updateSettings();
+											}}
+										/>
+									</div>
+									<div class="tooltip tooltip-primary tooltip-right" data-tip="La partie est uniquement retransmise sur l'écran de l'host.">
+										<label class="label">
+											<span class="label-text">Mode TV</span> 
+											<input 
+												disabled={!isHost}
+												type="checkbox"
+												checked={isHost ? modeTv : $room?.mode === 'TV'}
+												on:change={(e) => {
+													modeTv = e.target?.checked;
+													updateSettings();
+												}} 
+												class="checkbox checkbox-primary"
+											/>
+										</label>
+									</div>
+								</div>
 								<div class="flex flex-row justify-center">
 									<button
 										class="btn btn-error m-1 w-1/3"
@@ -265,108 +310,117 @@
 	</div>
 {:else}
 	<!-- In Progress Game -->
-	<div class="hero min-h-screen">
-		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
-			<div class="flex flex-col w-full justify-start">
-				<div class="stats shadow" transition:slide>
-					<div class="stat bg-primary">
-						<div class="stat-figure text-primary-content" />
-						<div class="stat-title text-primary-content">Tour</div>
-						<div class="stat-value text-primary-content inline-flex">
-							<span class="mr-4">
-								<i class="fa-solid fa-arrows-rotate" />
-							</span>
-							{currentTurn}
+	{#if $room?.mode === 'NORMAL' || ($room?.mode === 'TV' && isHost)}
+		<div class="hero min-h-screen">
+			<div class="hero-content flex flex-row justify-start items-start h-full w-full">
+				<div class="flex flex-col w-full justify-start">
+					<div class="stats shadow" transition:slide>
+						<div class="stat bg-primary">
+							<div class="stat-figure text-primary-content" />
+							<div class="stat-title text-primary-content">Tour</div>
+							<div class="stat-value text-primary-content inline-flex">
+								<span class="mr-4">
+									<i class="fa-solid fa-arrows-rotate" />
+								</span>
+								{currentTurn}
+							</div>
+						</div>
+						<div class="stat bg-secondary">
+							<div class="stat-title text-secondary-content">Temps Restant</div>
+							<div class="stat-value text-secondary-content inline-flex">
+								<span class="mr-4">
+									<i class="fa-solid fa-clock" />
+								</span>
+								{remainingTimeSeconds}s
+							</div>
+						</div>
+						<div class="stat bg-accent">
+							<div class="stat-title text-accent-content">Artiste</div>
+							<div class="stat-value text-accent-content inline-flex">
+								<span class="mr-4">
+									<i class="fa-solid fa-music" />
+								</span>
+								{currentArtist?.name ?? 'Aucun'}
+							</div>
 						</div>
 					</div>
-					<div class="stat bg-secondary">
-						<div class="stat-title text-secondary-content">Temps Restant</div>
-						<div class="stat-value text-secondary-content inline-flex">
-							<span class="mr-4">
-								<i class="fa-solid fa-clock" />
-							</span>
-							{remainingTimeSeconds}s
+
+					{#if players}
+						<div class="grid grid-cols-4 grid-flow-row gap-8 mt-16 w-full">
+							{#each players as p, i}
+								<div class="flex flex-col justify-center items-center">
+									<p class="font-semibold">{p.username}</p>
+									<div
+										class="w-[60%] h-2 rounded"
+										class:bg-primary={currentPlayerIndex === i}
+										class:bg-base-300={currentPlayerIndex !== i}
+									/>
+									<div
+										class="w-[50%] h-16 rounded-b shadow-lg"
+										class:bg-primary={currentPlayerIndex === i}
+										class:bg-base-300={currentPlayerIndex !== i}
+									>
+										{#if currentPlayerIndex === i}
+											<div
+												class="p-2 m-2 text-2xs text-center rounded"
+												class:bg-base-100={!currentPlayerHasGuessed && remainingTimeSeconds > 0}
+												class:bg-success={currentPlayerHasGuessed}
+												class:bg-error={(!currentPlayerHasGuessed && remainingTimeSeconds <= 0) ||
+													(currentPlayerHasAttemptedGuess && !currentPlayerHasGuessed)}
+											>
+												{currentGuess || '‎'}
+											</div>
+										{/if}
+									</div>
+								</div>
+							{/each}
 						</div>
-					</div>
-					<div class="stat bg-accent">
-						<div class="stat-title text-accent-content">Artiste</div>
-						<div class="stat-value text-accent-content inline-flex">
-							<span class="mr-4">
-								<i class="fa-solid fa-music" />
-							</span>
-							{currentArtist?.name ?? 'Aucun'}
-						</div>
-					</div>
+					{/if}
 				</div>
 
-				{#if players}
-					<div class="grid grid-cols-4 grid-flow-row gap-8 mt-16 w-full">
-						{#each players as p, i}
-							<div class="flex flex-col justify-center items-center">
-								<p class="font-semibold">{p.username}</p>
-								<div
-									class="w-[60%] h-2 rounded"
-									class:bg-primary={currentPlayerIndex === i}
-									class:bg-base-300={currentPlayerIndex !== i}
-								/>
-								<div
-									class="w-[50%] h-16 rounded-b shadow-lg"
-									class:bg-primary={currentPlayerIndex === i}
-									class:bg-base-300={currentPlayerIndex !== i}
-								>
-									{#if currentPlayerIndex === i}
-										<div
-											class="p-2 m-2 text-2xs text-center rounded"
-											class:bg-base-100={!currentPlayerHasGuessed && remainingTimeSeconds > 0}
-											class:bg-success={currentPlayerHasGuessed}
-											class:bg-error={(!currentPlayerHasGuessed && remainingTimeSeconds <= 0) ||
-												(currentPlayerHasAttemptedGuess && !currentPlayerHasGuessed)}
-										>
-											{currentGuess || '‎'}
-										</div>
-									{/if}
-								</div>
-							</div>
-						{/each}
+				{#if currentTrack}
+					<div transition:slide>
+						<Featuring
+							{autoplay}
+							number={undefined}
+							audioUrl={currentTrack.previewUrl}
+							artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
+								currentArtist?.imageUrl ??
+								''}
+							artist2Name={$room?.enteredArtists[$room?.currentTurn - 2]?.name ??
+								currentArtist?.name ??
+								''}
+							artist1ImageUrl={currentTrack.artist.imageUrl}
+							artist1Name={currentTrack.artist.name}
+							imgUrl={currentTrack.trackImage}
+							releaseDate={currentTrack.releaseDate}
+							title={CutTrackName(currentTrack.name)}
+						/>
+						<div class="form-control">
+							<label class="label">
+							<span class="label-text">Autoplay</span> 
+							<input 
+								type="checkbox" 
+								class="checkbox checkbox-primary"
+								bind:checked={autoplay} 
+								on:change={() => localStorage.setItem('autoplay', autoplay ? 'true' : 'false')}
+							/>
+							</label>
+						</div>
 					</div>
 				{/if}
 			</div>
-
-			{#if currentTrack}
-				<div transition:slide>
-					<Featuring
-						{autoplay}
-						number={undefined}
-						audioUrl={currentTrack.previewUrl}
-						artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
-							currentArtist?.imageUrl ??
-							''}
-						artist2Name={$room?.enteredArtists[$room?.currentTurn - 2]?.name ??
-							currentArtist?.name ??
-							''}
-						artist1ImageUrl={currentTrack.artist.imageUrl}
-						artist1Name={currentTrack.artist.name}
-						imgUrl={currentTrack.trackImage}
-						releaseDate={currentTrack.releaseDate}
-						title={CutTrackName(currentTrack.name)}
-					/>
-					<div class="form-control">
-						<label class="label">
-						  <span class="label-text">Autoplay</span> 
-						  <input 
-						  	type="checkbox" 
-							class="checkbox checkbox-primary"
-							bind:checked={autoplay} 
-							on:change={() => localStorage.setItem('autoplay', autoplay ? 'true' : 'false')}
-						/>
-						</label>
-					  </div>
-				</div>
-			{/if}
 		</div>
-	</div>
+	{/if}
 	{#if isCurrentPlayer}
 		<!-- Guess Input -->
+
+		{#if $room?.mode === 'TV'}
+			<div class="flex flex-row justify-center" transition:slide>
+				<h1 class="font-bold text-primary text-2xl">A ton tour !</h1>
+			</div>
+		{/if}
+
 		<div class="absolute bottom-0 p-14 w-full" transition:scale>
 			<div class="card shadow-lg bg-primary p-8">
 				<div class="card-body" />
