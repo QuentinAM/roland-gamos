@@ -15,9 +15,6 @@ export async function start(playlistStart: string, token?: string): Promise<Arti
 
     const data = await response.json() as any;
 
-    console.log(data);
-
-
     // Check for errors
     if (data.error && data.error.status === 401) {
         // Change headers and call again

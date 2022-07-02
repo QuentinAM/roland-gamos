@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { scale, slide } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import { room, player } from '$lib/game/data';
-	import { onMount } from 'svelte';
 	import Featuring from '$lib/components/Featuring/index.svelte';
 	import { CutTrackName } from '$lib/game/util';
 	import type { GuessingMessage, GuessMessage, RestartMessage } from 'src/websocketserver/wstypes';
+	import type { SendMessage } from '$lib/websocket';
 
+	let sendMessage: SendMessage;
 	let turnDuration = 30_000;
 	let currentTime = Date.now();
 
@@ -36,86 +39,48 @@
 	let guess = '';
 	// Send the final guess attempt to the server
 	async function submitGuess() {
-		const { websocket } = await import('$lib/websocket');
-
-		console.log('currentGuess: ', guess);
-
-		let success = false;
-		const unsubscribe = websocket.subscribe((ws) => {
-			if (!ws) return;
-
-			let message: GuessMessage = {
-				type: 'GUESS',
-				body: {
-					guess: guess,
-					roomId: $room?.id as string,
-					userId: $player?.userId as string
-				}
-			};
-
-			ws.send(JSON.stringify(message));
-			currentPlayerHasAttemptedGuess = true;
-			success = true;
-			guess = '';
-		});
-		if (success) {
-			unsubscribe();
-		}
+		let message: GuessMessage = {
+			type: 'GUESS',
+			body: {
+				guess: guess,
+				roomId: $room?.id as string,
+				userId: $player?.userId as string
+			}
+		};
+		sendMessage(message);
+		currentPlayerHasAttemptedGuess = true;
+		guess = '';
 	}
 
 	// Send the current guess attempt to the server
 	async function guessing() {
-		const { websocket } = await import('$lib/websocket');
-
-		console.log('currentGuess: ', guess);
-
-		let success = false;
-		const unsubscribe = websocket.subscribe((ws) => {
-			if (!ws) return;
-
-			let message: GuessingMessage = {
-				type: 'GUESSING',
-				body: {
-					currentGuess: guess,
-					roomId: $room?.id as string,
-					userId: $player?.userId as string
-				}
-			};
-
-			ws.send(JSON.stringify(message));
-			success = true;
-		});
-		if (success) {
-			unsubscribe();
-		}
+		let message: GuessingMessage = {
+			type: 'GUESSING',
+			body: {
+				currentGuess: guess,
+				roomId: $room?.id as string,
+				userId: $player?.userId as string
+			}
+		};
+		sendMessage(message);
+		guess = '';
 	}
 
 	async function restart() {
-		const { websocket } = await import('$lib/websocket');
-
-		let success = false;
-		const unsubscribe = websocket.subscribe((ws) => {
-			if (!ws) return;
-
-			let message: RestartMessage = {
-				type: 'RESTART',
-				body: {
-					playlistStart: $room?.playlistStart as string,
-					roomId: $room?.id as string,
-					userId: $player?.userId as string
-				}
-			};
-
-			ws.send(JSON.stringify(message));
-			success = true;
-		});
-		if (success) {
-			unsubscribe();
-		}
+		let message: RestartMessage = {
+			type: 'RESTART',
+			body: {
+				playlistStart: $room?.playlistStart as string,
+				roomId: $room?.id as string,
+				userId: $player?.userId as string
+			}
+		};
+		sendMessage(message);
 	}
 
 	onMount(async () => {
-		const { websocket } = await import('$lib/websocket');
+		let { sm } = await import('$lib/websocket');
+		sendMessage = sm;
 
 		// Check if a room is present
 		if (!$room) {
@@ -256,7 +221,7 @@
 	<div class="hero min-h-screen">
 		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
 			<div class="flex flex-col w-full justify-start">
-				<div class="stats shadow">
+				<div class="stats shadow" transition:slide>
 					<div class="stat bg-primary">
 						<div class="stat-figure text-primary-content" />
 						<div class="stat-title text-primary-content">Tour</div>
@@ -321,28 +286,35 @@
 			</div>
 
 			{#if currentTrack}
-				<Featuring
-					number={undefined}
-					audioUrl={currentTrack.previewUrl}
-					artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
-						currentArtist?.imageUrl ??
-						''}
-					artist2Name={$room?.enteredArtists[$room?.currentTurn - 2]?.name ??
-						currentArtist?.name ??
-						''}
-					artist1ImageUrl={currentTrack.artist.imageUrl}
-					artist1Name={currentTrack.artist.name}
-					imgUrl={currentTrack.trackImage}
-					releaseDate={currentTrack.releaseDate}
-					title={CutTrackName(currentTrack.name)}
-				/>
+				<div transition:slide>
+					<Featuring
+						number={undefined}
+						audioUrl={currentTrack.previewUrl}
+						artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
+							currentArtist?.imageUrl ??
+							''}
+						artist2Name={$room?.enteredArtists[$room?.currentTurn - 2]?.name ??
+							currentArtist?.name ??
+							''}
+						artist1ImageUrl={currentTrack.artist.imageUrl}
+						artist1Name={currentTrack.artist.name}
+						imgUrl={currentTrack.trackImage}
+						releaseDate={currentTrack.releaseDate}
+						title={CutTrackName(currentTrack.name)}
+					/>
+				</div>
 			{/if}
 		</div>
 	</div>
 	{#if isCurrentPlayer}
 		<!-- Guess Input -->
-		<div class="absolute bottom-0 p-16 w-full">
-			<div class="card shadow-lg">
+		<div class="absolute bottom-0 p-14 w-full" transition:scale>
+			<div class="card shadow-lg bg-primary p-8">
+				<div class="card-body" />
+			</div>
+		</div>
+		<div class="absolute bottom-0 p-16 w-full" transition:scale={{ delay: 100 }}>
+			<div class="card shadow-lg bg-base-100">
 				<div class="card-body">
 					<div class="form-control flex-row">
 						<input

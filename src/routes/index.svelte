@@ -4,7 +4,9 @@
 	import { goto } from '$app/navigation';
 	import { player, room } from '$lib/game/data';
 	import { onMount } from 'svelte';
+	import type { SendMessage } from '$lib/websocket';
 
+	let sendMessage: SendMessage;
 	let step1 = true;
 	let username: string;
 	let usernameError = false;
@@ -19,40 +21,32 @@
 	}
 
 	async function createRoom() {
-		let { websocket } = await import('$lib/websocket');
-
 		if ($room != null) {
 			room.set(null);
 		}
 
-		const unsubscribeWs = websocket.subscribe((ws) => {
-			if (!ws) return;
+		let userId = localStorage.getItem('userId') as string;
 
-			let userId = localStorage.getItem('userId') as string;
+		player.set({
+			userId,
+			username,
+			ws: undefined
+		});
 
-			player.set({
-				userId,
-				username,
-				ws: undefined
-			});
+		let message: CreateMessage = {
+			type: 'CREATE',
+			body: {
+				username: username,
+				userId
+			}
+		};
+		sendMessage(message);
 
-			let message: CreateMessage = {
-				type: 'CREATE',
-				body: {
-					username: username,
-					userId
-				}
-			};
+		const unsubscribeRoom = room.subscribe((room) => {
+			if (!room) return;
 
-			ws.send(JSON.stringify(message));
-
-			const unsubscribeRoom = room.subscribe((room) => {
-				if (!room) return;
-
-				unsubscribeWs();
-				unsubscribeRoom();
-				goto(`/room/${room.id}`);
-			});
+			unsubscribeRoom();
+			goto(`/room/${room.id}`);
 		});
 	}
 
@@ -65,7 +59,10 @@
 		goto(`/room/${roomId}`);
 	}
 
-	onMount(() => {
+	onMount(async () => {
+		let { sm } = await import('$lib/websocket');
+		sendMessage = sm;
+
 		username = localStorage.getItem('username') ?? '';
 	});
 </script>

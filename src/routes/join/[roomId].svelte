@@ -3,62 +3,56 @@
 	import { page } from '$app/stores';
 	import UsernameInput from '$lib/components/inputs/UsernameInput.svelte';
 	import { room, player } from '$lib/game/data';
+	import type { SendMessage } from '$lib/websocket';
 	import type { JoinMessage } from 'src/websocketserver/wstypes';
 	import { onMount } from 'svelte';
 
+	let sendMessage: SendMessage;
 	let roomId: string = $page.params.roomId;
 	let error = false;
-
-	onMount(async () => {
-		if ($player) {
-			joinRoom();
-		}
-	});
-
 	let username: string;
 	let usernameError = false;
+
 	async function joinRoom() {
-		console.log(username);
-
-		const { websocket } = await import('$lib/websocket');
 		room.set(null);
-		const unsubscribeWs = websocket.subscribe((ws) => {
-			if (!ws) return;
 
-			let userId = localStorage.getItem('userId') as string;
+		let userId = localStorage.getItem('userId') as string;
 
-			player.set({
+		player.set({
+			userId,
+			username,
+			ws: undefined
+		});
+
+		let message: JoinMessage = {
+			type: 'JOIN',
+			body: {
 				userId,
 				username,
-				ws: undefined
-			});
+				roomId
+			}
+		};
+		sendMessage(message);
 
-			let message: JoinMessage = {
-				type: 'JOIN',
-				body: {
-					userId,
-					username,
-					roomId
-				}
-			};
+		const unsubscribeRoom = room.subscribe((r) => {
+			if (r) {
+				goto(`/room/${r.id}`);
+				unsubscribeRoom();
+				return;
+			}
 
-			ws.send(JSON.stringify(message));
-
-			const unsubscribeRoom = room.subscribe((r) => {
-				if (r) {
-					goto(`/room/${r.id}`);
-					unsubscribeWs();
-					unsubscribeRoom();
-					return;
-				}
-
-				error = true;
-			});
+			error = true;
 		});
 	}
 
-	onMount(() => {
+	onMount(async () => {
+		let { sm } = await import('$lib/websocket');
+		sendMessage = sm;
 		username = localStorage.getItem('username') ?? '';
+
+		if ($player) {
+			joinRoom();
+		}
 	});
 </script>
 

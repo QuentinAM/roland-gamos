@@ -1,4 +1,3 @@
-import { wss } from './index';
 import { Room, UpdateResponse } from './wstypes';
 
 export function sendRoomUpdate(roomId: string, room: Room) {

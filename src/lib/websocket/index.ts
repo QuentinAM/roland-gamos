@@ -1,20 +1,16 @@
-import { browser, dev } from "$app/env";
-import type { Message, Room, UpdateResponse } from "../../websocketserver/wstypes";
-import { writable } from "svelte/store";
+import { dev } from "$app/env";
+import type { ErrorResponse, Message, Room, UpdateResponse } from "../../websocketserver/wstypes";
 import { room } from "../game/data"
 
 const url = dev ? "ws://localhost:8080" : "wss://box.begue.cc:8080";
-let ws = new WebSocket(url);
-export const websocket = writable<WebSocket | null>(null);
+export let ws = new WebSocket(url);
 
 let onopen = () => {
-    console.log("Connected to server");
-    websocket.set(ws);
+    console.log("WS: Connected to server");
 };
 
 let onclose = () => {
-    console.log("Disconnected from server");
-    websocket.set(null);
+    console.log("WS: Disconnected from server");
     ws = new WebSocket(url);
     ws.onopen = onopen;
     ws.onclose = onclose;
@@ -22,11 +18,14 @@ let onclose = () => {
 }
 
 let onmessage = (event: MessageEvent) => {
-    const data = JSON.parse(event.data.toString()) as UpdateResponse;
+    const data = JSON.parse(event.data.toString()) as UpdateResponse | ErrorResponse | any;
 
     switch (data.type) {
         case "UPDATE":
             handleUpdate(data.body.room);
+            break;
+        case "ERROR":
+            console.error(data.body.message);
             break;
         default:
             console.log(`Unknown message type: ${data.type}`, data);
@@ -41,7 +40,10 @@ ws.onmessage = onmessage;
 function handleUpdate(updatedRoom: Room) {
     console.log(`Room ${updatedRoom.id} updated`);
 
-    room.update((currentRoom) => {
-        return updatedRoom;
-    });
+    room.set(updatedRoom);
+}
+
+export type SendMessage = (message: Message) => void;
+export function sm(message: Message) {
+    ws.send(JSON.stringify(message));
 }
