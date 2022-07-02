@@ -13,7 +13,7 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
 
     console.log(`Turn ${currentTurn} in room ${roomId} is over.`);
 
-    if (!room.currentPlayerHasGuessed) {
+    if (!room.currentPlayerHasGuessed && room.players.length > 1) {
         // Guess is incorrect, eliminate player
         console.log(`Player ${room.players[currentPlayerIndex]?.userId} was eliminated in room ${roomId}.`);
         room.players[currentPlayerIndex].turn = currentTurn;
