@@ -94,7 +94,7 @@
 	});
 </script>
 
-{#if currentPlayerHasAttemptedGuess}
+{#if currentPlayerHasAttemptedGuess && !isGameOver}
 	<Timer />
 {/if}
 {#if isGameOver}
