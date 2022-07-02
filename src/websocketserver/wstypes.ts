@@ -18,6 +18,7 @@ export interface Room {
     tracks: Track[];
     enteredArtists: Artist[];
     interval?: NodeJS.Timeout;
+    isGameOver: boolean;
 
     // Setting
     mode: ModeType;

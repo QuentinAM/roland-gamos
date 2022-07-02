@@ -38,7 +38,7 @@
 		players && currentPlayerIndex != undefined
 			? players[currentPlayerIndex]?.userId === $player?.userId
 			: false;
-	$: isGameOver = $room?.players?.length === 1;
+	$: isGameOver = $room?.isGameOver;
 
 	$: tracks = $room?.tracks;
 	$: isHost =
@@ -168,7 +168,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="flex flex-row">
+				<div class="flex flex-row space-x-4">
 					<div>
 						<h1 class="font-bold">Titres joués</h1>
 						<div class="h-[33rem] carousel carousel-vertical rounded-box">
@@ -194,7 +194,7 @@
 					<div class="flex flex-col space-y-4">
 						<div class="ml-20">
 							<h1 class="font-bold">Statistiques</h1>
-							<div class="stats stats-vertical shadow">
+							<div class="stats stats-vertical shadow w-[27rem]">
 								{#if $room?.currentTurnStartTime}
 									<div class="stat">
 										<div class="stat-title">Durée</div>
@@ -238,7 +238,7 @@
 								{/if}
 							</div>
 						</div>
-						<div class="flex justify-center">
+						<div class="flex flex-row justify-center space-x-3">
 							<div class="form-control w-full max-w-xs">
 								<PlaylistInput
 									bind:chosenCategory
@@ -296,13 +296,42 @@
 									</button>
 									{#if $room?.hostPlayerId}
 										{#if $room?.hostPlayerId === $player?.userId}
-											<button class="btn btn-primary m-1 w-1/3" on:click={restart}> Rejouer </button>
+											<button 
+												class="btn btn-primary m-1 w-1/3" 
+												on:click={restart}
+												disabled={$room?.players.length === 1}
+											>
+												Rejouer
+											</button>
 										{/if}
 									{/if}
 								</div>
 							</div>
 						</div>
 					</div>
+					{#if $room?.players}
+							<div class="card shadow-xl h-full overflow-auto">
+								<div class="card-body">
+									<h2 class="text-xl font-semibold">Joueurs:</h2>
+									<div class="flex flex-col items-center">
+										{#each $room?.players as pl, i}
+											<span
+												class="inline-flex"
+												class:text-primary={pl.userId === $player?.userId}
+												class:font-semibold={pl.userId === $player?.userId}
+											>
+												{#if i === $room.hostPlayerIndex}
+													<span class="mr-1">
+														<i class="fa-solid fa-crown text-primary" />
+													</span>
+												{/if}
+												{pl.username}
+											</span>
+										{/each}
+									</div>
+								</div>
+							</div>
+						{/if}
 				</div>
 			</div>
 		</div>

@@ -209,13 +209,19 @@
 						Partir
 					</button>
 					{#if isHost}
-						<button
-							class="btn btn-primary"
-							disabled={!!(playerCount && playerCount < 2)}
-							on:click={startGame}
-						>
-							Commencer
-						</button>
+						<div 
+							class="tooltip tooltip-primary tooltip-bottom" 
+							data-tip={!!(playerCount && (playerCount < 2 || (playerCount < 3 && modeTv))) ? 
+								'Mode TV: 3 joueurs minimum.Mode Normal: 2 joueurs minimum.' : 
+								"C'est parti! "}>
+							<button
+								class="btn btn-primary"
+								disabled={!!(playerCount && (playerCount < 2 || (playerCount < 3 && modeTv)))}
+								on:click={startGame}
+							>
+								Commencer
+							</button>
+						</div>
 					{/if}
 				</div>
 			{/if}

@@ -40,6 +40,19 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
         return;
     }
 
+    // Check if more than 2 players for TV mode
+    if (room.mode === 'TV' && room.players.length <= 2) {
+        const response: ErrorResponse = {
+            type: 'ERROR',
+            body: {
+                message: `Room ${body.roomId} is starting on TV mode with only ${room.players.length} players.`,
+            }
+        };
+
+        ws.send(JSON.stringify(response));
+        return;
+    }
+
     console.log(`Starting game in room ${body.roomId}`);
 
     // Start game

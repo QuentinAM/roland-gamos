@@ -53,7 +53,7 @@
 
 	function joinRoom() {
 
-		if (roomIdError || roomId === ''){
+		if (roomIdError || !roomId){
 			return;
 		}
 

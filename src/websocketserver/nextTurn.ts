@@ -1,5 +1,6 @@
 import { sendRoomUpdate } from './sendRoomUpdate';
 import { rooms } from './index';
+import { RoleManager } from 'discord.js';
 
 export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex: number) {
     const room = rooms.get(roomId);
@@ -32,7 +33,14 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
     } else {
         // Game is over
         console.log(`Game is over in room ${roomId}.`);
-        // TODO: Game finished logic
+
+        room.isGameOver = true;
+         // Reset eliminated players
+         room.eliminatedPlayers.forEach(p => {
+            room.players.push(p);
+        });
+        room.eliminatedPlayers = [];
+
         clearInterval(room.interval);
         sendRoomUpdate(roomId, room);
     }

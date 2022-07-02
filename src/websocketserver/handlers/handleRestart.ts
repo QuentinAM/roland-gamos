@@ -25,11 +25,7 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
         return;
     }
 
-    // Reset players
-    room.eliminatedPlayers.forEach(p => {
-        room.players.push(p);
-    });
-    room.eliminatedPlayers = [];
+    // Reset tracks
     room.enteredArtists = [];
     room.tracks = [];
 
@@ -49,9 +45,22 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
         return;
     }
 
-    console.log(`Starting game in room ${body.roomId}`);
+    // Check if more than 2 players for TV mode
+    if (room.mode === 'TV' && room.players.length <= 2) {
+        const response: ErrorResponse = {
+            type: 'ERROR',
+            body: {
+                message: `Room ${body.roomId} is restarting on TV mode with only ${room.players.length} players.`,
+            }
+        };
 
-    // Retart game
+        ws.send(JSON.stringify(response));
+        return;
+    }
+
+    console.log(`Restarting game in room ${body.roomId}`);
+
+    // Restart game
     room.currentPlayerIndex = 0;
     room.currentTurn = 1;
     room.currentTurnStartTime = Date.now() + 5000;
@@ -59,6 +68,14 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     room.currentPlayerHasAttemptedGuess = false;
     room.currentGuess = '';
     room.enteredArtists = [await start(room.playlistStart)];
+    room.isGameOver = false;
+
+    // If is tv mode, eliminate the host
+    if (room.mode === 'TV') {
+        const hostPlayer = room.players.splice(room.hostPlayerIndex, 1)[0];
+        hostPlayer.turn = 0;
+        room.eliminatedPlayers.push(hostPlayer);
+    }
 
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);
