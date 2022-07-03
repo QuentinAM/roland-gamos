@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { scale } from 'svelte/transition';
+	import { scale, fade } from 'svelte/transition';
 
 	let number = 5;
 
@@ -24,6 +24,7 @@
 			class:text-primary={number == 5}
 			class:text-secondary={number == 4}
 			class:text-accent={number != 5 && number != 4}
+			transition:fade
 		>
 			{number}
 		</span>

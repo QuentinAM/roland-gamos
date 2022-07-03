@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { scale, slide } from 'svelte/transition';
+	import { scale, slide, fade } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import { room, player } from '$lib/game/data';
 	import Featuring from '$lib/components/ui/Featuring.svelte';
@@ -139,7 +139,7 @@
 	<Timer />
 {/if}
 {#if isGameOver}
-	<div class="hero min-h-screen">
+	<div class="hero min-h-screen" transition:fade>
 		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
 			<div class="flex flex-col w-full justify-start">
 				<h1 class="font-bold">Partie terminée</h1>
@@ -348,7 +348,7 @@
 				<div class="flex flex-col w-full justify-start">
 					<div class="stats shadow" transition:slide>
 						<div class="stat bg-primary">
-							<div class="stat-figure text-primary-content" />
+							<div class="stat-figure text-primary-content"/>
 							<div class="stat-title text-primary-content">Tour</div>
 							<div class="stat-value text-primary-content inline-flex">
 								<span class="mr-4">
@@ -373,7 +373,7 @@
 						<div class="stat bg-accent">
 							<div class="stat-title text-accent-content">Artiste</div>
 							<div class="stat-value text-accent-content inline-flex">
-								<span class="mr-4">
+								<span class="mr-4"> 
 									<i class="fa-solid fa-music" />
 								</span>
 								{currentArtist?.name ?? 'Aucun'}
@@ -384,7 +384,7 @@
 					{#if players}
 						<div class="grid grid-cols-4 grid-flow-row gap-8 mt-16 w-full">
 							{#each players as p, i}
-								<div class="flex flex-col justify-center items-center">
+								<div class="flex flex-col justify-center items-center" transition:scale>
 									<p class="font-semibold">{p.username}</p>
 									<div
 										class="w-[60%] h-2 rounded"

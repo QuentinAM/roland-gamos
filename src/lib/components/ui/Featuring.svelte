@@ -9,6 +9,21 @@
 	export let artist2ImageUrl: string | undefined;
 	export let artist1Name: string | undefined;
 	export let artist2Name: string | undefined;
+	let audio: any;
+
+	const fadeAudio = () => {
+		const fadeAudioInterval = setInterval(() => {
+			const fadePoint = audio.duration - 5;
+			if ((audio.currentTime >= fadePoint) && (audio.volume !== 0)) {
+				audio.volume -= 0.1
+			}
+
+			if (audio.volume < 0.003) {
+				clearInterval(fadeAudioInterval);
+			}
+		}, 200);
+	};
+
 </script>
 
 <div class="card card-compact w-96 bg-base-100 shadow-xl">
@@ -28,7 +43,15 @@
 		<p>{releaseDate}</p>
 	</div>
 	{#if audioUrl}
-		<audio class="w-full" src={audioUrl} controls {autoplay}>
+		<audio 
+			class="w-full" 
+			src={audioUrl} 
+			controls 
+			{autoplay} 
+			bind:this={audio}
+			on:play={() => {
+				fadeAudio();
+			}}>
 			<track kind="captions" />
 		</audio>
 	{/if}
