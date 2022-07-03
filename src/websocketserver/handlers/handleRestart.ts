@@ -61,6 +61,7 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     console.log(`Restarting game in room ${body.roomId}`);
 
     // Restart game
+    room.eliminatedPlayers = [];
     room.currentPlayerIndex = 0;
     room.currentTurn = 1;
     room.currentTurnStartTime = Date.now() + 5000;

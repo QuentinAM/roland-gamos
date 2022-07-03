@@ -16,7 +16,7 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
 
     if (!room.currentPlayerHasGuessed && room.players.length > 1) {
         // Guess is incorrect, eliminate player
-        console.log(`Player ${room.players[currentPlayerIndex]?.userId} was eliminated in room ${roomId}.`);
+        console.log(`Player ${room.players[currentPlayerIndex]?.userId} was eliminated in room ${roomId} at turn ${currentTurn}.`);
         room.players[currentPlayerIndex].turn = currentTurn;
         room.eliminatedPlayers.push(room.players.splice(currentPlayerIndex, 1)[0]);
     }
@@ -35,11 +35,17 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
         console.log(`Game is over in room ${roomId}.`);
 
         room.isGameOver = true;
-         // Reset eliminated players
+        
+        const lastPlayer = room.players[0];
+
+        // Reset eliminated players
          room.eliminatedPlayers.forEach(p => {
+            if (p.userId === lastPlayer.userId)
+                return;
             room.players.push(p);
         });
-        room.eliminatedPlayers = [];
+
+        // Eliminated players will be reset only if restart to correctly display leaderboard on front
 
         clearInterval(room.interval);
         sendRoomUpdate(roomId, room);

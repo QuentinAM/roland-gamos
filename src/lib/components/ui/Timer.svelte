@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { scale } from 'svelte/transition';
 
 	let number = 5;
 
@@ -16,7 +17,7 @@
 	});
 </script>
 
-<div class="absolute z-50 w-full h-full flex items-center justify-center pointer-events-none">
+<div class="absolute z-50 w-full h-full flex items-center justify-center pointer-events-none" transition:scale>
 	<p>
 		<span
 			class="text-8xl font-bold"

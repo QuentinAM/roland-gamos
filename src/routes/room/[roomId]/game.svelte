@@ -115,6 +115,10 @@
 		sendMessage(message);
 	}
 
+	function capitalizeFirstLetter(str: string | undefined){
+		return str === undefined ? '' : str.charAt(0).toUpperCase() + str.slice(1);
+	}
+
 	onMount(async () => {
 		let { sm } = await import('$lib/websocket');
 		sendMessage = sm;
@@ -350,7 +354,9 @@
 								<span class="mr-4">
 									<i class="fa-solid fa-arrows-rotate" />
 								</span>
-								{currentTurn}
+								<span class="countdown">
+									<span style={`--value:${currentTurn};`}></span>
+								</span>
 							</div>
 						</div>
 						<div class="stat bg-secondary">
@@ -359,7 +365,9 @@
 								<span class="mr-4">
 									<i class="fa-solid fa-clock" />
 								</span>
-								{remainingTimeSeconds}s
+								<span class="countdown">
+									<span style={`--value:${remainingTimeSeconds};`}>s</span>
+								</span>
 							</div>
 						</div>
 						<div class="stat bg-accent">
@@ -396,7 +404,7 @@
 												class:bg-error={(!currentPlayerHasGuessed && remainingTimeSeconds <= 0) ||
 													(currentPlayerHasAttemptedGuess && !currentPlayerHasGuessed)}
 											>
-												{currentGuess || '‎'}
+												{capitalizeFirstLetter(currentGuess) || '‎'}
 											</div>
 										{/if}
 									</div>
@@ -461,7 +469,7 @@
 						<input
 							class="input input-primary w-full rounded-r-none"
 							type="text"
-							placeholder="Entre un artiste."
+							placeholder={`Entre un artiste qui a featé avec ${currentArtist?.name}.`}
 							bind:value={guess}
 							on:input={guessing}
 							on:keydown={(e) => {

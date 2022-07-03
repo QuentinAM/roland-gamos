@@ -1,3 +1,4 @@
+import { convertCompilerOptionsFromJson } from "typescript";
 import type { Track } from "../wstypes";
 import { getToken, getArtistPicture, spToken } from "./utils";
 const levenshtein_threshold = 2;
@@ -40,7 +41,9 @@ async function CheckTrack(track: any, first_artist: string, second_artist: strin
 }
 
 async function GuessEndpoint(first_artist: string, second_artist: string, token: string | null): Promise<any> {
-    let url =  encodeURI(`https://api.spotify.com/v1/search?limit=2&market=FR&type=track&q=${`${first_artist} ${second_artist}`}`);
+    let url =  encodeURI(`https://api.spotify.com/v1/search?limit=2&market=FR&type=track&q=${`${first_artist.toLowerCase()} ${second_artist.toLowerCase()}`}`);
+    
+    console.log()
     const response = await fetch(url, {
         method: 'GET',
         headers: {
