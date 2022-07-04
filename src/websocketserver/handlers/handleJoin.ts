@@ -37,14 +37,35 @@ export function handleJoin(ws: WebSocket, data: JoinMessage) {
         return;
     }
 
+    // Check if username is not already taken or empty
+    if (!body.username){
+        const response: ErrorResponse = {
+            type: 'ERROR',
+            body: {
+                message: `A player tried to join without username is already in room ${body.roomId}.`,
+            }
+        };
+
+        ws.send(JSON.stringify(response));
+        return;
+    }
+
+    // Check if username already exist if so add a number to the end
+    let username = body.username;
+    let i = 1;
+    while (room.players.find(player => player.username === username)) {
+        username = `${body.username}(${i})`;
+        i++;
+    }
+
     // Add player to room
     room.players.push({
         userId: body.userId,
-        username: body.username,
+        username: username,
         ws: ws,
     });
 
-    console.log(`${body.username} joined room ${body.roomId}`);
+    console.log(`${username} joined room ${body.roomId}`);
 
     // Send response
     sendRoomUpdate(body.roomId, room);
