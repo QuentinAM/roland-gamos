@@ -15,6 +15,12 @@
 	let usernameError = false;
 
 	async function joinRoom() {
+
+		if (!username){
+			usernameError = true;
+			return;
+		}
+
 		room.set(null);
 
 		let userId = localStorage.getItem('userId') as string;

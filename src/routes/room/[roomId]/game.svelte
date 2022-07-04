@@ -5,6 +5,7 @@
 	import { room, player } from '$lib/game/data';
 	import Featuring from '$lib/components/ui/Featuring.svelte';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
+	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import { CutTrackName } from '$lib/game/util';
 	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage, LeaveMessage } from 'src/websocketserver/wstypes';
@@ -15,7 +16,7 @@
 	let turnDuration = 30_000;
 	let currentTime = Date.now();
 	let chosenCategory: any;
-	let autoplay: boolean = localStorage.getItem('autoplay') === 'true' ?? true;
+	let autoplay: boolean;
 	let timeBetweenRound = 30;
 
 	$: players = $room?.players;
@@ -127,6 +128,8 @@
 		if (!$room) {
 			goto('/');
 		}
+
+		autoplay = localStorage.getItem('autoplay') === 'true' ?? true;
 
 		// Update the remaining time every second
 		setInterval(() => {
@@ -313,8 +316,21 @@
 							</div>
 						</div>
 					</div>
-					{#if $room?.players}
-							<div class="card shadow-xl h-full overflow-auto">
+					<div class="flex flex-col">
+						{#if $room}
+							<div class="w-full pt-2">
+								<h1 class="text-4xl font-bold">
+									Room:
+									<span class="text-secondary">
+										{$room.id}
+										<ClipBoard value={window.location.href.substring(0, window.location.href.length - 5)} />
+									</span>
+								</h1>
+								<p>Envoie le lien à tes freros pour qu'ils puissent rejoindre!</p>
+							</div>
+						{/if}
+						{#if $room?.players}
+							<div class="card shadow-xl overflow-auto">
 								<div class="card-body">
 									<h2 class="text-xl font-semibold">Joueurs:</h2>
 									<div class="flex flex-col items-center">
@@ -336,6 +352,7 @@
 								</div>
 							</div>
 						{/if}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -437,7 +454,7 @@
 							<span class="label-text">Autoplay</span> 
 							<input 
 								type="checkbox" 
-								class="checkbox checkbox-primary"
+								class="toggle toggle-primary"
 								bind:checked={autoplay} 
 								on:change={() => localStorage.setItem('autoplay', autoplay ? 'true' : 'false')}
 							/>
@@ -477,6 +494,7 @@
 									submitGuess();
 								}
 							}}
+							autofocus
 							disabled={currentPlayerHasAttemptedGuess}
 						/>
 						<button

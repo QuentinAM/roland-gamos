@@ -84,6 +84,13 @@
 	}
 
 	onMount(async () => {
+
+		// Check if game is over
+		if ($room?.isGameOver) {
+			goto('/room/' + roomId + '/game');
+			return;
+		}
+
 		let { sm } = await import('$lib/websocket');
 		sendMessage = sm;
 

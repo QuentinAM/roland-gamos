@@ -88,7 +88,6 @@ function FormatName(name: string){
 }
 
 function levenshtein(s: string, t: string) {
-    console.log(s, t);
     if (s === t) {
         return 0;
     }

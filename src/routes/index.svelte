@@ -47,6 +47,7 @@
 			if (!room) return;
 
 			unsubscribeRoom();
+
 			goto(`/room/${room.id}`);
 		});
 	}
