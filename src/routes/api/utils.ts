@@ -1,8 +1,11 @@
+import secret from './.env.json';
 export let spToken = "";
 
 export async function getToken() {
-    const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-    const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+    const CLIENT_ID = secret.SPOTIFY_CLIENT_ID;
+    const CLIENT_SECRET = secret.SPOTIFY_CLIENT_SECRET;
+
+    console.log('Getting token');
 
     const response = await fetch(`https://accounts.spotify.com/api/token`, {
         method: 'POST',
@@ -29,5 +32,5 @@ export async function getArtistPicture(request: string, token?: string) {
     });
 
     const data = await response.json() as any;
-    return data.images.length > 0 ? data.images[0].url : {};
+    return data.images[0].url;
 }

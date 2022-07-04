@@ -7,6 +7,7 @@
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { IsSpotifyPlaylist } from '$lib/room/util';
+	import AutoCompleteInput from '$lib/components/inputs/AutoComplete/AutoCompleteInput.svelte';
 	import { CutTrackName } from '$lib/game/util';
 	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage, LeaveMessage } from 'src/websocketserver/wstypes';
 	import type { SendMessage } from '$lib/websocket';
@@ -483,19 +484,16 @@
 			<div class="card shadow-lg bg-base-100">
 				<div class="card-body">
 					<div class="form-control flex-row">
-						<input
-							class="input input-primary w-full rounded-r-none"
-							type="text"
+						<AutoCompleteInput
 							placeholder={`Entre un artiste qui a featé avec ${currentArtist?.name}.`}
-							bind:value={guess}
-							on:input={guessing}
-							on:keydown={(e) => {
-								if (e.key === 'Enter') {
-									submitGuess();
-								}
+							bind:guess
+							onValidate={() => {
+								submitGuess();
 							}}
-							autofocus
-							disabled={currentPlayerHasAttemptedGuess}
+							onInput={() =>{
+								guessing();
+							}}
+							{currentPlayerHasAttemptedGuess}
 						/>
 						<button
 							class="btn btn-success rounded-l-none"
