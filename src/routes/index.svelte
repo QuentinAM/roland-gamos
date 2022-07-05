@@ -1,5 +1,6 @@
 <script lang="ts">
 	import UsernameInput from '$lib/components/inputs/UsernameInput.svelte';
+	import Footer from '$lib/components/Footer/index.svelte';
 	import type { CreateMessage } from 'src/websocketserver/wstypes';
 	import { goto } from '$app/navigation';
 	import { player, room } from '$lib/game/data';
@@ -137,3 +138,4 @@
 		</div>
 	</div>
 </div>
+<Footer/>
