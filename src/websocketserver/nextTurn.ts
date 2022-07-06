@@ -1,6 +1,5 @@
 import { sendRoomUpdate } from './sendRoomUpdate';
 import { rooms } from './index';
-import { RoleManager } from 'discord.js';
 
 export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex: number) {
     const room = rooms.get(roomId);
