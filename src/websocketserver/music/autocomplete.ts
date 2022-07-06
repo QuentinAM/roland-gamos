@@ -2,6 +2,9 @@ import { Artist } from "../wstypes";
 import { spToken, getToken } from "./utils";
 
 export async function autoComplete(input: string): Promise<Artist[]> {
+
+    if (!input) return [];
+
     // Get both artists
     let { artists }: {artists: any[]}= await autoCompleteEndpoint(input, spToken);
 
@@ -67,6 +70,6 @@ async function autoCompleteEndpoint(input: string, token: string | null): Promis
     }
 
     return {
-        artists: data.artists.items
+        artists: data.artists.items ? data.artists.items : []
     }
 }
