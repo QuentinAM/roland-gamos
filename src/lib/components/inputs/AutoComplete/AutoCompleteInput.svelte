@@ -1,4 +1,9 @@
 <script lang="ts">
+import { autoComplete } from '$lib/game/data';
+import type { Artist } from 'src/websocketserver/wstypes';
+
+import { onMount } from 'svelte';
+
     import AutoCompleteChoice from './AutoCompleteChoice.svelte';
 
     export let guess: string;
@@ -13,18 +18,16 @@
     let selectionIndex: number = 0;
     let inputSet = false;
 
-    const filter = async () => {
+    const filter = async (artists: Artist[]) => {
 
         if (!guess) {
             filtered = [];
             return;
         }
 
-        data = await (await fetch('/api/autocomplete-' + guess)).json();
-
         let storageArr: any[] = [];
         if (guess) {
-            data.forEach((artist: any) => {
+            artists.forEach((artist: any) => {
                 if (artist.name.toLowerCase().startsWith(guess.toLowerCase()) || artist.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").startsWith(guess.toLowerCase())) {
                     storageArr = [...storageArr, {
                         name: makeMatchBold(artist.name),
@@ -97,6 +100,14 @@
             inputSet = false;
         }
     } 
+
+    onMount(() => {
+        autoComplete.subscribe((artists) => {
+            if (!artists) return;
+            filter(artists);
+        });
+    });
+
 </script>
 
 <div class="w-full">
@@ -115,7 +126,6 @@
         bind:this={searchInput}
         bind:value={guess}
         on:input={() => {
-            filter();
             onInput();
         }}
         on:keydown={navigateList}

@@ -1,15 +1,7 @@
+import { Artist } from "../wstypes";
 import { spToken, getToken } from "./utils";
 
-export async function get({ params }: { params: any })
-{
-    // Get input params
-    return {
-        status: 200,
-        body: params.input ? await autoComplete(params.input) : []
-    }
-}
-
-export async function autoComplete(input: string): Promise<any | undefined> {
+export async function autoComplete(input: string): Promise<Artist[]> {
     // Get both artists
     let { artists }: {artists: any[]}= await autoCompleteEndpoint(input, spToken);
 

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { scale, slide, fade } from 'svelte/transition';
 	import { goto } from '$app/navigation';
-	import { room, player } from '$lib/game/data';
+	import { room, player, autoComplete } from '$lib/game/data';
 	import Featuring from '$lib/components/ui/Featuring.svelte';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';

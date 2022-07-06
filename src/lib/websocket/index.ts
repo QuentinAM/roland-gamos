@@ -1,6 +1,6 @@
 import { dev } from "$app/env";
 import type { ErrorResponse, Message, Room, UpdateResponse } from "../../websocketserver/wstypes";
-import { room } from "../game/data"
+import { room, autoComplete } from "../game/data"
 
 const url = dev ? "ws://localhost:8080" : "wss://box.begue.cc:8080";
 export let ws = new WebSocket(url);
@@ -27,6 +27,9 @@ let onmessage = (event: MessageEvent) => {
         case "ERROR":
             console.error(data.body.message);
             break;
+        case 'AUTOCOMPLETE':
+            handleAutoComplete(data.body.artists);
+            break;
         default:
             console.log(`Unknown message type: ${data.type}`, data);
             break;
@@ -36,6 +39,10 @@ let onmessage = (event: MessageEvent) => {
 ws.onopen = onopen;
 ws.onclose = onclose;
 ws.onmessage = onmessage;
+
+function handleAutoComplete(artists: any[3]){
+    autoComplete.set(artists);
+}
 
 function handleUpdate(updatedRoom: Room) {
     console.log(`Room ${updatedRoom.id} updated`);

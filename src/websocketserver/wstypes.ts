@@ -45,7 +45,7 @@ export interface Artist {
     imageUrl: string;
 }
 
-export type MessageType = 'CREATE' | 'JOIN' | 'LEAVE' | 'START' | 'GUESS' | 'GUESSING' | 'RESTART' | 'SETTING';
+export type MessageType = 'CREATE' | 'JOIN' | 'LEAVE' | 'START' | 'GUESS' | 'GUESSING' | 'RESTART' | 'SETTING' | 'AUTOCOMPLETE';
 
 export interface Message {
     type: MessageType;
@@ -136,4 +136,11 @@ export interface ErrorResponse {
     body: {
         message: string;
     };
+}
+
+export interface AutocompleteResponse {
+    type: 'AUTOCOMPLETE';
+    body: {
+        artists: Artist[];
+    }
 }

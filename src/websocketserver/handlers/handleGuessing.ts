@@ -1,9 +1,10 @@
 import { WebSocket } from 'ws';
 import { sendRoomUpdate } from '../sendRoomUpdate';
-import { GuessingMessage, ErrorResponse } from '../wstypes';
+import { GuessingMessage, ErrorResponse, AutocompleteResponse } from '../wstypes';
 import { rooms } from '../index';
+import { autoComplete } from '../music/autocomplete';
 
-export function handleGuessing(ws: WebSocket, data: GuessingMessage) {
+export async function handleGuessing(ws: WebSocket, data: GuessingMessage) {
     const body = data.body;
 
     // Check if room exists
@@ -66,6 +67,16 @@ export function handleGuessing(ws: WebSocket, data: GuessingMessage) {
         ws.send(JSON.stringify(response));
         return;
     }
+
+    // Send back autocomplete
+    const response: AutocompleteResponse = {
+        type: 'AUTOCOMPLETE',
+        body: {
+            artists: await autoComplete(body.currentGuess),
+        }
+    };
+    ws.send(JSON.stringify(response));
+    
 
     // Send update to all players in the room
     room.currentGuess = body.currentGuess;
