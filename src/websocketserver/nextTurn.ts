@@ -8,12 +8,21 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
     }
 
     // Check if turn is already over
-    if (room.currentTurn != currentTurn)
+    if (room.currentTurn != currentTurn || room.isGameOver) // TODO: fix this : it work but some calls are made while game is finish
         return;
 
-    console.log(`Turn ${currentTurn} in room ${roomId} is over.`);
+    console.log(`Turn ${currentTurn} starting in room ${roomId}.`);
 
-    if (!room.currentPlayerHasGuessed && room.players.length > 1) {
+    // Check if there are still players in the room
+    if (room.players.length === 0) {
+        console.log(`Room ${roomId} is empty, deleting it.`);
+        rooms.delete(roomId);
+        return;
+    }
+
+    let guessIsInCorrect = !room.currentPlayerHasGuessed && room.players.length > 1;
+
+    if (guessIsInCorrect) {
         // Guess is incorrect, eliminate player
         console.log(`Player ${room.players[currentPlayerIndex]?.userId} was eliminated in room ${roomId} at turn ${currentTurn}.`);
         room.players[currentPlayerIndex].turn = currentTurn;
@@ -22,7 +31,7 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
 
     if (room.players.length > 1) {
         // Go to the next turn
-        room.currentPlayerIndex = (room.currentPlayerIndex + 1) % room.players.length;
+        room.currentPlayerIndex = guessIsInCorrect ? room.currentPlayerIndex % room.players.length : (room.currentPlayerIndex + 1) % room.players.length;
         room.currentTurnStartTime = Date.now();
         room.currentPlayerHasGuessed = false;
         room.currentPlayerHasAttemptedGuess = false;
@@ -34,15 +43,14 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
         console.log(`Game is over in room ${roomId}.`);
 
         room.isGameOver = true;
-        
-        const lastPlayer = room.players[0];
 
-        // Reset eliminated players
-         room.eliminatedPlayers.forEach(p => {
-            if (p.userId === lastPlayer.userId)
-                return;
+        // Reset players
+        room.eliminatedPlayers.forEach(p => {
             room.players.push(p);
         });
+
+        // Re calculate hostPlayerIndex
+        room.hostPlayerIndex = room.players.findIndex(p => p.userId === room.hostPlayerId);
 
         // Eliminated players will be reset only if restart to correctly display leaderboard on front
 

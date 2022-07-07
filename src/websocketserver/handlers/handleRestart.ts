@@ -58,18 +58,26 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
         return;
     }
 
-    console.log(`Restarting game in room ${body.roomId}`);
+    console.log(`Restarting game in room ${body.roomId} in mode ${room.mode}.`);
 
     // Restart game
     room.eliminatedPlayers = [];
     room.currentPlayerIndex = 0;
     room.currentTurn = 1;
-    room.currentTurnStartTime = Date.now() + 5000;
+    room.currentTurnStartTime = Date.now() + 5_000;
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
     room.currentGuess = '';
     room.enteredArtists = [await start(room.playlistStart)];
     room.isGameOver = false;
+    
+    if (room.mode === undefined){
+        room.mode = 'NORMAL';
+    }
+
+    if (room.playlistStart === undefined){
+        room.playlistStart = 'https://open.spotify.com/playlist/4l1CEhc7ZPbaEtiPdCSGbl';
+    }
 
     // If is tv mode, eliminate the host
     if (room.mode === 'TV') {
@@ -78,10 +86,12 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
         room.eliminatedPlayers.push(hostPlayer);
     }
 
+    console.log(room);
+
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);
     // Set the next turn
     room.interval = setInterval(() => {
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-    }, 30_000);
+    }, room.timeBetweenRound * 1000 + 5_000);
 }

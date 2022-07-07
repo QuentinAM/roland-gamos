@@ -86,7 +86,7 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
     // Send update to all players in the room
     room.currentPlayerHasAttemptedGuess = true;
     if (!already_said_artist && res) {
-        console.log(`Correct guess in room ${body.roomId} by user ${body.userId}: ${body.guess}`);
+        console.log(`Correct guess in room ${body.roomId} by user ${body.userId}: ${body.guess} at turn ${room.currentTurn}.`);
 
         // Guess is correct, send update to all players in the room
         room.currentGuess = body.guess;
@@ -97,6 +97,7 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
 
         sendRoomUpdate(body.roomId, room);
     } else {
+        console.log(`Incorrect guess in room ${body.roomId} by user ${body.userId}: ${body.guess} at turn ${room.currentTurn}.`);
         room.currentPlayerHasGuessed = false;
 
         sendRoomUpdate(body.roomId, room);
@@ -104,8 +105,13 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
 
     setTimeout(() => {
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-        room.interval = setInterval(() => {
-            nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-        }, 30_000);
+
+        // If only two players left and guess is wrong, means that game will be over, don't need to start timer
+
+        if (room.players.length > 2 && !room.currentPlayerHasGuessed){
+            room.interval = setInterval(() => {
+                nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
+            }, room.timeBetweenRound * 1000);
+        }
     }, 5_000);
 }

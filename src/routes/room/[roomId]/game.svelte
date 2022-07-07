@@ -14,7 +14,7 @@
 	import Timer from '$lib/components/ui/Timer.svelte';
 
 	let sendMessage: SendMessage;
-	let turnDuration = 30_000;
+	$: turnDuration = $room?.timeBetweenRound ? $room?.timeBetweenRound * 1000 : 30_000;
 	let currentTime = Date.now();
 	let chosenCategory: any;
 	let autoplay: boolean;
@@ -134,7 +134,7 @@
 
 		// Update the remaining time every second
 		setInterval(() => {
-			if (!currentPlayerHasAttemptedGuess) currentTime = Date.now();
+			if (!currentPlayerHasAttemptedGuess && !isGameOver) currentTime = Date.now();
 		}, 1_000);
 	});
 </script>
@@ -341,7 +341,7 @@
 												class:text-primary={pl.userId === $player?.userId}
 												class:font-semibold={pl.userId === $player?.userId}
 											>
-												{#if i === $room.hostPlayerIndex}
+												{#if pl.userId === $room.hostPlayerId}
 													<span class="mr-1">
 														<i class="fa-solid fa-crown text-primary" />
 													</span>
