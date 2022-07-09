@@ -7,6 +7,12 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
         return;
     }
 
+    // Check if room is empty, if so delete it
+    if (room.players.length === 0) {
+        rooms.delete(roomId);
+        return;
+    }
+
     // Check if turn is already over
     if (room.currentTurn != currentTurn || room.isGameOver) // TODO: fix this : it work but some calls are made while game is finished
         return;

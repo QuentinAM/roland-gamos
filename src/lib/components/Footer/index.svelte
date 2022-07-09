@@ -1,4 +1,8 @@
-<footer class="footer absolute bottom-0 items-center p-4 bg-transparent text-neutral-content shadow-2xl shadow-black">
+<script>
+    import { slide } from 'svelte/transition';
+</script>
+
+<footer class="footer absolute bottom-0 items-center p-4 bg-transparent text-neutral-content shadow-2xl shadow-black" transition:slide>
     <div class="items-center grid-flow-col ">
         <a href="https://developer.spotify.com/terms/" target="_blank" class="hover:underline">Spotify Developer Terms</a>
         <div class="divider divider-horizontal mx-1"></div>

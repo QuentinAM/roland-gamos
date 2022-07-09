@@ -139,6 +139,7 @@
 	});
 </script>
 
+<svelte:window on:beforeunload={handleLeave}/>
 {#if currentPlayerHasAttemptedGuess && !isGameOver}
 	<Timer />
 {/if}

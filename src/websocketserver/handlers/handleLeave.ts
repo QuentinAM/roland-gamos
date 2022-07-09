@@ -55,6 +55,11 @@ export function handleLeave(ws: WebSocket, data: LeaveMessage) {
         room.hostPlayerIndex = 0;
     }
 
+    // If playing and only one player go to game over screen
+    if (room.players.length === 1) {
+        room.isGameOver = true;
+    }
+
     // Send response
     sendRoomUpdate(body.roomId, room);
 }

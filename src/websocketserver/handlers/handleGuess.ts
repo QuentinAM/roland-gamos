@@ -105,11 +105,6 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
 
     setTimeout(() => {
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-
-        // If only two players left and guess is wrong, means that game will be over, don't need to start timer
-
-        if (room.players.length === 2 && !room.currentPlayerHasGuessed) return;
-        
         room.interval = setTimeout(() => {
             console.log('Out of time');
             nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);

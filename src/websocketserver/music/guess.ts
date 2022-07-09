@@ -10,6 +10,9 @@ export async function guess(guess: string): Promise<Track | undefined> {
 
     const { track, track2, token } = await GuessEndpoint(first_artist, second_artist, spToken);
 
+    if (!track){
+        return;
+    }
 
     let res = await CheckTrack(track, first_artist, second_artist, token);
     if (!res)
@@ -21,8 +24,9 @@ export async function guess(guess: string): Promise<Track | undefined> {
 
 async function CheckTrack(track: any, first_artist: string, second_artist: string, token: string)
 {
-    if (track && IsValid(first_artist, second_artist, track.artists)) {
-        const second_artist_obj: any = track.artists.find((artist: { name: any; }) => levenshtein(FormatName(artist.name), FormatName(second_artist)) <= levenshtein_threshold);
+    const feat = IsValid(first_artist, second_artist, track.artists);
+    if (track && feat[0] && feat[1]) {
+        const second_artist_obj: any = feat[1];
         const artist_image = await getArtistPicture(second_artist_obj.href, token);
 
         return {
@@ -40,7 +44,7 @@ async function CheckTrack(track: any, first_artist: string, second_artist: strin
 }
 
 async function GuessEndpoint(first_artist: string, second_artist: string, token: string | null): Promise<any> {
-    let url =  encodeURI(`https://api.spotify.com/v1/search?limit=2&market=FR&type=track&q=${`${first_artist} ${second_artist}`}`);
+    let url = encodeURI(`https://api.spotify.com/v1/search?limit=2&market=FR&type=track&q=${`${first_artist} ${second_artist}`}`);
     
     console.log()
     const response = await fetch(url, {
@@ -70,7 +74,7 @@ function IsValid(first_artist: string, second_artist: string, artists: Array<any
     // Check if both artists are in the list of artists
     const first_artist_found = artists.find(artist => levenshtein(FormatName(artist.name), FormatName(first_artist)) <= levenshtein_threshold);
     const second_artist_found = artists.find(artist => levenshtein(FormatName(artist.name), FormatName(second_artist)) <= levenshtein_threshold);
-    return first_artist_found !== undefined && second_artist_found !== undefined;
+    return [first_artist_found, second_artist_found];
 }
 
 function FormatName(name: string){
