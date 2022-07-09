@@ -12,11 +12,9 @@ import { onMount } from 'svelte';
     export let onValidate: any;
     export let currentPlayerHasAttemptedGuess: boolean | undefined;
 
-    let data: any = [];   
     let filtered: any[] = [];
     let searchInput: HTMLInputElement;
     let selectionIndex: number = 0;
-    let inputSet = false;
 
     const filter = async (artists: Artist[]) => {
 
@@ -36,6 +34,13 @@ import { onMount } from 'svelte';
                 }
             });
         }
+
+        // Check if artist found
+        if (storageArr.find(artist => artist.name === makeMatchBold(guess))) {
+            filtered = [];
+            return;
+        }
+
         filtered = storageArr;
 
         // Update index
@@ -89,15 +94,11 @@ import { onMount } from 'svelte';
         }
         else if (e.key === "Enter")
         {
-            if (inputSet){
+            if (filtered.length === 0){
                 onValidate();
             }
 
             setInputVal(filtered[selectionIndex]);
-            inputSet = true;
-        }
-        else{
-            inputSet = false;
         }
     } 
 
@@ -112,23 +113,36 @@ import { onMount } from 'svelte';
 
 <div class="w-full">
     {#if filtered.length > 0 && !currentPlayerHasAttemptedGuess}
-        <ul id="autocomplete-items-list" class="">
+        <ul class="w-full">
             {#each filtered as artist, index}
                 <AutoCompleteChoice {artist} lastElement={index === filtered.length - 1} highlighted={index === selectionIndex} on:click={() => setInputVal(artist)} />
             {/each}
         </ul>
     {/if}
-    <input 
-        id="country-input" 
-        type="text" 
-        {placeholder}
-        class="input input-primary w-full rounded-r-none"
-        bind:this={searchInput}
-        bind:value={guess}
-        on:input={() => {
-            onInput();
-        }}
-        on:keydown={navigateList}
-        disabled={currentPlayerHasAttemptedGuess}
-    />
+    <div class="flex flex-row">
+        <!-- svelte-ignore a11y-autofocus -->
+        <input 
+            id="country-input" 
+            type="text" 
+            {placeholder}
+            class="input input-primary w-full rounded-r-none"
+            bind:this={searchInput}
+            bind:value={guess}
+            on:input={() => {
+                onInput();
+            }}
+            on:keydown={navigateList}
+            disabled={currentPlayerHasAttemptedGuess}
+            autofocus
+        />
+        <button
+            class="btn btn-success rounded-l-none"
+            on:click={onValidate}
+            disabled={currentPlayerHasAttemptedGuess}
+        >
+            <span class="mr-2">
+                <i class="fa-solid fa-check" />
+            </span> Valider
+        </button>
+    </div>
 </div>

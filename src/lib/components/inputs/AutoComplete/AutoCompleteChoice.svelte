@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { slide } from 'svelte/transition';
+
     export let artist: any;
     export let highlighted: boolean;
     export let lastElement: boolean;
@@ -10,6 +12,7 @@
     class:rounded-br={lastElement}
     class:rounded-bl={lastElement}
     on:click
+    transition:slide
 >
     <div class="avatar">
         <div class="w-10 h-10 rounded-full">

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 
-	let number = 5;
+	let number = 3;
 
 	function decrement() {
 		number--;
@@ -21,9 +21,9 @@
 	<p>
 		<span
 			class="text-8xl font-bold"
-			class:text-primary={number == 5}
-			class:text-secondary={number == 4}
-			class:text-accent={number != 5 && number != 4}
+			class:text-primary={number == 3}
+			class:text-secondary={number == 2}
+			class:text-accent={number == 1}
 			transition:fade
 		>
 			{number}

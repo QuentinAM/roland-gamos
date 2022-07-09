@@ -91,7 +91,8 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);
     // Set the next turn
-    room.interval = setInterval(() => {
+    room.interval = setTimeout(() => {
+        console.log('Out of time');
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-    }, room.timeBetweenRound * 1000 + 5_000);
+    }, room.timeBetweenRound * 1000 + 3_000);
 }

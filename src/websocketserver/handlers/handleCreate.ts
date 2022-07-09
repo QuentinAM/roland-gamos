@@ -31,7 +31,7 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         tracks: [],
         mode: 'NORMAL',
         timeBetweenRound: 30,
-        playlistStart: 'https://open.spotify.com/playlist/4l1CEhc7ZPbaEtiPdCSGbl',
+        playlistStart: 'https://open.spotify.com/playlist/3vZYzaSfr9HvjaIivjHyAC',
         isGameOver: false
     });
 

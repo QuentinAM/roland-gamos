@@ -58,7 +58,7 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
     // Start game
     room.currentPlayerIndex = 0;
     room.currentTurn = 1;
-    room.currentTurnStartTime = Date.now() + 5_000;
+    room.currentTurnStartTime = Date.now() + 3_000;
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
     room.enteredArtists = [await start(room.playlistStart)];
@@ -73,7 +73,8 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);
     // Set the next turn
-    room.interval = setInterval(() => {
+    room.interval = setTimeout(() => {
+        console.log('Out of time');
         nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
-    }, room.timeBetweenRound * 1000 + 5_000);
+    }, room.timeBetweenRound * 1000 + 3_000);
 }

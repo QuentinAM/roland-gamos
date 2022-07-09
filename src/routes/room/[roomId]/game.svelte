@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { scale, slide, fade } from 'svelte/transition';
 	import { goto } from '$app/navigation';
-	import { room, player, autoComplete } from '$lib/game/data';
+	import { room, player } from '$lib/game/data';
 	import Featuring from '$lib/components/ui/Featuring.svelte';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
@@ -484,18 +484,20 @@
 			<div class="card shadow-lg bg-base-100">
 				<div class="card-body">
 					<div class="form-control flex-row">
-						<AutoCompleteInput
-							placeholder={`Entre un artiste qui a featé avec ${currentArtist?.name}.`}
-							bind:guess
-							onValidate={() => {
-								submitGuess();
-							}}
-							onInput={() =>{
-								guessing();
-							}}
-							{currentPlayerHasAttemptedGuess}
-						/>
-						<button
+						<div class="w-full">
+							<AutoCompleteInput
+								placeholder={`Entre un artiste qui a featé avec ${currentArtist?.name}.`}
+								bind:guess
+								onValidate={() => {
+									submitGuess();
+								}}
+								onInput={() =>{
+									guessing();
+								}}
+								{currentPlayerHasAttemptedGuess}
+							/>
+						</div>
+						<!-- <button
 							class="btn btn-success rounded-l-none"
 							on:click={submitGuess}
 							disabled={currentPlayerHasAttemptedGuess}
@@ -503,7 +505,7 @@
 							<span class="mr-2">
 								<i class="fa-solid fa-check" />
 							</span> Valider
-						</button>
+						</button> -->
 					</div>
 				</div>
 			</div>
