@@ -75,14 +75,6 @@
 		sendMessage(message);
 	}
 
-	function validTimeBetweenTime(node: any, value: any){
-		return {
-			update(value: any) {
-				timeBetweenRound = value === null || timeBetweenRound < node.min ? timeBetweenRound : parseInt(value);
-			}
-		}
-	}
-
 	onMount(async () => {
 
 		// Check if game is over
@@ -113,6 +105,7 @@
 	});
 </script>
 
+<svelte:window on:beforeunload={handleLeave}/>
 {#if startGamePressed}
 	<div class="hero min-h-screen" transition:fade>
 		<div class="hero-content text-center flex flex-col">
