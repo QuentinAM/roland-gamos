@@ -56,7 +56,7 @@ export function handleLeave(ws: WebSocket, data: LeaveMessage) {
     }
 
     // If playing and only one player go to game over screen
-    if (room.players.length === 1) {
+    if (room.players.length === 1 && room.currentTurn != 0) {
         room.isGameOver = true;
     }
 

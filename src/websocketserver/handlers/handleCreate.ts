@@ -35,7 +35,7 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         isGameOver: false
     });
 
-    console.log(`${body.username} created room ${roomId}`);
+    console.log(`${body.userId} created room ${roomId}`);
 
     const response: UpdateResponse = {
         type: 'UPDATE',

@@ -5,7 +5,12 @@
 	import { page } from '$app/stores';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { room, player } from '$lib/game/data';
-	import type { LeaveMessage, ModeType, SettingMessage, StartMessage } from 'src/websocketserver/wstypes';
+	import type {
+		LeaveMessage,
+		ModeType,
+		SettingMessage,
+		StartMessage
+	} from 'src/websocketserver/wstypes';
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import type { SendMessage } from '$lib/websocket';
@@ -43,8 +48,7 @@
 	}
 
 	async function updateSettings() {
-
-		if (!isHost){
+		if (!isHost) {
 			return;
 		}
 
@@ -55,7 +59,7 @@
 				roomId,
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number,
-				mode: modeTv ? 'TV' : 'NORMAL' as ModeType,
+				mode: modeTv ? 'TV' : ('NORMAL' as ModeType),
 				playlistStart: chosenCategory.url as string
 			}
 		};
@@ -63,7 +67,6 @@
 	}
 
 	async function handleLeave() {
-
 		// Send settings to server
 		let message: LeaveMessage = {
 			type: 'LEAVE',
@@ -76,7 +79,6 @@
 	}
 
 	onMount(async () => {
-
 		// Check if game is over
 		if ($room?.isGameOver) {
 			goto('/room/' + roomId + '/game');
@@ -91,6 +93,8 @@
 		if ($player && $room?.id === roomId) {
 			// Already joined room => checking for the start of the game
 			const unsubscribeRoom = room.subscribe((r) => {
+				console.log(r);
+
 				if (r?.currentTurn != 0) {
 					// Game has started, redirect to game page
 					unsubscribeRoom();
@@ -105,7 +109,7 @@
 	});
 </script>
 
-<svelte:window on:beforeunload={handleLeave}/>
+<svelte:window on:beforeunload={handleLeave} />
 {#if startGamePressed}
 	<div class="hero min-h-screen" transition:fade>
 		<div class="hero-content text-center flex flex-col">
@@ -156,43 +160,50 @@
 				<p class="text-sm">Seul l'host de la room peut changer les paramètres.</p>
 				<PlaylistInput
 					bind:chosenCategory
-					nonHostValue={$room.playlistStart} 
+					nonHostValue={$room.playlistStart}
 					onChange={() => {
-						updateSettings()
-					}} {isHost}
+						updateSettings();
+					}}
+					{isHost}
 				/>
 				<div class="form-control w-full max-w-xs">
 					<label class="label">
 						<span class="label-text">Temps de réponse ({$room?.timeBetweenRound}s)</span>
-						<input class="hidden"/>
+						<input class="hidden" />
 					</label>
-					<div class="tooltip tooltip-primary tooltip-right" data-tip="Délais avant lequel il faut donner votre réponse.">
-						<input 
+					<div
+						class="tooltip tooltip-primary tooltip-right"
+						data-tip="Délais avant lequel il faut donner votre réponse."
+					>
+						<input
 							type="range"
 							disabled={!isHost}
-							value={isHost ? timeBetweenRound : $room.timeBetweenRound} 
-							min=1 
-							max=60
-							step=1
+							value={isHost ? timeBetweenRound : $room.timeBetweenRound}
+							min="1"
+							max="60"
+							step="1"
 							class="range"
-							class:range-primary={isHost} 
+							class:range-primary={isHost}
 							on:change={(e) => {
 								timeBetweenRound = e.target?.value;
 								updateSettings();
 							}}
 						/>
 					</div>
-					<div class="tooltip tooltip-primary tooltip-right" data-tip="La partie est uniquement retransmise sur l'écran de l'host.">
+					<div
+						class="tooltip tooltip-primary tooltip-right"
+						data-tip="La partie est uniquement retransmise sur l'écran de l'host."
+					>
 						<label class="label">
-							<span class="label-text">Mode TV</span> 
-							<input 
+							<span class="label-text">Mode TV</span>
+							<input
 								disabled={!isHost}
 								type="checkbox"
 								checked={isHost ? modeTv : $room.mode === 'TV'}
 								on:change={(e) => {
 									modeTv = e?.target?.checked;
 									updateSettings();
-								}} 
+								}}
 								class="checkbox checkbox-primary"
 							/>
 						</label>
@@ -209,11 +220,14 @@
 						Partir
 					</button>
 					{#if isHost}
-						<div 
-							class="tooltip tooltip-primary tooltip-bottom" 
-							data-tip={!!(playerCount && (playerCount < 2 || (playerCount < 3 && modeTv))) ? 
-								'Mode TV: 3 joueurs minimum.Mode Normal: 2 joueurs minimum.' : 
-								"C'est parti! "}>
+						<div
+							class="tooltip tooltip-primary tooltip-bottom"
+							data-tip={playerCount && playerCount < 3 && modeTv
+								? 'Il faut au moins 3 joueurs pour jouer en mode TV.'
+								: playerCount && playerCount < 2
+								? 'Il faut au moins 2 joueurs pour jouer.'
+								: "C'est parti!"}
+						>
 							<button
 								class="btn btn-primary"
 								disabled={!!(playerCount && (playerCount < 2 || (playerCount < 3 && modeTv)))}

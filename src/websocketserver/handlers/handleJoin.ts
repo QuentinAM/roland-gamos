@@ -29,7 +29,7 @@ export function handleJoin(ws: WebSocket, data: JoinMessage) {
         const response: ErrorResponse = {
             type: 'ERROR',
             body: {
-                message: `Player ${body.username} is already in room ${body.roomId}.`,
+                message: `Player ${body.userId} is already in room ${body.roomId}.`,
             }
         };
 
@@ -38,11 +38,11 @@ export function handleJoin(ws: WebSocket, data: JoinMessage) {
     }
 
     // Check if username is not already taken or empty
-    if (!body.username){
+    if (!body.username) {
         const response: ErrorResponse = {
             type: 'ERROR',
             body: {
-                message: `A player tried to join without username is already in room ${body.roomId}.`,
+                message: `A player tried to join room ${body.roomId} without username.`,
             }
         };
 
@@ -65,7 +65,7 @@ export function handleJoin(ws: WebSocket, data: JoinMessage) {
         ws: ws,
     });
 
-    console.log(`${username} joined room ${body.roomId}`);
+    console.log(`${body.userId} joined room ${body.roomId}`);
 
     // Send response
     sendRoomUpdate(body.roomId, room);
