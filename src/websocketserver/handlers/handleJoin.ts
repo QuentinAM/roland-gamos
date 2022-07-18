@@ -37,7 +37,7 @@ export function handleJoin(ws: WebSocket, data: JoinMessage) {
         return;
     }
 
-    // Check if username is not already taken or empty
+    // Check if username is empty
     if (!body.username) {
         const response: ErrorResponse = {
             type: 'ERROR',
@@ -58,14 +58,26 @@ export function handleJoin(ws: WebSocket, data: JoinMessage) {
         i++;
     }
 
-    // Add player to room
-    room.players.push({
-        userId: body.userId,
-        username: username,
-        ws: ws,
-    });
+    // Check if game has already started
+    if (room.currentTurn !== 0) {
+        room.spectators?.push({
+            userId: body.userId,
+            username: username,
+            ws: ws
+        });
+        console.log(`${body.userId} joined room ${body.roomId} as spectator`);
+    }
+    else
+    {
+        // Add player to room
+        room.players.push({
+            userId: body.userId,
+            username: username,
+            ws: ws,
+        });
 
-    console.log(`${body.userId} joined room ${body.roomId}`);
+        console.log(`${body.userId} joined room ${body.roomId}`);
+    }
 
     // Send response
     sendRoomUpdate(body.roomId, room);

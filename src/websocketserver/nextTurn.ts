@@ -50,13 +50,25 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
 
         room.isGameOver = true;
 
+        // Set turn for the winner
+        room.players[0].turn = currentTurn;
+
         // Reset players
         room.eliminatedPlayers.forEach(p => {
             room.players.push(p);
         });
 
+        // Put spectator in players
+        if (room.spectators) {
+            room.players = [...room.players, ...room.spectators];
+            room.spectators = [];
+        }
+
         // Re calculate hostPlayerIndex
         room.hostPlayerIndex = room.players.findIndex(p => p.userId === room.hostPlayerId);
+
+        // Reset turn
+        room.currentTurn = 0;
 
         // Eliminated players will be reset only if restart to correctly display leaderboard on front
 

@@ -4,7 +4,7 @@ export function sendRoomUpdate(roomId: string, room: Room) {
     let resRoom = { ...room };
     resRoom.interval = undefined;
     resRoom.players = resRoom.players?.map(player => {
-        return { userId: player.userId, username: player.username };
+        return { userId: player.userId, username: player.username, turn: player.turn };
     });
     resRoom.eliminatedPlayers = resRoom.eliminatedPlayers?.map(player => {
         return { userId: player.userId, username: player.username, turn: player.turn };

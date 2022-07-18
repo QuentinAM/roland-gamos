@@ -79,7 +79,7 @@
 	}
 
 	onMount(async () => {
-		// Check if game is over
+		// Check if game is over or is has started
 		if ($room?.isGameOver) {
 			goto('/room/' + roomId + '/game');
 			return;

@@ -47,6 +47,9 @@
 		$room &&
 		$player &&
 		$room?.hostPlayerId === $player?.userId;
+
+	$: isSpectator = $room?.spectators?.find(pl => pl.userId === $player?.userId);
+
 	$: modeTv = $room?.mode === 'TV';
 
 	let guess = '';
@@ -163,7 +166,7 @@
 							<tr>
 								<th class="text-primary text-bold text-xl">1er</th>
 								<td class="text-primary text-bold text-xl">{$room?.players[0].username}</td>
-								<td class="text-primary text-bold text-xl">{$room?.currentTurn}</td>
+								<td class="text-primary text-bold text-xl">{$room?.players[0].turn}</td>
 							</tr>
 							{#if eliminatedPlayers}
 								{#each eliminatedPlayers.reverse() as p, i}
@@ -462,6 +465,11 @@
 							/>
 							</label>
 						</div>
+						{#if isSpectator && !isGameOver}
+							<div>
+								<h1 class="font-bold text-primary text-2xl">Spectateur: en attente dans la fin de la partie</h1>
+							</div>
+						{/if}
 					</div>
 				{/if}
 			</div>

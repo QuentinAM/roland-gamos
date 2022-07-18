@@ -7,6 +7,7 @@ export interface Room {
     hostPlayerIndex: number;
     hostPlayerId: string;
     players: Player[];
+    spectators?: Player[];
     eliminatedPlayers: Player[];
     playlistStart: string;
     currentPlayerIndex: number;

@@ -32,7 +32,8 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         mode: 'NORMAL',
         timeBetweenRound: 30,
         playlistStart: 'https://open.spotify.com/playlist/3vZYzaSfr9HvjaIivjHyAC',
-        isGameOver: false
+        isGameOver: false,
+        spectators: []
     });
 
     console.log(`${body.userId} created room ${roomId}`);
