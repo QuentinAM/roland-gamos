@@ -10,9 +10,8 @@
     Jusqu'à preuve du contraire.
 </p>
 
----
 # Sommaire
-- [🗒️ Règles](#🗒️-règles)
+- [🗒️ Règles](#%F0%9F%97%92%EF%B8%8F-r%C3%A8gles)
 - [🖼️ Screens](#🖼️-screens)
     - [🎵 En Jeu](#🎵-en-jeu)
     - [🎧 Fin de partie](#🎧-fin-de-partie)
