@@ -3,20 +3,20 @@
     Roland Gamos⚡
 <h1>
 
-<p style="font-size: 18px">
-🎧 Le jeu du meilleur jeu rap au monde.
+<p style="font-size: 13px">
+🎧 Le meilleur jeu rap au monde.
 </p>
-<p style="font-size: 15px">
+<p style="font-size: 12px">
     Jusqu'à preuve du contraire.
 </p>
 
----
+
 # Sommaire
-- [🗒️ Règles](https://github.com/QuentinAM/roland-gamos#%F0%9F%97%92%EF%B8%8F-r%C3%A8gles)
-- [🖼️ Screens](#🖼️-screens)
-    - [🎵 En Jeu](#🎵-en-jeu)
-    - [🎧 Fin de partie](#🎧-fin-de-partie)
-- [⚖️ Droits](#⚖️-droits)
+- [🗒️ Règles](#%EF%B8%8F-règles)
+- [🖼️ Screens](#%EF%B8%8F-screens)
+    - [🎵 En Jeu](#-en-jeu)
+    - [🎧 Fin de partie](#-fin-de-partie)
+- [⚖️ Droits](#%EF%B8%8F-droits)
 
 ---
 
