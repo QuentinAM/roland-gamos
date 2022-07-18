@@ -4,7 +4,7 @@
 <h1>
 
 <p style="font-size: 13px">
-🎧 Le jeu du meilleur jeu rap au monde.
+🎧 Le meilleur jeu rap au monde.
 </p>
 <p style="font-size: 12px">
     Jusqu'à preuve du contraire.
