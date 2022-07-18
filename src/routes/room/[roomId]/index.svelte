@@ -146,7 +146,7 @@
 								>
 									{#if i === $room.hostPlayerIndex}
 										<span class="mr-1">
-											<i class="fa-solid fa-crown text-primary" />
+											<i class="fa-solid fa-crown text-primary"/>
 										</span>
 									{/if}
 									{pl.username}
