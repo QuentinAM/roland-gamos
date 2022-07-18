@@ -26,9 +26,9 @@
 
 </script>
 
-<div class="card card-compact w-96 bg-base-100 shadow-xl">
+<div class="card card-compact w-full lg:w-96 bg-base-100 shadow-xl">
 	<figure>
-		<img src={imgUrl} width="640" height="640" alt="e" />
+		<img src={imgUrl} class="lg:w-[640px] lg:h-[400px] w-[240px] h-[240px]" alt="e"/>
 	</figure>
 	{#if number}
 		<div

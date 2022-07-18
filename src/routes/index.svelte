@@ -56,6 +56,7 @@
 	function joinRoom() {
 
 		if (roomIdError || !roomId){
+			roomIdError = true;
 			return;
 		}
 
@@ -81,7 +82,7 @@
 			<h1 class="text-5xl font-bold">Roland Gamos</h1>
 			<p class="pt-6">Le jeu du meilleur jeu rap au monde.</p>
 			<p class="text-sm">Jusqu'à preuve du contraire.</p>
-			<div class="pt-5 w-max">
+			<div class="pt-5 lg:w-max lg:text-center text-left">
 				<p class="text-base">🎵 Le but du jeu ? Un ping-pong featuring musical.</p>
 				<p class="text-sm">
 					🎙️ Un artiste de départ est pris dans la playlist de ton choix.

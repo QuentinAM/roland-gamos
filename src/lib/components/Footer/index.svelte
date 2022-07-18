@@ -1,4 +1,4 @@
-<footer class="footer absolute bottom-0 items-center p-4 bg-transparent text-neutral-content ">
+<footer class="footer gap-1 lg:gap-2 absolute bottom-0 items-center p-4 bg-transparent text-neutral-content ">
 	<div class="items-center grid-flow-col ">
 		<a href="https://developer.spotify.com/terms/" target="_blank" class="hover:underline"
 			>Spotify Developer Terms</a

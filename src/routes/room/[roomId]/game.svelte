@@ -148,7 +148,7 @@
 {/if}
 {#if isGameOver}
 	<div class="hero min-h-screen" transition:fade>
-		<div class="hero-content flex flex-row justify-start items-start h-full w-full">
+		<div class="hero-content p-2 lg:p-4 gap-0 lg:gap-1 flex flex-row justify-start items-start h-full w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-max">
 			<div class="flex flex-col w-full justify-start">
 				<h1 class="font-bold">Partie terminée</h1>
 				<div class="overflow-auto h-64">
@@ -180,10 +180,10 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="flex flex-row space-x-4">
+				<div class="flex lg:flex-row flex-col lg:space-x-4 space-y-4">
 					<div>
 						<h1 class="font-bold">Titres joués</h1>
-						<div class="h-[33rem] carousel carousel-vertical rounded-box">
+						<div class="h-[25rem] lg:h-[35rem] shadow-lg shadow-zinc-600 carousel carousel-vertical rounded-box">
 							{#if tracks}
 								{#each tracks as track, i}
 									<div class="carousel-item h-full">
@@ -204,9 +204,9 @@
 						</div>
 					</div>
 					<div class="flex flex-col space-y-4">
-						<div class="ml-20">
+						<div class="lg:ml-20">
 							<h1 class="font-bold">Statistiques</h1>
-							<div class="stats stats-vertical shadow w-[27rem]">
+							<div class="stats stats-vertical shadow w-full">
 								{#if $room?.currentTurnStartTime}
 									<div class="stat">
 										<div class="stat-title">Durée</div>
@@ -366,13 +366,13 @@
 	<!-- In Progress Game -->
 	{#if $room?.mode === 'NORMAL' || ($room?.mode === 'TV' && isHost)}
 		<div class="hero min-h-screen">
-			<div class="hero-content flex flex-row justify-start items-start h-full w-full">
+			<div class="hero-content flex lg:flex-row flex-col justify-start items-start h-full w-full">
 				<div class="flex flex-col w-full justify-start">
-					<div class="stats shadow" transition:slide>
-						<div class="stat bg-primary">
+					<div class="stats shadow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-max" transition:slide>
+						<div class="stat bg-primary lg:p-4 p-2">
 							<div class="stat-figure text-primary-content"/>
-							<div class="stat-title text-primary-content">Tour</div>
-							<div class="stat-value text-primary-content inline-flex">
+							<div class="stat-title text-sm lg:text-xl text-primary-content">Tour</div>
+							<div class="stat-value text-sm lg:text-xl text-primary-content inline-flex">
 								<span class="mr-4">
 									<i class="fa-solid fa-arrows-rotate" />
 								</span>
@@ -381,9 +381,9 @@
 								</span>
 							</div>
 						</div>
-						<div class="stat bg-secondary">
-							<div class="stat-title text-secondary-content">Temps Restant</div>
-							<div class="stat-value text-secondary-content inline-flex">
+						<div class="stat bg-secondary lg:p-4 p-2">
+							<div class="stat-title text-sm lg:text-xl text-secondary-content">Temps Restant</div>
+							<div class="stat-value text-sm lg:text-xl text-secondary-content inline-flex">
 								<span class="mr-4">
 									<i class="fa-solid fa-clock" />
 								</span>
@@ -392,9 +392,9 @@
 								</span>
 							</div>
 						</div>
-						<div class="stat bg-accent">
-							<div class="stat-title text-accent-content">Artiste</div>
-							<div class="stat-value text-accent-content inline-flex">
+						<div class="stat bg-accent lg:p-4 p-1">
+							<div class="stat-title text-sm lg:text-xl text-accent-content">Artiste</div>
+							<div class="stat-value text-sm lg:text-xl text-accent-content inline-flex">
 								<span class="mr-4"> 
 									<i class="fa-solid fa-music" />
 								</span>
@@ -404,7 +404,7 @@
 					</div>
 
 					{#if players}
-						<div class="grid grid-cols-4 grid-flow-row gap-8 mt-16 w-full">
+						<div class="grid lg:grid-cols-4 grid-cols-2 grid-flow-row gap-8 mt-16 w-full">
 							{#each players as p, i}
 								<div class="flex flex-col justify-center items-center" transition:scale>
 									<p class="font-semibold">{p.username}</p>
@@ -437,7 +437,7 @@
 				</div>
 
 				{#if currentTrack}
-					<div transition:slide>
+					<div class="w-full my-1" transition:slide>
 						<Featuring
 							{autoplay}
 							number={undefined}
@@ -484,12 +484,12 @@
 			</div>
 		{/if}
 
-		<div class="absolute bottom-0 p-14 w-full" transition:scale>
+		<div class="absolute bottom-0 p-1 lg:p-14 w-full" transition:scale>
 			<div class="card shadow-lg bg-primary p-8">
 				<div class="card-body" />
 			</div>
 		</div>
-		<div class="absolute bottom-0 p-16 w-full" transition:scale={{ delay: 100 }}>
+		<div class="absolute bottom-0 p-3 lg:p-16 w-full" transition:scale={{ delay: 100 }}>
 			<div class="card shadow-lg bg-base-100">
 				<div class="card-body">
 					<div class="form-control flex-row">

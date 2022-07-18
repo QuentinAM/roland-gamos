@@ -110,9 +110,10 @@
 </script>
 
 <svelte:window on:beforeunload={handleLeave} />
-{#if startGamePressed}
-	<div class="hero min-h-screen" transition:fade>
-		<div class="hero-content text-center flex flex-col">
+<div class="hero min-h-screen">
+	<div class="hero-content text-center flex flex-col">
+
+		{#if startGamePressed}
 			<div>
 				<h1 class="text-4xl font-bold">Chargement</h1>
 				<div
@@ -120,11 +121,8 @@
 					style="--value:80; --size:3rem; --thickness: 0.5rem;"
 				/>
 			</div>
-		</div>
-	</div>
-{:else}
-	<div class="hero min-h-screen">
-		<div class="hero-content text-center flex flex-col">
+		{:else}
+
 			<div>
 				<h1 class="text-4xl font-bold">
 					Room:
@@ -139,7 +137,7 @@
 				<div class="card shadow-xl">
 					<div class="card-body">
 						<h2 class="text-xl font-semibold">Joueurs:</h2>
-						<div class="flex flex-col items-center">
+						<div class="flex flex-col items-center max-h-20 overflow-auto">
 							{#each $room.players as pl, i}
 								<span
 									class="inline-flex"
@@ -239,6 +237,6 @@
 					{/if}
 				</div>
 			{/if}
-		</div>
+		{/if}
 	</div>
-{/if}
+</div>

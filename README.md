@@ -12,7 +12,7 @@
 
 ---
 # Sommaire
-- [🗒️ Règles](#🗒️-règles)
+- [🗒️ Règles](https://github.com/QuentinAM/roland-gamos#%F0%9F%97%92%EF%B8%8F-r%C3%A8gles)
 - [🖼️ Screens](#🖼️-screens)
     - [🎵 En Jeu](#🎵-en-jeu)
     - [🎧 Fin de partie](#🎧-fin-de-partie)
