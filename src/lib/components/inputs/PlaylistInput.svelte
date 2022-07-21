@@ -67,6 +67,7 @@
 						placeholder="URL Spotify de la playlist"
 						disabled={!isHost}
 						bind:value={chosenCategory.url}
+						on:input={onChange}
 					/>
 				</div>
 			</div>

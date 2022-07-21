@@ -53,5 +53,5 @@
 ---
 # ⚖️ Droits
 
-- Inspiré du rolang gamos créé rap jeu.
-- Créé par [Augustin B.](https://github.com/augustinbegue) et [Quentin AM.](https://github.com/QuentinAM)
+- Inspiré du rolang gamos créé par rap jeu.
+- Créé par [Augustin B.](https://github.com/augustinbegue) et [Quentin A.M.](https://github.com/QuentinAM)

@@ -182,7 +182,7 @@
 							step="1"
 							class="range"
 							class:range-primary={isHost}
-							on:change={(e) => {
+							on:input={(e) => {
 								timeBetweenRound = e.target?.value;
 								updateSettings();
 							}}

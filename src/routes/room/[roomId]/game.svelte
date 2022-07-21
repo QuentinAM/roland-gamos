@@ -274,7 +274,7 @@
 											step=1
 											class="range"
 											class:range-primary={isHost} 
-											on:change={(e) => {
+											on:input={(e) => {
 												timeBetweenRound = e.target?.value;
 												updateSettings();
 											}}
@@ -368,8 +368,8 @@
 		<div class="hero min-h-screen">
 			<div class="hero-content flex lg:flex-row flex-col justify-start items-start h-full w-full">
 				<div class="flex flex-col w-full justify-start">
-					<div class="stats shadow max-w-xs sm:max-w-sm md:max-w-md lg:max-w-max" transition:slide>
-						<div class="stat bg-primary lg:p-4 p-2">
+					<div class="stats shadow" transition:slide>
+						<div class="stat bg-primary md:p-4 p-2">
 							<div class="stat-figure text-primary-content"/>
 							<div class="stat-title text-sm lg:text-xl text-primary-content">Tour</div>
 							<div class="stat-value text-sm lg:text-xl text-primary-content inline-flex">
@@ -381,7 +381,7 @@
 								</span>
 							</div>
 						</div>
-						<div class="stat bg-secondary lg:p-4 p-2">
+						<div class="stat bg-secondary md:p-4 p-2">
 							<div class="stat-title text-sm lg:text-xl text-secondary-content">Temps Restant</div>
 							<div class="stat-value text-sm lg:text-xl text-secondary-content inline-flex">
 								<span class="mr-4">
@@ -392,7 +392,7 @@
 								</span>
 							</div>
 						</div>
-						<div class="stat bg-accent lg:p-4 p-1">
+						<div class="stat bg-accent md:p-4 p-1">
 							<div class="stat-title text-sm lg:text-xl text-accent-content">Artiste</div>
 							<div class="stat-value text-sm lg:text-xl text-accent-content inline-flex">
 								<span class="mr-4"> 
@@ -404,7 +404,7 @@
 					</div>
 
 					{#if players}
-						<div class="grid lg:grid-cols-4 grid-cols-2 grid-flow-row gap-8 mt-16 w-full">
+						<div class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 grid-flow-row gap-8 mt-16 w-full">
 							{#each players as p, i}
 								<div class="flex flex-col justify-center items-center" transition:scale>
 									<p class="font-semibold">{p.username}</p>

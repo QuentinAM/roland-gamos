@@ -8,7 +8,7 @@ export async function guess(guess: string): Promise<Track | undefined> {
     const first_artist: string = guess_split[0];
     const second_artist: string = guess_split[1];
 
-    const { track, track2, token } = await GuessEndpoint(first_artist, second_artist, spToken);
+    let { track, track2, token } = await GuessEndpoint(first_artist, second_artist, 'FR', spToken);
 
     if (!track){
         return;
@@ -19,6 +19,25 @@ export async function guess(guess: string): Promise<Track | undefined> {
     {
         res = await CheckTrack(track2, first_artist, second_artist, token);
     }
+
+    if (!res){
+        console.log('Re-attempting guess all around the world for', first_artist, second_artist);
+        const response = await GuessEndpoint(first_artist, second_artist, null, spToken);
+        track = response.track;
+        track2 = response.track2;
+        token = response.token;
+    }
+
+    if (!track){
+        return;
+    }
+
+    res = await CheckTrack(track, first_artist, second_artist, token);
+    if (!res)
+    {
+        res = await CheckTrack(track2, first_artist, second_artist, token);
+    }
+
     return res;
 }
 
@@ -43,10 +62,9 @@ async function CheckTrack(track: any, first_artist: string, second_artist: strin
     return;
 }
 
-async function GuessEndpoint(first_artist: string, second_artist: string, token: string | null): Promise<any> {
-    let url = encodeURI(`https://api.spotify.com/v1/search?limit=2&market=FR&type=track&q=${`${first_artist} ${second_artist}`}`);
+async function GuessEndpoint(first_artist: string, second_artist: string, market: string | null, token: string | null): Promise<any> {
+    let url = encodeURI(`https://api.spotify.com/v1/search?limit=2&type=track${market !== null ? `&market=${market}` : ''}&q=${`${first_artist} ${second_artist}`}`);
     
-    console.log()
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -60,7 +78,7 @@ async function GuessEndpoint(first_artist: string, second_artist: string, token:
     // Check for errors
     if (data.error && data.error.status === 401 || data.error && data.error.status === 400) {
         // Change headers and call again
-        return GuessEndpoint(first_artist, second_artist, await getToken());
+        return GuessEndpoint(first_artist, second_artist, market, await getToken());
     }
 
     return {
