@@ -157,7 +157,7 @@
 	<div class="hero min-h-screen" transition:fade>
 		<div class="hero-content p-2 lg:p-4 gap-0 lg:gap-1 flex flex-row justify-start items-start h-full w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-max">
 			<div class="flex flex-col w-full justify-start">
-				<h1 class="font-bold">Partie terminée</h1>
+				<h1 class="font-bold">Partie terminée {$room?.gameNumber} </h1>
 				<div class="overflow-auto h-64">
 					<table class="table w-full max-h-[50%]">
 						<!-- head -->
@@ -166,6 +166,7 @@
 								<th />
 								<th>Joueur</th>
 								<th>Dernier tour</th>
+								<th>Victoires</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -174,6 +175,7 @@
 								<th class="text-primary text-bold text-xl">1er</th>
 								<td class="text-primary text-bold text-xl">{$room?.players[0].username}</td>
 								<td class="text-primary text-bold text-xl">{$room?.players[0].turn}</td>
+								<td class="text-bold text-xl">{$room?.winsArray[$room?.players[0].userId]}</td>
 							</tr>
 							{#if eliminatedPlayers}
 								{#each eliminatedPlayers.reverse() as p, i}
@@ -181,6 +183,9 @@
 										<th>{i + 2}ème</th>
 										<td>{p.username}</td>
 										<td>{p.turn}</td>
+										<td>
+											{$room?.winsArray[p.userId] ? $room?.winsArray[p.userId] : 0}
+										</td>
 									</tr>
 								{/each}
 							{/if}

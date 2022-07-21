@@ -13,7 +13,6 @@ export interface Room {
     players: Player[];
     spectators?: Player[];
     eliminatedPlayers: Player[];
-    playlistStart: Playlist;
     currentPlayerIndex: number;
     currentTurn: number;
     currentTurnStartTime: number;
@@ -24,10 +23,17 @@ export interface Room {
     enteredArtists: Artist[];
     interval?: NodeJS.Timeout;
     isGameOver: boolean;
+    
+    // Restart
+    winsArray: {
+        [key: string]: number; // [userId]: wins
+    }
+    gameNumber: number;
 
     // Setting
     mode: ModeType;
     timeBetweenRound: number;
+    playlistStart: Playlist;
 }
 
 export interface Player {

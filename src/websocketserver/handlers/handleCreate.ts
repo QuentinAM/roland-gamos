@@ -36,17 +36,12 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
             name: 'RAP FR'            
         },
         isGameOver: false,
-        spectators: []
+        spectators: [],
+        winsArray: {},
+        gameNumber: 1
     });
 
     console.log(`${body.userId} created room ${roomId}`);
-
-    const response: UpdateResponse = {
-        type: 'UPDATE',
-        body: {
-            room: rooms.get(roomId) as Room,
-        }
-    };
 
     // Send response
     const room = rooms.get(roomId);

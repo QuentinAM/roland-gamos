@@ -70,6 +70,7 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     room.currentGuess = '';
     room.enteredArtists = [await start(room.playlistStart.url)];
     room.isGameOver = false;
+    room.gameNumber = room.gameNumber + 1;
     
     if (room.mode === undefined){
         room.mode = 'NORMAL';
@@ -89,13 +90,11 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
         room.eliminatedPlayers.push(hostPlayer);
     }
 
-    console.log(room);
-
     // Send update to all players in the room
     sendRoomUpdate(body.roomId, room);
     // Set the next turn
     room.interval = setTimeout(() => {
         console.log('Out of time');
-        nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
+        nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex, room.gameNumber);
     }, room.timeBetweenRound * 1000 + 3_000);
 }

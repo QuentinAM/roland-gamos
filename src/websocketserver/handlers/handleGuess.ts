@@ -70,7 +70,7 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
     }
 
     // Stop the current timer
-    clearInterval(room.interval);
+    clearTimeout(room.interval);
 
     // Check if artist have already been said
     let already_said_artist = room.enteredArtists.find(artist => artist.name.toLowerCase().replace(' ', '') === body.guess.toLowerCase().replace(' ', '')) !== undefined;
@@ -104,11 +104,11 @@ export async function handleGuess(ws: WebSocket, data: GuessMessage) {
     }
 
     setTimeout(() => {
-        nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
+        nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex, room.gameNumber);
         room.interval = setTimeout(() => {
             if (room.isGameOver) return;
             console.log('Out of time');
-            nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex);
+            nextTurn(body.roomId, room.currentTurn, room.currentPlayerIndex, room.gameNumber);
         }, room.timeBetweenRound * 1000);
     }, 3_000);
 }

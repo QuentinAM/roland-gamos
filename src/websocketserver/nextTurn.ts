@@ -1,7 +1,8 @@
 import { sendRoomUpdate } from './sendRoomUpdate';
 import { rooms } from './index';
+import { Room } from './wstypes';
 
-export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex: number) {
+export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex: number, gameNumber: number) {
     const room = rooms.get(roomId);
     if (!room) {
         return;
@@ -14,7 +15,7 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
     }
 
     // Check if turn is already over
-    if (room.currentTurn != currentTurn || room.isGameOver) // TODO: fix this : it work but some calls are made while game is finished
+    if (room.currentTurn != currentTurn || room.gameNumber != gameNumber || room.isGameOver) // TODO: fix this : it work but some calls are made while game is finished
         return;
 
     console.log(`Turn ${currentTurn} starting in room ${roomId}.`);
@@ -53,6 +54,9 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
         // Set turn for the winner
         room.players[0].turn = currentTurn;
 
+        // Set winner in winsArray
+        room.winsArray[room.players[0].userId] = room.winsArray[room.players[0].userId] ? room.winsArray[room.players[0].userId] + 1 : 1;
+
         // Reset players
         room.eliminatedPlayers.forEach(p => {
             room.players.push(p);
@@ -72,7 +76,7 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
 
         // Eliminated players will be reset only if restart to correctly display leaderboard on front
 
-        clearInterval(room.interval);
+        clearTimeout(room.interval);
         sendRoomUpdate(roomId, room);
     }
 }

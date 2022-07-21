@@ -2,7 +2,6 @@ import type { Artist } from '../wstypes';
 import { getToken, getArtistPicture } from './utils';
 
 export async function start(playlistStart: string | undefined, token?: string): Promise<Artist> {
-    console.log(playlistStart);
     // Get playlist id by splitig playlistStart with '/'
     const playlist_split = playlistStart?.split('/');
 
