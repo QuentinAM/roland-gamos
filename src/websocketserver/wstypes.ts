@@ -1,6 +1,10 @@
 import { WebSocket } from 'ws';
 
 export type ModeType = 'NORMAL' | 'TV';
+export interface Playlist {
+    url: string;
+    name: string;
+} 
 
 export interface Room {
     id: string;
@@ -9,7 +13,7 @@ export interface Room {
     players: Player[];
     spectators?: Player[];
     eliminatedPlayers: Player[];
-    playlistStart: string;
+    playlistStart: Playlist;
     currentPlayerIndex: number;
     currentTurn: number;
     currentTurnStartTime: number;
@@ -121,7 +125,7 @@ export interface SettingMessage extends Message {
         roomId: string;
         mode: ModeType;
         timeBetweenRound: number;
-        playlistStart: string;
+        playlistStart: Playlist;
     };
 }
 

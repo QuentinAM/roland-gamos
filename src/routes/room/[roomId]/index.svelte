@@ -5,6 +5,7 @@
 	import { page } from '$app/stores';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import { room, player } from '$lib/game/data';
+	import type { Playlist } from '../../../websocketserver/wstypes';
 	import type {
 		LeaveMessage,
 		ModeType,
@@ -18,7 +19,7 @@
 	let sendMessage: SendMessage;
 	let roomId: string = $page.params.roomId;
 	let url: string;
-	let chosenCategory: any;
+	let chosenCategory: Playlist;
 	let timeBetweenRound: number = 30;
 	let modeTv: boolean = false;
 
@@ -47,9 +48,13 @@
 		sendMessage(message);
 	}
 
-	async function updateSettings() {
+	async function updateSettings(newCategory?: Playlist) {
 		if (!isHost) {
 			return;
+		}
+
+		if (newCategory){
+			chosenCategory = newCategory;
 		}
 
 		// Send settings to server
@@ -60,7 +65,7 @@
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number,
 				mode: modeTv ? 'TV' : ('NORMAL' as ModeType),
-				playlistStart: chosenCategory.url as string
+				playlistStart: chosenCategory as Playlist
 			}
 		};
 		sendMessage(message);
@@ -93,8 +98,6 @@
 		if ($player && $room?.id === roomId) {
 			// Already joined room => checking for the start of the game
 			const unsubscribeRoom = room.subscribe((r) => {
-				console.log(r);
-
 				if (r?.currentTurn != 0) {
 					// Game has started, redirect to game page
 					unsubscribeRoom();
@@ -157,10 +160,9 @@
 				</div>
 				<p class="text-sm">Seul l'host de la room peut changer les paramètres.</p>
 				<PlaylistInput
-					bind:chosenCategory
 					nonHostValue={$room.playlistStart}
-					onChange={() => {
-						updateSettings();
+					onChange={(newCategory) => {
+						updateSettings(newCategory);
 					}}
 					{isHost}
 				/>

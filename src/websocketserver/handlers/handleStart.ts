@@ -61,7 +61,7 @@ export async function handleStart(ws: WebSocket, data: StartMessage) {
     room.currentTurnStartTime = Date.now() + 3_000;
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
-    room.enteredArtists = [await start(room.playlistStart)];
+    room.enteredArtists = [await start(room.playlistStart.url)];
 
     // If is tv mode, eliminate the host
     if (room.mode === 'TV') {

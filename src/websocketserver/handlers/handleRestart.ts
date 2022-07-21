@@ -68,7 +68,7 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     room.currentPlayerHasGuessed = false;
     room.currentPlayerHasAttemptedGuess = false;
     room.currentGuess = '';
-    room.enteredArtists = [await start(room.playlistStart)];
+    room.enteredArtists = [await start(room.playlistStart.url)];
     room.isGameOver = false;
     
     if (room.mode === undefined){
@@ -76,7 +76,10 @@ export async function handleRestart(ws: WebSocket, data: RestartMessage) {
     }
 
     if (room.playlistStart === undefined){
-        room.playlistStart = 'https://open.spotify.com/playlist/4l1CEhc7ZPbaEtiPdCSGbl';
+        room.playlistStart = {
+            url: "https://open.spotify.com/playlist/4l1CEhc7ZPbaEtiPdCSGbl",
+            name: 'RAP FR',
+        };
     }
 
     // If is tv mode, eliminate the host

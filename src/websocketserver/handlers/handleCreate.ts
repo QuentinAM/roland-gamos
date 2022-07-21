@@ -31,7 +31,10 @@ export function handleCreate(ws: WebSocket, data: CreateMessage) {
         tracks: [],
         mode: 'NORMAL',
         timeBetweenRound: 30,
-        playlistStart: 'https://open.spotify.com/playlist/3vZYzaSfr9HvjaIivjHyAC',
+        playlistStart: {
+            url: "https://open.spotify.com/playlist/3vZYzaSfr9HvjaIivjHyAC",
+            name: 'RAP FR'            
+        },
         isGameOver: false,
         spectators: []
     });

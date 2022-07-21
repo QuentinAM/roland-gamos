@@ -9,14 +9,14 @@
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import AutoCompleteInput from '$lib/components/inputs/AutoComplete/AutoCompleteInput.svelte';
 	import { CutTrackName } from '$lib/game/util';
-	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage, LeaveMessage } from 'src/websocketserver/wstypes';
+	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage, LeaveMessage, Playlist } from 'src/websocketserver/wstypes';
 	import type { SendMessage } from '$lib/websocket';
 	import Timer from '$lib/components/ui/Timer.svelte';
 
 	let sendMessage: SendMessage;
 	$: turnDuration = $room?.timeBetweenRound ? $room?.timeBetweenRound * 1000 : 30_000;
 	let currentTime = Date.now();
-	let chosenCategory: any;
+	let chosenCategory: Playlist;
 	let autoplay: boolean;
 	let timeBetweenRound = 30;
 
@@ -105,7 +105,14 @@
 		sendMessage(message);
 	}
 
-	async function updateSettings() {
+	async function updateSettings(newCategory?: Playlist) {
+		if (!isHost) {
+			return;
+		}
+
+		if (newCategory){
+			chosenCategory = newCategory;
+		}
 		// Send settings to server
 		let message: SettingMessage = {
 			type: 'SETTING',
@@ -114,7 +121,7 @@
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number,
 				mode: modeTv ? 'TV' : 'NORMAL' as ModeType,
-				playlistStart: chosenCategory.url as string
+				playlistStart: chosenCategory as Playlist
 			}
 		};
 		sendMessage(message);
@@ -253,10 +260,9 @@
 						<div class="flex flex-row justify-center space-x-3">
 							<div class="form-control w-full max-w-xs">
 								<PlaylistInput
-									bind:chosenCategory
 									nonHostValue={$room?.playlistStart} 
-									onChange={() => {
-										updateSettings()
+									onChange={(newCategory) => {
+										updateSettings(newCategory);
 									}} {isHost}
 								/>
 								<div class="form-control w-full max-w-xs">
