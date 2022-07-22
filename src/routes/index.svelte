@@ -1,6 +1,7 @@
 <script lang="ts">
 	import UsernameInput from '$lib/components/inputs/UsernameInput.svelte';
 	import Footer from '$lib/components/Footer/index.svelte';
+	import Translation from '$lib/components/Translation/index.svelte';
 	import type { CreateMessage } from 'src/websocketserver/wstypes';
 	import { goto } from '$app/navigation';
 	import { player, room } from '$lib/game/data';
@@ -102,7 +103,7 @@
 						<UsernameInput bind:username bind:usernameError onSubmit={toggleSteps} />
 					</div>
 					<div class="form-control">
-						<button class="btn btn-primary" on:click={toggleSteps}>Continuer</button>
+						<button class="btn btn-primary" on:click={toggleSteps}><Translation id="continue"/></button>
 					</div>
 				</div>
 			{:else}
@@ -124,14 +125,14 @@
 						/>
 					</div>
 					<div class="form-control">
-						<button class="btn btn-primary" on:click={joinRoom}>Rejoindre une room</button>
+						<button class="btn btn-primary" on:click={joinRoom}><Translation id="join_room"/></button>
 					</div>
 					<div class="divider">
-						<span class="divider-text">Ou</span>
+						<span class="divider-text"><Translation id="ou"/></span>
 					</div>
 					<div class="form-control">
 						<div class="form-control">
-							<button class="btn btn-primary" on:click={createRoom}>Créer une room</button>
+							<button class="btn btn-primary" on:click={createRoom}><Translation id="create_room"/></button>
 						</div>
 					</div>
 				</div>
