@@ -43,6 +43,7 @@ export async function guess(guess: string): Promise<Track | undefined> {
 
 async function CheckTrack(track: any, first_artist: string, second_artist: string, token: string)
 {
+    if (!track) return;
     const feat = IsValid(first_artist, second_artist, track.artists);
     if (track && feat[0] && feat[1]) {
         const second_artist_obj: any = feat[1];

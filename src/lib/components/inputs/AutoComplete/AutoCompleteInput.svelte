@@ -56,6 +56,7 @@ import { onMount } from 'svelte';
     }
         
     const setInputVal = (artist: any) => {
+        if (!artist) return;
         guess = removeBold(artist.name);
         onInput();
         filtered = [];

@@ -13,27 +13,12 @@ import { Message, LeaveMessage, StartMessage, GuessMessage, GuessingMessage, Roo
 import 'dotenv/config'
 import 'isomorphic-fetch';
 
-export const prod = process.execArgv[0] != '-r';
+// export const prod = process.execArgv[0] == '-r';
 export const rooms = new Map<string, Room>();
 
 export let wss: WebSocketServer;
-if (prod) {
-    console.log('Starting production server');
-
-    const certDir = `/etc/letsencrypt/live`;
-    const domain = `box.begue.cc`;
-    const server = createServer({
-        key: readFileSync(`${certDir}/${domain}/privkey.pem`),
-        cert: readFileSync(`${certDir}/${domain}/fullchain.pem`)
-    });
-    wss = new WebSocketServer({ server });
-    server.listen(8080);
-}
-else {
-    console.log('Starting developement server');
-
-    wss = new WebSocketServer({ port: 8080 });
-}
+console.log('Starting server');
+wss = new WebSocketServer({ port: 8080 });
 
 import { guess } from './music/guess';
 import { handleSetting } from './handlers/handleSetting';

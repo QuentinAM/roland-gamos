@@ -35,6 +35,7 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
         room.players[currentPlayerIndex].turn = currentTurn;
         room.eliminatedPlayers.push(room.players.splice(currentPlayerIndex, 1)[0]);
     }
+    clearTimeout(room.interval);
 
     if (room.players.length > 1) {
         // Go to the next turn
@@ -76,7 +77,6 @@ export function nextTurn(roomId: string, currentTurn: number, currentPlayerIndex
 
         // Eliminated players will be reset only if restart to correctly display leaderboard on front
 
-        clearTimeout(room.interval);
         sendRoomUpdate(roomId, room);
     }
 }

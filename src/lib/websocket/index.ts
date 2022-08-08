@@ -1,8 +1,8 @@
-import { dev } from "$app/env";
+// import { dev } from "$app/env";
 import type { ErrorResponse, Message, Room, UpdateResponse } from "../../websocketserver/wstypes";
 import { room, autoComplete } from "../game/data"
 
-const url = dev ? "ws://localhost:8080" : "wss://box.begue.cc:8080";
+const url = "ws://localhost:8080"; // dev ? "ws://localhost:8080" : "wss://box.begue.cc:8080";
 export let ws = new WebSocket(url);
 
 let onopen = () => {
@@ -45,8 +45,6 @@ function handleAutoComplete(artists: any[3]){
 }
 
 function handleUpdate(updatedRoom: Room) {
-    console.log(`Room ${updatedRoom.id} updated`);
-
     room.set(updatedRoom);
 }
 

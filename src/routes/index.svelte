@@ -128,7 +128,7 @@
 						<button class="btn btn-primary" on:click={joinRoom}><Translation id="join_room"/></button>
 					</div>
 					<div class="divider">
-						<span class="divider-text"><Translation id="ou"/></span>
+						<span class="divider-text"><Translation id="or"/></span>
 					</div>
 					<div class="form-control">
 						<div class="form-control">

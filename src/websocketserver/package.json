@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "nodemon --config nodemon.json index.ts",
-    "dev:debug": "nodemon --config nodemon.json --inspect-brk index.ts"
+    "dev:debug": "nodemon --config nodemon.json --inspect-brk index.ts",
+    "build:server": "npm start --prefix src/websocketserver",
+    "start:server": "node src/websocketserver/dist/index.js"
   },
   "author": "",
   "license": "ISC",

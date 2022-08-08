@@ -13,7 +13,7 @@
     let word: string;
 
     function changeWord() {
-        word = dataset[$language][id];
+        word = dataset[$language] ? dataset[$language][id] : "";
     }
 
     onMount(() => {
