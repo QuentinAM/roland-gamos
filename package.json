@@ -1,12 +1,11 @@
 {
-	"name": "rolland-gamos",
+	"name": "roland-gamos",
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "svelte-kit dev",
-		"build": "svelte-kit build",
+		"build": "vite build",
 		"package": "svelte-kit package",
 		"preview": "svelte-kit preview",
-		"prepare": "svelte-kit sync",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. .",
@@ -14,26 +13,27 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/adapter-netlify": "^1.0.0-next.66",
+		"@sveltejs/adapter-netlify": "^1.0.0-next.71",
 		"@sveltejs/adapter-node": "^1.0.0-next.86",
-		"@sveltejs/kit": "^1.0.0-next.355",
-		"autoprefixer": "^10.4.7",
-		"postcss": "^8.4.14",
-		"prettier": "^2.6.2",
+		"@sveltejs/kit": "^1.0.0-next.405",
+		"autoprefixer": "^10.4.8",
+		"postcss": "^8.4.16",
+		"prettier": "^2.7.1",
 		"prettier-plugin-svelte": "^2.7.0",
-		"svelte": "^3.44.0",
-		"svelte-check": "^2.7.1",
+		"svelte": "^3.49.0",
+		"svelte-check": "^2.8.0",
 		"svelte-preprocess": "^4.10.7",
-		"tailwindcss": "^3.1.4",
-		"tslib": "^2.3.1",
-		"typescript": "^4.7.2"
+		"tailwindcss": "^3.1.8",
+		"tslib": "^2.4.0",
+		"typescript": "^4.7.4"
 	},
 	"type": "module",
 	"dependencies": {
-		"daisyui": "^2.17.0",
+		"daisyui": "^2.22.0",
 		"dotenv": "^16.0.1",
 		"isomorphic-fetch": "^3.0.0",
 		"svelte-kit": "^1.0.0",
+		"vite": "^3.0.5",
 		"ws": "^8.8.1"
 	}
 }
