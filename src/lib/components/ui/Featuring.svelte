@@ -14,8 +14,8 @@
 	const fadeAudio = () => {
 		const fadeAudioInterval = setInterval(() => {
 			const fadePoint = audio.duration - 5;
-			if ((audio.currentTime >= fadePoint) && (audio.volume !== 0)) {
-				audio.volume -= 0.1
+			if (audio.currentTime >= fadePoint && audio.volume !== 0) {
+				audio.volume -= 0.1;
 			}
 
 			if (audio.volume < 0.003) {
@@ -23,12 +23,11 @@
 			}
 		}, 200);
 	};
-
 </script>
 
 <div class="card card-compact w-full lg:w-96 bg-base-100 shadow-xl">
 	<figure>
-		<img src={imgUrl} class="lg:w-[640px] lg:h-[400px] w-[240px] h-[240px]" alt="e"/>
+		<img src={imgUrl} class="lg:w-[640px] lg:h-[400px] w-[240px] h-[240px]" alt="e" />
 	</figure>
 	{#if number}
 		<div
@@ -43,15 +42,16 @@
 		<p>{releaseDate}</p>
 	</div>
 	{#if audioUrl}
-		<audio 
-			class="w-full" 
-			src={audioUrl} 
-			controls 
-			{autoplay} 
+		<audio
+			class="w-full"
+			src={audioUrl}
+			controls
+			{autoplay}
 			bind:this={audio}
 			on:play={() => {
 				fadeAudio();
-			}}>
+			}}
+		>
 			<track kind="captions" />
 		</audio>
 	{/if}

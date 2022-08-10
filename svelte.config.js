@@ -7,14 +7,17 @@ const config = {
 	// for more information about preprocessors
 	preprocess: [
 		preprocess({
-			postcss: true,
-		}),
+			postcss: true
+		})
 	],
 	kit: {
 		adapter: adapter({
 			// default options are shown
 			out: 'build'
 		})
+	},
+	server: {
+		port: 8080
 	}
 };
 

@@ -53,7 +53,7 @@
 			return;
 		}
 
-		if (newCategory){
+		if (newCategory) {
 			chosenCategory = newCategory;
 		}
 
@@ -115,7 +115,6 @@
 <svelte:window on:beforeunload={handleLeave} />
 <div class="hero min-h-screen">
 	<div class="hero-content text-center flex flex-col">
-
 		{#if startGamePressed}
 			<div>
 				<h1 class="text-4xl font-bold">Chargement</h1>
@@ -125,7 +124,6 @@
 				/>
 			</div>
 		{:else}
-
 			<div>
 				<h1 class="text-4xl font-bold">
 					Room:
@@ -149,7 +147,7 @@
 								>
 									{#if i === $room.hostPlayerIndex}
 										<span class="mr-1">
-											<i class="fa-solid fa-crown text-primary"/>
+											<i class="fa-solid fa-crown text-primary" />
 										</span>
 									{/if}
 									{pl.username}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import type { Playlist } from '../../../websocketserver/wstypes';
-	
+
 	let chosenCategory: Playlist;
 	export let isHost: boolean | null;
 	export let nonHostValue: Playlist | undefined;
@@ -45,19 +45,19 @@
 		{#if isHost}
 			<select class="select select-primary select-bordered w-full" bind:value={chosenCategory}>
 				{#each categories as category, i}
-					<option 
-						value={category}
-					>
+					<option value={category}>
 						{category.name}
 					</option>
 				{/each}
 			</select>
 		{:else}
-			<select disabled={true} class="select select-primary select-bordered w-full" value={nonHostValue?.name}>
+			<select
+				disabled={true}
+				class="select select-primary select-bordered w-full"
+				value={nonHostValue?.name}
+			>
 				{#each categories as category, i}
-					<option 
-						value={category.name}
-					>	
+					<option value={category.name}>
 						{category.name}
 					</option>
 				{/each}
@@ -84,7 +84,7 @@
 				/>
 			</div>
 		</div>
-	{/if}	
+	{/if}
 
 	{#if chosenCategory && isHost}
 		{#if chosenCategory.name === 'Autre'}

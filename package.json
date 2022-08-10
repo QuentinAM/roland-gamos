@@ -10,15 +10,13 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. .",
-		"format": "prettier --write --plugin-search-dir=. .",
-		"build:server": "",
-		"start:server": "node src/websocketserver/dist/index.js"
+		"format": "prettier --write --plugin-search-dir=. ."
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/adapter-node": "next",
 		"@sveltejs/adapter-netlify": "^1.0.0-next.66",
-		"@sveltejs/kit": "next",
+		"@sveltejs/adapter-node": "^1.0.0-next.86",
+		"@sveltejs/kit": "^1.0.0-next.355",
 		"autoprefixer": "^10.4.7",
 		"postcss": "^8.4.14",
 		"prettier": "^2.6.2",
@@ -34,6 +32,8 @@
 	"dependencies": {
 		"daisyui": "^2.17.0",
 		"dotenv": "^16.0.1",
-		"isomorphic-fetch": "^3.0.0"
+		"isomorphic-fetch": "^3.0.0",
+		"svelte-kit": "^1.0.0",
+		"ws": "^8.8.1"
 	}
 }

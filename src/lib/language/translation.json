@@ -1,16 +1,16 @@
 {
-    "FR": {
-        "created_by": "Créé par",
-        "continue": "Continuer",
-        "create_room": "Créer une room",
-        "join_room": "Rejoindre une room",
-        "or": "Ou"
-    },
-    "EN": {
-        "created_by": "Created by",
-        "continue": "Continue",
-        "create_room": "Create a room",
-        "join_room": "Join a room",
-        "or": "Or"
-    }
+	"FR": {
+		"created_by": "Créé par",
+		"continue": "Continuer",
+		"create_room": "Créer une room",
+		"join_room": "Rejoindre une room",
+		"or": "Ou"
+	},
+	"EN": {
+		"created_by": "Created by",
+		"continue": "Continue",
+		"create_room": "Create a room",
+		"join_room": "Join a room",
+		"or": "Or"
+	}
 }

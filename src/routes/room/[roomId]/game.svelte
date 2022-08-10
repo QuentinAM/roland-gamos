@@ -9,7 +9,15 @@
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import AutoCompleteInput from '$lib/components/inputs/AutoComplete/AutoCompleteInput.svelte';
 	import { CutTrackName } from '$lib/game/util';
-	import type { GuessingMessage, GuessMessage, ModeType, RestartMessage, SettingMessage, LeaveMessage, Playlist } from 'src/websocketserver/wstypes';
+	import type {
+		GuessingMessage,
+		GuessMessage,
+		ModeType,
+		RestartMessage,
+		SettingMessage,
+		LeaveMessage,
+		Playlist
+	} from 'src/websocketserver/wstypes';
 	import type { SendMessage } from '$lib/websocket';
 	import Timer from '$lib/components/ui/Timer.svelte';
 
@@ -43,12 +51,9 @@
 	$: isGameOver = $room?.isGameOver;
 
 	$: tracks = $room?.tracks;
-	$: isHost =
-		$room &&
-		$player &&
-		$room?.hostPlayerId === $player?.userId;
+	$: isHost = $room && $player && $room?.hostPlayerId === $player?.userId;
 
-	$: isSpectator = $room?.spectators?.find(pl => pl.userId === $player?.userId);
+	$: isSpectator = $room?.spectators?.find((pl) => pl.userId === $player?.userId);
 
 	$: modeTv = $room?.mode === 'TV';
 
@@ -110,7 +115,7 @@
 			return;
 		}
 
-		if (newCategory){
+		if (newCategory) {
 			chosenCategory = newCategory;
 		}
 		// Send settings to server
@@ -120,14 +125,14 @@
 				roomId: $room?.id as string,
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number,
-				mode: modeTv ? 'TV' : 'NORMAL' as ModeType,
+				mode: modeTv ? 'TV' : ('NORMAL' as ModeType),
 				playlistStart: chosenCategory as Playlist
 			}
 		};
 		sendMessage(message);
 	}
 
-	function capitalizeFirstLetter(str: string | undefined){
+	function capitalizeFirstLetter(str: string | undefined) {
 		return str === undefined ? '' : str.charAt(0).toUpperCase() + str.slice(1);
 	}
 
@@ -149,15 +154,17 @@
 	});
 </script>
 
-<svelte:window on:beforeunload={handleLeave}/>
+<svelte:window on:beforeunload={handleLeave} />
 {#if currentPlayerHasAttemptedGuess && !isGameOver}
 	<Timer />
 {/if}
 {#if isGameOver}
 	<div class="hero min-h-screen" transition:fade>
-		<div class="hero-content p-2 lg:p-4 gap-0 lg:gap-1 flex flex-row justify-start items-start h-full w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-max">
+		<div
+			class="hero-content p-2 lg:p-4 gap-0 lg:gap-1 flex flex-row justify-start items-start h-full w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-max"
+		>
 			<div class="flex flex-col w-full justify-start">
-				<h1 class="font-bold">Partie terminée {$room?.gameNumber} </h1>
+				<h1 class="font-bold">Partie terminée {$room?.gameNumber}</h1>
 				<div class="overflow-auto h-64">
 					<table class="table w-full max-h-[50%]">
 						<!-- head -->
@@ -195,7 +202,9 @@
 				<div class="flex lg:flex-row flex-col lg:space-x-4 space-y-4">
 					<div>
 						<h1 class="font-bold">Titres joués</h1>
-						<div class="h-[25rem] lg:h-[35rem] shadow-lg shadow-zinc-600 carousel carousel-vertical rounded-box">
+						<div
+							class="h-[25rem] lg:h-[35rem] shadow-lg shadow-zinc-600 carousel carousel-vertical rounded-box"
+						>
 							{#if tracks}
 								{#each tracks as track, i}
 									<div class="carousel-item h-full">
@@ -265,43 +274,50 @@
 						<div class="flex flex-row justify-center space-x-3">
 							<div class="form-control w-full max-w-xs">
 								<PlaylistInput
-									nonHostValue={$room?.playlistStart} 
+									nonHostValue={$room?.playlistStart}
 									onChange={(newCategory) => {
 										updateSettings(newCategory);
-									}} {isHost}
+									}}
+									{isHost}
 								/>
 								<div class="form-control w-full max-w-xs">
 									<label class="label">
 										<span class="label-text">Temps de réponse ({$room?.timeBetweenRound}s)</span>
-										<input class="hidden"/>
+										<input class="hidden" />
 									</label>
-									<div class="tooltip tooltip-primary tooltip-right" data-tip="Délais avant lequel il faut donner votre réponse.">
-										<input 
+									<div
+										class="tooltip tooltip-primary tooltip-right"
+										data-tip="Délais avant lequel il faut donner votre réponse."
+									>
+										<input
 											type="range"
 											disabled={!isHost}
-											value={isHost ? timeBetweenRound : $room?.timeBetweenRound} 
-											min=1 
-											max=60
-											step=1
+											value={isHost ? timeBetweenRound : $room?.timeBetweenRound}
+											min="1"
+											max="60"
+											step="1"
 											class="range"
-											class:range-primary={isHost} 
+											class:range-primary={isHost}
 											on:input={(e) => {
 												timeBetweenRound = e.target?.value;
 												updateSettings();
 											}}
 										/>
 									</div>
-									<div class="tooltip tooltip-primary tooltip-right" data-tip="La partie est uniquement retransmise sur l'écran de l'host.">
+									<div
+										class="tooltip tooltip-primary tooltip-right"
+										data-tip="La partie est uniquement retransmise sur l'écran de l'host."
+									>
 										<label class="label">
-											<span class="label-text">Mode TV</span> 
-											<input 
+											<span class="label-text">Mode TV</span>
+											<input
 												disabled={!isHost}
 												type="checkbox"
 												checked={modeTv}
 												on:change={(e) => {
 													modeTv = e.target?.checked;
 													updateSettings();
-												}} 
+												}}
 												class="checkbox checkbox-primary"
 											/>
 										</label>
@@ -319,8 +335,8 @@
 									</button>
 									{#if $room?.hostPlayerId}
 										{#if $room?.hostPlayerId === $player?.userId}
-											<button 
-												class="btn btn-primary m-1 w-1/3" 
+											<button
+												class="btn btn-primary m-1 w-1/3"
 												on:click={restart}
 												disabled={$room?.players.length === 1}
 											>
@@ -339,7 +355,9 @@
 									Room:
 									<span class="text-secondary">
 										{$room.id}
-										<ClipBoard value={window.location.href.substring(0, window.location.href.length - 5)} />
+										<ClipBoard
+											value={window.location.href.substring(0, window.location.href.length - 5)}
+										/>
 									</span>
 								</h1>
 								<p>Envoie le lien à tes freros pour qu'ils puissent rejoindre!</p>
@@ -381,14 +399,14 @@
 				<div class="flex flex-col w-full justify-start">
 					<div class="stats shadow" transition:slide>
 						<div class="stat bg-primary md:p-4 p-2">
-							<div class="stat-figure text-primary-content"/>
+							<div class="stat-figure text-primary-content" />
 							<div class="stat-title text-sm lg:text-xl text-primary-content">Tour</div>
 							<div class="stat-value text-sm lg:text-xl text-primary-content inline-flex">
 								<span class="mr-4">
 									<i class="fa-solid fa-arrows-rotate" />
 								</span>
 								<span class="countdown">
-									<span style={`--value:${currentTurn};`}></span>
+									<span style={`--value:${currentTurn};`} />
 								</span>
 							</div>
 						</div>
@@ -406,7 +424,7 @@
 						<div class="stat bg-accent md:p-4 p-1">
 							<div class="stat-title text-sm lg:text-xl text-accent-content">Artiste</div>
 							<div class="stat-value text-sm lg:text-xl text-accent-content inline-flex">
-								<span class="mr-4"> 
+								<span class="mr-4">
 									<i class="fa-solid fa-music" />
 								</span>
 								{currentArtist?.name ?? 'Aucun'}
@@ -415,7 +433,9 @@
 					</div>
 
 					{#if players}
-						<div class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 grid-flow-row gap-8 mt-16 w-full">
+						<div
+							class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 grid-flow-row gap-8 mt-16 w-full"
+						>
 							{#each players as p, i}
 								<div class="flex flex-col justify-center items-center" transition:scale>
 									<p class="font-semibold">{p.username}</p>
@@ -467,18 +487,20 @@
 						/>
 						<div class="form-control">
 							<label class="label">
-							<span class="label-text">Autoplay</span> 
-							<input 
-								type="checkbox" 
-								class="toggle toggle-primary"
-								bind:checked={autoplay} 
-								on:change={() => localStorage.setItem('autoplay', autoplay ? 'true' : 'false')}
-							/>
+								<span class="label-text">Autoplay</span>
+								<input
+									type="checkbox"
+									class="toggle toggle-primary"
+									bind:checked={autoplay}
+									on:change={() => localStorage.setItem('autoplay', autoplay ? 'true' : 'false')}
+								/>
 							</label>
 						</div>
 						{#if isSpectator && !isGameOver}
 							<div>
-								<h1 class="font-bold text-primary text-2xl">Spectateur: en attente dans la fin de la partie</h1>
+								<h1 class="font-bold text-primary text-2xl">
+									Spectateur: en attente dans la fin de la partie
+								</h1>
 							</div>
 						{/if}
 					</div>
@@ -511,7 +533,7 @@
 								onValidate={() => {
 									submitGuess();
 								}}
-								onInput={() =>{
+								onInput={() => {
 									guessing();
 								}}
 								{currentPlayerHasAttemptedGuess}

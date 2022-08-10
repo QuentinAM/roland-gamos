@@ -15,8 +15,7 @@
 	let usernameError = false;
 
 	async function joinRoom() {
-
-		if (!username){
+		if (!username) {
 			usernameError = true;
 			return;
 		}
@@ -108,7 +107,11 @@
 				</h1>
 				<p class="pt-6">Ça arrive fort.</p>
 			</div>
-			<button class="btn btn-primary absolute bottom-1 w-1/2" on:click={() => goto('/')} transition:scale>
+			<button
+				class="btn btn-primary absolute bottom-1 w-1/2"
+				on:click={() => goto('/')}
+				transition:scale
+			>
 				Quitter
 			</button>
 		{/if}

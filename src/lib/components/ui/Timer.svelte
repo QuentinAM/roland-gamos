@@ -17,7 +17,10 @@
 	});
 </script>
 
-<div class="absolute z-50 w-full h-full flex items-center justify-center pointer-events-none" transition:scale>
+<div
+	class="absolute z-50 w-full h-full flex items-center justify-center pointer-events-none"
+	transition:scale
+>
 	<p>
 		<span
 			class="text-8xl font-bold"

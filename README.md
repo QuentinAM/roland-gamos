@@ -10,12 +10,12 @@
     Jusqu'à preuve du contraire.
 </p>
 
-
 # Sommaire
+
 - [🗒️ Règles](#%EF%B8%8F-règles)
 - [🖼️ Screens](#%EF%B8%8F-screens)
-    - [🎵 En Jeu](#-en-jeu)
-    - [🎧 Fin de partie](#-fin-de-partie)
+  - [🎵 En Jeu](#-en-jeu)
+  - [🎧 Fin de partie](#-fin-de-partie)
 - [⚖️ Droits](#%EF%B8%8F-droits)
 
 ---
@@ -42,15 +42,16 @@
 
 # 🖼️ Screens
 
-## 🎵 En jeu 
+## 🎵 En jeu
 
 <img src="./static/img/in_game.png" style="border-radius:5px;">
 
-## 🎧 Fin de partie 
+## 🎧 Fin de partie
 
 <img src="./static/img/game_over.png" style="border-radius:5px;">
 
 ---
+
 # ⚖️ Droits
 
 - Inspiré du rolang gamos créé par rap jeu.

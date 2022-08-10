@@ -55,8 +55,7 @@
 	}
 
 	function joinRoom() {
-
-		if (roomIdError || !roomId){
+		if (roomIdError || !roomId) {
 			roomIdError = true;
 			return;
 		}
@@ -87,11 +86,11 @@
 				<p class="text-base">🎵 Le but du jeu ? Un ping-pong featuring musical.</p>
 				<p class="text-sm">
 					🎙️ Un artiste de départ est pris dans la playlist de ton choix.
-					<br/>
+					<br />
 					🎧 Chacun votre tour vous devrez donner un feat avec l'artiste précédent.
-					<br/>
+					<br />
 					⚠️ Un artiste ne peut être cité qu'une fois !
-					<br/>
+					<br />
 					🥇 Que le meilleur gagne !
 				</p>
 			</div>
@@ -103,7 +102,9 @@
 						<UsernameInput bind:username bind:usernameError onSubmit={toggleSteps} />
 					</div>
 					<div class="form-control">
-						<button class="btn btn-primary" on:click={toggleSteps}><Translation id="continue"/></button>
+						<button class="btn btn-primary" on:click={toggleSteps}
+							><Translation id="continue" /></button
+						>
 					</div>
 				</div>
 			{:else}
@@ -118,21 +119,25 @@
 							id="roomId"
 							type="text"
 							bind:value={roomId}
-							on:change={() => roomIdError = roomId.length !== 6}
+							on:change={() => (roomIdError = roomId.length !== 6)}
 							placeholder="Code de la room"
 							class:input-error={roomIdError}
 							class="input input-bordered input-primary w-full max-w-xs"
 						/>
 					</div>
 					<div class="form-control">
-						<button class="btn btn-primary" on:click={joinRoom}><Translation id="join_room"/></button>
+						<button class="btn btn-primary" on:click={joinRoom}
+							><Translation id="join_room" /></button
+						>
 					</div>
 					<div class="divider">
-						<span class="divider-text"><Translation id="or"/></span>
+						<span class="divider-text"><Translation id="or" /></span>
 					</div>
 					<div class="form-control">
 						<div class="form-control">
-							<button class="btn btn-primary" on:click={createRoom}><Translation id="create_room"/></button>
+							<button class="btn btn-primary" on:click={createRoom}
+								><Translation id="create_room" /></button
+							>
 						</div>
 					</div>
 				</div>
@@ -140,4 +145,4 @@
 		</div>
 	</div>
 </div>
-<Footer/>
+<Footer />

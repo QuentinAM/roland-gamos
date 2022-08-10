@@ -3,7 +3,9 @@
 	import Selector from '$lib/components/Translation/Selector.svelte';
 </script>
 
-<footer class="footer gap-1 lg:gap-2 absolute bottom-0 items-center p-4 bg-transparent text-neutral-content ">
+<footer
+	class="footer gap-1 lg:gap-2 absolute bottom-0 items-center p-4 bg-transparent text-neutral-content "
+>
 	<div class="items-center grid-flow-col ">
 		<a href="https://developer.spotify.com/terms/" target="_blank" class="hover:underline"
 			>Spotify Developer Terms</a
@@ -16,13 +18,13 @@
 		>
 	</div>
 	<div class="grid-flow-col gap-2 md:place-self-center md:justify-self-end">
-		<Selector/>
+		<Selector />
 		<div class="divider divider-horizontal mx-1" />
 		<a href="https://github.com/QuentinAM/roland-gamos" target="_blank" class="hover:underline">
 			GitHub
 		</a>
 		<div class="divider divider-horizontal mx-1" />
-		<Translation id="created_by"/>
+		<Translation id="created_by" />
 		<a href="https://github.com/augustinbegue" target="_blank" class="hover:underline">
 			Augustin B
 		</a>
