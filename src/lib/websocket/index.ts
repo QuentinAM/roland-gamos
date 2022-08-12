@@ -2,7 +2,7 @@
 import type { ErrorResponse, Message, Room, UpdateResponse } from '../../websocketserver/wstypes';
 import { room, autoComplete } from '../game/data';
 
-const url = 'wss://rolandgamoswss.quentinam.fr'; // dev ? "ws://localhost:8080" : "wss://box.begue.cc:8080";
+const url = "ws://localhost:8080"; // 'wss://rolandgamoswss.quentinam.fr';
 export let ws = new WebSocket(url);
 
 let onopen = () => {

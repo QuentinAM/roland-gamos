@@ -68,7 +68,8 @@
 				playlistStart: chosenCategory as Playlist
 			}
 		};
-		sendMessage(message);
+		if (sendMessage)
+			sendMessage(message);
 	}
 
 	async function handleLeave() {
