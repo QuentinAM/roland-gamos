@@ -20,7 +20,7 @@ let onclose = () => {
 let onmessage = (event: MessageEvent) => {
 	const data = JSON.parse(event.data.toString()) as UpdateResponse | ErrorResponse | any;
 
-	console.log('WS: Received message', data);
+	// console.log('WS: Received message', data);
 
 	switch (data.type) {
 		case 'UPDATE':
@@ -52,6 +52,6 @@ function handleUpdate(updatedRoom: Room) {
 
 export type SendMessage = (message: Message) => void;
 export function sm(message: Message) {
-	console.log('WS: Sending message', message);
+	// console.log('WS: Sending message', message);
 	ws.send(JSON.stringify(message));
 }
