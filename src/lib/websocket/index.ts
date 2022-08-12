@@ -20,6 +20,8 @@ let onclose = () => {
 let onmessage = (event: MessageEvent) => {
 	const data = JSON.parse(event.data.toString()) as UpdateResponse | ErrorResponse | any;
 
+	console.log('WS: Received message', data);
+
 	switch (data.type) {
 		case 'UPDATE':
 			handleUpdate(data.body.room);
