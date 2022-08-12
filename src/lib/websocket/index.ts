@@ -50,5 +50,6 @@ function handleUpdate(updatedRoom: Room) {
 
 export type SendMessage = (message: Message) => void;
 export function sm(message: Message) {
+	console.log('WS: Sending message', message);
 	ws.send(JSON.stringify(message));
 }
