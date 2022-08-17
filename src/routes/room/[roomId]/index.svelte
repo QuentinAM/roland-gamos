@@ -15,6 +15,7 @@
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import type { SendMessage } from '$lib/websocket';
+	import countries from "countries-list";
 
 	let sendMessage: SendMessage;
 	let roomId: string = $page.params.roomId;
@@ -22,6 +23,8 @@
 	let chosenCategory: Playlist;
 	let timeBetweenRound: number = 30;
 	let modeTv: boolean = false;
+	let market: string;
+	let countriesList: any[] = [];
 
 	$: playerCount = $room?.players.length;
 	$: isHost =
@@ -65,7 +68,8 @@
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number,
 				mode: modeTv ? 'TV' : ('NORMAL' as ModeType),
-				playlistStart: chosenCategory as Playlist
+				playlistStart: chosenCategory as Playlist,
+				market: market
 			}
 		};
 		if (sendMessage)
@@ -95,6 +99,7 @@
 		sendMessage = sm;
 
 		url = window.location.href;
+		countriesList = Object.keys(countries.countries);
 
 		if ($player && $room?.id === roomId) {
 			// Already joined room => checking for the start of the game
@@ -105,7 +110,9 @@
 					goto('/room/' + roomId + '/game');
 				}
 			});
-		} else {
+			market = $room.market;
+		}
+		else {
 			// Not joined room
 			room.set(null);
 			goto(`/join/${roomId}`);
@@ -205,6 +212,25 @@
 								}}
 								class="checkbox checkbox-primary"
 							/>
+						</label>
+					</div>
+					<div
+						class="tooltip tooltip-primary tooltip-right"
+						data-tip="Le pays dans lequel les titres vont être recherchés, par défaut le pays de l'host. Si non trouvé les recherches sont aussi faites à l'international."
+					>
+						<label class="label">
+							<span class="label-text">Market</span>
+							<select disabled={!isHost} class="select select-primary" value={isHost ? market : $room.market} 
+								on:change={(e) => {
+									market = e?.target?.value;
+									updateSettings();
+								}}>
+								{#each countriesList as country}
+									<option value={country}>
+										{countries.getEmojiFlag(country)} {country}
+									</option>
+								{/each}
+							</select>
 						</label>
 					</div>
 				</div>

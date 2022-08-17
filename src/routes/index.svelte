@@ -14,6 +14,7 @@
 	let usernameError: boolean = false;
 	let roomId: string;
 	let roomIdError: boolean = false;
+	let country: string;
 	function toggleSteps() {
 		if (step1 && !username) {
 			usernameError = true;
@@ -40,7 +41,8 @@
 			type: 'CREATE',
 			body: {
 				username: username,
-				userId
+				userId,
+				market: country
 			}
 		};
 		sendMessage(message);
@@ -73,6 +75,10 @@
 		sendMessage = sm;
 
 		username = localStorage.getItem('username') ?? '';
+
+		fetch('http://ip-api.com/json')
+		.then(res => res.json())
+		.then(data => country = data.countryCode);
 	});
 </script>
 

@@ -34,6 +34,7 @@ export interface Room {
 	mode: ModeType;
 	timeBetweenRound: number;
 	playlistStart: Playlist;
+	market: string;
 }
 
 export interface Player {
@@ -77,6 +78,7 @@ export interface CreateMessage extends Message {
 	body: {
 		userId: string;
 		username: string;
+		market: string;
 	};
 }
 
@@ -141,6 +143,7 @@ export interface SettingMessage extends Message {
 		mode: ModeType;
 		timeBetweenRound: number;
 		playlistStart: Playlist;
+        market: string;
 	};
 }
 
