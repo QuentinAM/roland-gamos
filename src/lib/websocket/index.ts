@@ -2,7 +2,7 @@ import { dev } from "$app/env";
 import type { ErrorResponse, Message, Room, UpdateResponse } from '../../websocketserver/wstypes';
 import { room, autoComplete } from '../game/data';
 
-const url =  dev ? 'ws://localhost:8080' : 'wss://rolandgamoswss.quentinam.fr';
+const url =  dev ? 'ws://localhost:8080' : 'wss://roland-gamos.server.begue.cc';
 export let ws = new WebSocket(url);
 
 let onopen = () => {
