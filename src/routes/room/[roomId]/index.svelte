@@ -15,7 +15,7 @@
 	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import type { SendMessage } from '$lib/websocket';
-	import countries from "countries-list";
+	import countries from 'countries-list';
 
 	let sendMessage: SendMessage;
 	let roomId: string = $page.params.roomId;
@@ -72,8 +72,7 @@
 				market: market
 			}
 		};
-		if (sendMessage)
-			sendMessage(message);
+		if (sendMessage) sendMessage(message);
 	}
 
 	async function handleLeave() {
@@ -99,7 +98,9 @@
 		sendMessage = sm;
 
 		url = window.location.href;
-		countriesList = Object.keys(countries.countries);
+		countriesList = Object.keys(countries.countries).filter(
+			(c) => c == 'FR' || c == 'US' || c == 'GB'
+		);
 
 		if ($player && $room?.id === roomId) {
 			// Already joined room => checking for the start of the game
@@ -111,8 +112,7 @@
 				}
 			});
 			market = $room.market;
-		}
-		else {
+		} else {
 			// Not joined room
 			room.set(null);
 			goto(`/join/${roomId}`);
@@ -219,15 +219,20 @@
 						data-tip="Le pays dans lequel les titres vont être recherchés, par défaut le pays de l'host. Si non trouvé les recherches sont aussi faites à l'international."
 					>
 						<label class="label">
-							<span class="label-text">Market</span>
-							<select disabled={!isHost} class="select select-primary" value={isHost ? market : $room.market} 
+							<span class="label-text">Region</span>
+							<select
+								disabled={!isHost}
+								class="select select-primary"
+								value={isHost ? market : $room.market}
 								on:change={(e) => {
 									market = e?.target?.value;
 									updateSettings();
-								}}>
+								}}
+							>
 								{#each countriesList as country}
 									<option value={country}>
-										{countries.getEmojiFlag(country)} {country}
+										{countries.getEmojiFlag(country)}
+										{country}
 									</option>
 								{/each}
 							</select>

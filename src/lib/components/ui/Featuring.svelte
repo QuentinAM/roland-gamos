@@ -5,14 +5,19 @@
 	export let title: string;
 	export let releaseDate: string;
 	export let audioUrl: string | undefined;
-	export let artist1ImageUrl: string | undefined;
-	export let artist2ImageUrl: string | undefined;
+	export let artist1artistImage: string | undefined;
+	export let artist2artistImage: string | undefined;
 	export let artist1Name: string | undefined;
 	export let artist2Name: string | undefined;
 	let audio: any;
 
 	const fadeAudio = () => {
 		const fadeAudioInterval = setInterval(() => {
+			if (!audio) {
+				clearInterval(fadeAudioInterval);
+				return;
+			}
+
 			const fadePoint = audio.duration - 5;
 			if (audio.currentTime >= fadePoint && audio.volume !== 0) {
 				audio.volume -= 0.1;
@@ -56,17 +61,17 @@
 		</audio>
 	{/if}
 	<div class="avatar-group absolute bottom-10 right-0 -space-x-3">
-		{#if artist1ImageUrl}
+		{#if artist1artistImage}
 			<div class="avatar">
 				<div class="w-12">
-					<img src={artist1ImageUrl} alt="artist1" />
+					<img src={artist1artistImage} alt="artist1" />
 				</div>
 			</div>
 		{/if}
-		{#if artist2ImageUrl}
+		{#if artist2artistImage}
 			<div class="avatar">
 				<div class="w-12">
-					<img src={artist2ImageUrl} alt="artist1" />
+					<img src={artist2artistImage} alt="artist1" />
 				</div>
 			</div>
 		{/if}

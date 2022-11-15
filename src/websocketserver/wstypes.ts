@@ -54,7 +54,7 @@ export interface Track {
 
 export interface Artist {
 	name: string;
-	imageUrl: string;
+	artistImage: string;
 }
 
 export type MessageType =
@@ -143,7 +143,7 @@ export interface SettingMessage extends Message {
 		mode: ModeType;
 		timeBetweenRound: number;
 		playlistStart: Playlist;
-        market: string;
+		market: string;
 	};
 }
 

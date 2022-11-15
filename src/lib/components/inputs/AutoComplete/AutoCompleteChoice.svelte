@@ -16,7 +16,7 @@
 >
 	<div class="avatar">
 		<div class="w-10 h-10 rounded-full">
-			<img src={artist.imageUrl} alt="weqwe" />
+			<img src={artist.artistImage} alt="weqwe" />
 		</div>
 		{@html artist.name}
 	</div>

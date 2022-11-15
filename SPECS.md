@@ -27,7 +27,7 @@
 ## Artist
 
 - Name
-- ImageUrl
+- artistImage
 
 # Websocket
 

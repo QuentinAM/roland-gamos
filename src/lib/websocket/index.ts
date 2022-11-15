@@ -2,7 +2,7 @@ import { dev } from "$app/env";
 import type { ErrorResponse, Message, Room, UpdateResponse } from '../../websocketserver/wstypes';
 import { room, autoComplete } from '../game/data';
 
-const url =  dev ? 'ws://localhost:8080' : 'wss://roland-gamos.server.begue.cc';
+const url = dev ? 'ws://localhost:8080' : 'wss://roland-gamos.server.begue.cc';
 export let ws = new WebSocket(url);
 
 let onopen = () => {
@@ -11,6 +11,7 @@ let onopen = () => {
 
 let onclose = () => {
 	console.log('WS: Disconnected from server');
+	window.location.href = '/';
 	ws = new WebSocket(url);
 	ws.onopen = onopen;
 	ws.onclose = onclose;
@@ -20,7 +21,7 @@ let onclose = () => {
 let onmessage = (event: MessageEvent) => {
 	const data = JSON.parse(event.data.toString()) as UpdateResponse | ErrorResponse | any;
 
-	// console.log('WS: Received message', data);
+	console.log('WS: Received message', data);
 
 	switch (data.type) {
 		case 'UPDATE':
@@ -52,6 +53,6 @@ function handleUpdate(updatedRoom: Room) {
 
 export type SendMessage = (message: Message) => void;
 export function sm(message: Message) {
-	// console.log('WS: Sending message', message);
+	console.log('WS: Sending message', message);
 	ws.send(JSON.stringify(message));
 }

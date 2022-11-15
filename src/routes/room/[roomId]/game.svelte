@@ -6,7 +6,6 @@
 	import Featuring from '$lib/components/ui/Featuring.svelte';
 	import PlaylistInput from '$lib/components/inputs/PlaylistInput.svelte';
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
-	import { IsSpotifyPlaylist } from '$lib/room/util';
 	import AutoCompleteInput from '$lib/components/inputs/AutoComplete/AutoCompleteInput.svelte';
 	import { CutTrackName } from '$lib/game/util';
 	import type {
@@ -159,235 +158,229 @@
 	<Timer />
 {/if}
 {#if isGameOver}
-	<div class="hero min-h-screen" transition:fade>
-		<div
-			class="hero-content p-2 lg:p-4 gap-0 lg:gap-1 flex flex-row justify-start items-start h-full w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-max"
-		>
-			<div class="flex flex-col w-full justify-start">
-				<h1 class="font-bold">Partie terminée {$room?.gameNumber}</h1>
-				<div class="overflow-auto h-64">
-					<table class="table w-full max-h-[50%]">
-						<!-- head -->
-						<thead>
-							<tr class="bg-base-400">
-								<th />
-								<th>Joueur</th>
-								<th>Dernier tour</th>
-								<th>Victoires</th>
-							</tr>
-						</thead>
-						<tbody>
-							<!-- row 1 -->
+	<div class="flex flex-col w-full justify-start p-4">
+		<h1 class="font-bold">Partie terminée #{$room?.gameNumber}</h1>
+		<div class="overflow-auto h-64">
+			<table class="table w-full max-h-[50%]">
+				<!-- head -->
+				<thead>
+					<tr class="bg-base-400">
+						<th />
+						<th>Joueur</th>
+						<th>Dernier tour</th>
+						<th>Victoires</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- row 1 -->
+					<tr>
+						<th class="text-primary text-bold text-xl">1er</th>
+						<td class="text-primary text-bold text-xl">{$room?.players[0].username}</td>
+						<td class="text-primary text-bold text-xl">{$room?.players[0].turn}</td>
+						<td class="text-bold text-xl">{$room?.winsArray[$room?.players[0].userId]}</td>
+					</tr>
+					{#if eliminatedPlayers}
+						{#each eliminatedPlayers.reverse() as p, i}
 							<tr>
-								<th class="text-primary text-bold text-xl">1er</th>
-								<td class="text-primary text-bold text-xl">{$room?.players[0].username}</td>
-								<td class="text-primary text-bold text-xl">{$room?.players[0].turn}</td>
-								<td class="text-bold text-xl">{$room?.winsArray[$room?.players[0].userId]}</td>
+								<th>{i + 2}ème</th>
+								<td>{p.username}</td>
+								<td>{p.turn}</td>
+								<td>
+									{$room?.winsArray[p.userId] ? $room?.winsArray[p.userId] : 0}
+								</td>
 							</tr>
-							{#if eliminatedPlayers}
-								{#each eliminatedPlayers.reverse() as p, i}
-									<tr>
-										<th>{i + 2}ème</th>
-										<td>{p.username}</td>
-										<td>{p.turn}</td>
-										<td>
-											{$room?.winsArray[p.userId] ? $room?.winsArray[p.userId] : 0}
-										</td>
-									</tr>
-								{/each}
-							{/if}
-						</tbody>
-					</table>
-				</div>
-				<div class="flex lg:flex-row flex-col lg:space-x-4 space-y-4">
-					<div>
-						<h1 class="font-bold">Titres joués</h1>
-						<div
-							class="h-[25rem] lg:h-[35rem] shadow-lg shadow-zinc-600 carousel carousel-vertical rounded-box"
-						>
-							{#if tracks}
-								{#each tracks as track, i}
-									<div class="carousel-item h-full">
-										<Featuring
-											number={`${i + 1}/${tracks.length}`}
-											audioUrl={track.previewUrl}
-											title={track.name}
-											imgUrl={track.trackImage}
-											releaseDate={track.releaseDate}
-											artist1ImageUrl={track.artist.imageUrl}
-											artist2ImageUrl={$room?.enteredArtists[i]?.imageUrl}
-											artist1Name={track.artist.name}
-											artist2Name={$room?.enteredArtists[i]?.name}
-										/>
-									</div>
-								{/each}
-							{/if}
-						</div>
-					</div>
-					<div class="flex flex-col space-y-4">
-						<div class="lg:ml-20">
-							<h1 class="font-bold">Statistiques</h1>
-							<div class="stats stats-vertical shadow w-full">
-								{#if $room?.currentTurnStartTime}
-									<div class="stat">
-										<div class="stat-title">Durée</div>
-										<div class="stat-value">
-											{Math.round(((currentTurn ?? 1) * (turnDuration + 5_000)) / 1000 / 60)}
-										</div>
-										<div class="stat-desc">Minutes</div>
-									</div>
-								{/if}
-
-								{#if tracks && tracks.length > 0}
-									<div class="stat">
-										<div class="stat-title">Morceau le plus ancien</div>
-										<div class="stat-value truncate">
-											{tracks.reduce(function (prev, curr) {
-												return prev.releaseDate < curr.releaseDate ? prev : curr;
-											}).name}
-										</div>
-										<div class="stat-desc">
-											{tracks.reduce(function (prev, curr) {
-												return prev.releaseDate < curr.releaseDate ? prev : curr;
-											}).releaseDate}
-										</div>
-									</div>
-								{/if}
-
-								{#if tracks && tracks.length > 0}
-									<div class="stat">
-										<div class="stat-title">Morceau le plus récent</div>
-										<div class="stat-value truncate">
-											{tracks.reduce(function (prev, curr) {
-												return prev.releaseDate > curr.releaseDate ? prev : curr;
-											}).name}
-										</div>
-										<div class="stat-desc">
-											{tracks.reduce(function (prev, curr) {
-												return prev.releaseDate > curr.releaseDate ? prev : curr;
-											}).releaseDate}
-										</div>
-									</div>
-								{/if}
-							</div>
-						</div>
-						<div class="flex flex-row justify-center space-x-3">
-							<div class="form-control w-full max-w-xs">
-								<PlaylistInput
-									nonHostValue={$room?.playlistStart}
-									onChange={(newCategory) => {
-										updateSettings(newCategory);
-									}}
-									{isHost}
+						{/each}
+					{/if}
+				</tbody>
+			</table>
+		</div>
+		<div class="flex lg:flex-row flex-col-reverse lg:space-x-4 space-y-4 w-full">
+			<div class="lg:grow">
+				<h1 class="font-bold">Titres joués</h1>
+				<div
+					class="h-[25rem] lg:h-[35rem] shadow-lg shadow-zinc-600 carousel carousel-vertical rounded-box"
+				>
+					{#if tracks}
+						{#each tracks as track, i}
+							<div class="carousel-item h-full">
+								<Featuring
+									number={`${i + 1}/${tracks.length}`}
+									audioUrl={track.previewUrl}
+									title={track.name}
+									imgUrl={track.trackImage}
+									releaseDate={track.releaseDate}
+									artist1artistImage={track.artist.artistImage}
+									artist2artistImage={$room?.enteredArtists[i]?.artistImage}
+									artist1Name={track.artist.name}
+									artist2Name={$room?.enteredArtists[i]?.name}
 								/>
-								<div class="form-control w-full max-w-xs">
-									<label class="label">
-										<span class="label-text">Temps de réponse ({$room?.timeBetweenRound}s)</span>
-										<input class="hidden" />
-									</label>
-									<div
-										class="tooltip tooltip-primary tooltip-right"
-										data-tip="Délais avant lequel il faut donner votre réponse."
-									>
-										<input
-											type="range"
-											disabled={!isHost}
-											value={isHost ? timeBetweenRound : $room?.timeBetweenRound}
-											min="1"
-											max="60"
-											step="1"
-											class="range"
-											class:range-primary={isHost}
-											on:input={(e) => {
-												timeBetweenRound = e.target?.value;
-												updateSettings();
-											}}
-										/>
-									</div>
-									<div
-										class="tooltip tooltip-primary tooltip-right"
-										data-tip="La partie est uniquement retransmise sur l'écran de l'host."
-									>
-										<label class="label">
-											<span class="label-text">Mode TV</span>
-											<input
-												disabled={!isHost}
-												type="checkbox"
-												checked={modeTv}
-												on:change={(e) => {
-													modeTv = e.target?.checked;
-													updateSettings();
-												}}
-												class="checkbox checkbox-primary"
-											/>
-										</label>
-									</div>
-								</div>
-								<div class="flex flex-row justify-center">
-									<button
-										class="btn btn-error m-1 w-1/3"
-										on:click={async () => {
-											await handleLeave();
-											goto('/');
-										}}
-									>
-										Quitter
-									</button>
-									{#if $room?.hostPlayerId}
-										{#if $room?.hostPlayerId === $player?.userId}
-											<button
-												class="btn btn-primary m-1 w-1/3"
-												on:click={restart}
-												disabled={$room?.players.length === 1}
-											>
-												Rejouer
-											</button>
-										{/if}
-									{/if}
-								</div>
 							</div>
-						</div>
-					</div>
-					<div class="flex flex-col">
-						{#if $room}
-							<div class="w-full pt-2">
-								<h1 class="text-4xl font-bold">
-									Room:
-									<span class="text-secondary">
-										{$room.id}
-										<ClipBoard
-											value={window.location.href.substring(0, window.location.href.length - 5)}
-										/>
-									</span>
-								</h1>
-								<p>Envoie le lien à tes freros pour qu'ils puissent rejoindre!</p>
+						{/each}
+					{/if}
+				</div>
+			</div>
+			<div class="flex flex-col space-y-4 lg:grow">
+				<div class="lg:ml-20">
+					<h1 class="font-bold">Statistiques</h1>
+					<div class="stats stats-vertical shadow w-full">
+						{#if $room?.currentTurnStartTime}
+							<div class="stat">
+								<div class="stat-title">Durée</div>
+								<div class="stat-value">
+									{Math.round(((currentTurn ?? 1) * (turnDuration + 5_000)) / 1000 / 60)}
+								</div>
+								<div class="stat-desc">Minutes</div>
 							</div>
 						{/if}
-						{#if $room?.players}
-							<div class="card shadow-xl overflow-auto">
-								<div class="card-body">
-									<h2 class="text-xl font-semibold">Joueurs:</h2>
-									<div class="flex flex-col items-center">
-										{#each $room?.players as pl, i}
-											<span
-												class="inline-flex"
-												class:text-primary={pl.userId === $player?.userId}
-												class:font-semibold={pl.userId === $player?.userId}
-											>
-												{#if pl.userId === $room.hostPlayerId}
-													<span class="mr-1">
-														<i class="fa-solid fa-crown text-primary" />
-													</span>
-												{/if}
-												{pl.username}
-											</span>
-										{/each}
-									</div>
+
+						{#if tracks && tracks.length > 0}
+							<div class="stat">
+								<div class="stat-title">Morceau le plus ancien</div>
+								<div class="stat-value truncate">
+									{tracks.reduce(function (prev, curr) {
+										return prev.releaseDate < curr.releaseDate ? prev : curr;
+									}).name}
+								</div>
+								<div class="stat-desc">
+									{tracks.reduce(function (prev, curr) {
+										return prev.releaseDate < curr.releaseDate ? prev : curr;
+									}).releaseDate}
+								</div>
+							</div>
+						{/if}
+
+						{#if tracks && tracks.length > 0}
+							<div class="stat">
+								<div class="stat-title">Morceau le plus récent</div>
+								<div class="stat-value truncate">
+									{tracks.reduce(function (prev, curr) {
+										return prev.releaseDate > curr.releaseDate ? prev : curr;
+									}).name}
+								</div>
+								<div class="stat-desc">
+									{tracks.reduce(function (prev, curr) {
+										return prev.releaseDate > curr.releaseDate ? prev : curr;
+									}).releaseDate}
 								</div>
 							</div>
 						{/if}
 					</div>
 				</div>
+				<div class="flex flex-row justify-center space-x-3">
+					<div class="form-control w-full max-w-xs">
+						<PlaylistInput
+							nonHostValue={$room?.playlistStart}
+							onChange={(newCategory) => {
+								updateSettings(newCategory);
+							}}
+							{isHost}
+						/>
+						<div class="form-control w-full max-w-xs">
+							<label class="label">
+								<span class="label-text">Temps de réponse ({$room?.timeBetweenRound}s)</span>
+								<input class="hidden" />
+							</label>
+							<div
+								class="tooltip tooltip-primary tooltip-right"
+								data-tip="Délais avant lequel il faut donner votre réponse."
+							>
+								<input
+									type="range"
+									disabled={!isHost}
+									value={isHost ? timeBetweenRound : $room?.timeBetweenRound}
+									min="1"
+									max="60"
+									step="1"
+									class="range"
+									class:range-primary={isHost}
+									on:input={(e) => {
+										timeBetweenRound = e.target?.value;
+										updateSettings();
+									}}
+								/>
+							</div>
+							<div
+								class="tooltip tooltip-primary tooltip-right"
+								data-tip="La partie est uniquement retransmise sur l'écran de l'host."
+							>
+								<label class="label">
+									<span class="label-text">Mode TV</span>
+									<input
+										disabled={!isHost}
+										type="checkbox"
+										checked={modeTv}
+										on:change={(e) => {
+											modeTv = e.target?.checked;
+											updateSettings();
+										}}
+										class="checkbox checkbox-primary"
+									/>
+								</label>
+							</div>
+						</div>
+						<div class="flex flex-row justify-center">
+							<button
+								class="btn btn-error m-1 w-1/3"
+								on:click={async () => {
+									await handleLeave();
+									goto('/');
+								}}
+							>
+								Quitter
+							</button>
+							{#if $room?.hostPlayerId}
+								{#if $room?.hostPlayerId === $player?.userId}
+									<button
+										class="btn btn-primary m-1 w-1/3"
+										on:click={restart}
+										disabled={$room?.players.length === 1}
+									>
+										Rejouer
+									</button>
+								{/if}
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="flex flex-col lg:grow">
+				{#if $room}
+					<div class="w-full pt-2">
+						<h1 class="text-4xl font-bold">
+							Room:
+							<span class="text-secondary">
+								{$room.id}
+								<ClipBoard
+									value={window.location.href.substring(0, window.location.href.length - 5)}
+								/>
+							</span>
+						</h1>
+						<p>Envoie le lien à tes freros pour qu'ils puissent rejoindre!</p>
+					</div>
+				{/if}
+				{#if $room?.players}
+					<div class="card shadow-xl overflow-auto">
+						<div class="card-body">
+							<h2 class="text-xl font-semibold">Joueurs:</h2>
+							<div class="flex flex-col items-center">
+								{#each $room?.players as pl, i}
+									<span
+										class="inline-flex"
+										class:text-primary={pl.userId === $player?.userId}
+										class:font-semibold={pl.userId === $player?.userId}
+									>
+										{#if pl.userId === $room.hostPlayerId}
+											<span class="mr-1">
+												<i class="fa-solid fa-crown text-primary" />
+											</span>
+										{/if}
+										{pl.username}
+									</span>
+								{/each}
+							</div>
+						</div>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -473,13 +466,13 @@
 							{autoplay}
 							number={undefined}
 							audioUrl={currentTrack.previewUrl}
-							artist2ImageUrl={$room?.enteredArtists[$room?.currentTurn - 2]?.imageUrl ??
-								currentArtist?.imageUrl ??
+							artist2artistImage={$room?.enteredArtists[$room?.currentTurn - 2]?.artistImage ??
+								currentArtist?.artistImage ??
 								''}
 							artist2Name={$room?.enteredArtists[$room?.currentTurn - 2]?.name ??
 								currentArtist?.name ??
 								''}
-							artist1ImageUrl={currentTrack.artist.imageUrl}
+							artist1artistImage={currentTrack.artist.artistImage}
 							artist1Name={currentTrack.artist.name}
 							imgUrl={currentTrack.trackImage}
 							releaseDate={currentTrack.releaseDate}
@@ -539,15 +532,6 @@
 								{currentPlayerHasAttemptedGuess}
 							/>
 						</div>
-						<!-- <button
-							class="btn btn-success rounded-l-none"
-							on:click={submitGuess}
-							disabled={currentPlayerHasAttemptedGuess}
-						>
-							<span class="mr-2">
-								<i class="fa-solid fa-check" />
-							</span> Valider
-						</button> -->
 					</div>
 				</div>
 			</div>

@@ -37,7 +37,7 @@
 						...storageArr,
 						{
 							name: makeMatchBold(artist.name),
-							imageUrl: artist.imageUrl
+							artistImage: artist.artistImage
 						}
 					];
 				}
