@@ -23,7 +23,7 @@
 	let chosenCategory: Playlist;
 	let timeBetweenRound: number = 30;
 	let modeTv: boolean = false;
-	let market: string;
+	let market: string = 'FR';
 	let countriesList: any[] = [];
 
 	$: playerCount = $room?.players.length;

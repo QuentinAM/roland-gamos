@@ -50,6 +50,7 @@ export interface Track {
 	releaseDate: string;
 	previewUrl: string;
 	artist: Artist;
+	artists: any[];
 }
 
 export interface Artist {

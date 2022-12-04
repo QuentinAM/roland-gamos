@@ -8,6 +8,7 @@
 	import ClipBoard from '$lib/components/ClipBoard/index.svelte';
 	import AutoCompleteInput from '$lib/components/inputs/AutoComplete/AutoCompleteInput.svelte';
 	import { CutTrackName } from '$lib/game/util';
+	import countries from 'countries-list';
 	import type {
 		GuessingMessage,
 		GuessMessage,
@@ -26,6 +27,8 @@
 	let chosenCategory: Playlist;
 	let autoplay: boolean;
 	let timeBetweenRound = 30;
+	let market: string = 'FR';
+	let countriesList: any[] = [];
 
 	$: players = $room?.players;
 	$: currentTurn = $room?.currentTurn;
@@ -86,6 +89,7 @@
 	}
 
 	async function restart() {
+		updateSettings();
 		let message: RestartMessage = {
 			type: 'RESTART',
 			body: {
@@ -125,7 +129,8 @@
 				userId: $player?.userId as string,
 				timeBetweenRound: timeBetweenRound as number,
 				mode: modeTv ? 'TV' : ('NORMAL' as ModeType),
-				playlistStart: chosenCategory as Playlist
+				playlistStart: chosenCategory as Playlist,
+				market: 'FR',
 			}
 		};
 		sendMessage(message);
@@ -145,6 +150,10 @@
 		}
 
 		autoplay = localStorage.getItem('autoplay') === 'true' ?? true;
+
+		countriesList = Object.keys(countries.countries).filter(
+			(c) => c == 'FR' || c == 'US' || c == 'GB'
+		);
 
 		// Update the remaining time every second
 		setInterval(() => {
@@ -202,19 +211,21 @@
 				>
 					{#if tracks}
 						{#each tracks as track, i}
-							<div class="carousel-item h-full">
-								<Featuring
-									number={`${i + 1}/${tracks.length}`}
-									audioUrl={track.previewUrl}
-									title={track.name}
-									imgUrl={track.trackImage}
-									releaseDate={track.releaseDate}
-									artist1artistImage={track.artist.artistImage}
-									artist2artistImage={$room?.enteredArtists[i]?.artistImage}
-									artist1Name={track.artist.name}
-									artist2Name={$room?.enteredArtists[i]?.name}
-								/>
-							</div>
+							{#if track}
+								<div class="carousel-item h-full">
+									<Featuring
+										number={`${i + 1}/${tracks.length}`}
+										audioUrl={track.previewUrl}
+										title={track.name}
+										imgUrl={track.trackImage}
+										releaseDate={track.releaseDate}
+										artist1artistImage={track.artists[0].artistImage}
+										artist2artistImage={track.artists[1].artistImage}
+										artist1Name={track.artists[0].acceptedNames}
+										artist2Name={track.artists[1].acceptedNames}
+									/>
+								</div>
+							{/if}
 						{/each}
 					{/if}
 				</div>
@@ -317,6 +328,30 @@
 									/>
 								</label>
 							</div>
+							<div
+								class="tooltip tooltip-primary tooltip-right"
+								data-tip="Le pays dans lequel les titres vont être recherchés, par défaut le pays de l'host. Si non trouvé les recherches sont aussi faites à l'international."
+							>
+							<label class="label">
+								<span class="label-text">Region</span>
+								<select
+									disabled={!isHost}
+									class="select select-primary"
+									value={isHost ? market : $room?.market}
+									on:change={(e) => {
+										market = e?.target?.value;
+										updateSettings();
+									}}
+								>
+									{#each countriesList as country}
+										<option value={country}>
+											{countries.getEmojiFlag(country)}
+											{country}
+										</option>
+									{/each}
+								</select>
+							</label>
+						</div>
 						</div>
 						<div class="flex flex-row justify-center">
 							<button
@@ -466,14 +501,10 @@
 							{autoplay}
 							number={undefined}
 							audioUrl={currentTrack.previewUrl}
-							artist2artistImage={$room?.enteredArtists[$room?.currentTurn - 2]?.artistImage ??
-								currentArtist?.artistImage ??
-								''}
-							artist2Name={$room?.enteredArtists[$room?.currentTurn - 2]?.name ??
-								currentArtist?.name ??
-								''}
-							artist1artistImage={currentTrack.artist.artistImage}
-							artist1Name={currentTrack.artist.name}
+							artist1artistImage={currentTrack.artists[0].artistImage}
+							artist1Name={currentTrack.artists[0].name}
+							artist2artistImage={currentTrack.artists[1].artistImage}
+							artist2Name={currentTrack.artists[1].name}
 							imgUrl={currentTrack.trackImage}
 							releaseDate={currentTrack.releaseDate}
 							title={CutTrackName(currentTrack.name)}

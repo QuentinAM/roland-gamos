@@ -6,8 +6,8 @@
 	export let releaseDate: string;
 	export let audioUrl: string | undefined;
 	export let artist1artistImage: string | undefined;
-	export let artist2artistImage: string | undefined;
-	export let artist1Name: string | undefined;
+	export let artist2artistImage: string | string[] | undefined;
+	export let artist1Name: string | string[] | undefined;
 	export let artist2Name: string | undefined;
 	let audio: any;
 
@@ -43,7 +43,18 @@
 	{/if}
 	<div class="card-body">
 		<h2 class="card-title truncate">{title}</h2>
-		<p class="-mt-3">{artist1Name} & {artist2Name}</p>
+		{#if Array.isArray(artist1Name) && Array.isArray(artist2Name)}
+			<p class="-mt-3">
+				{#each artist1Name as artist}
+					<span>{artist},</span>
+				{/each}
+				{#each artist2Name as artist}
+					<span>{artist}</span>
+				{/each}
+			</p>
+		{:else}
+			<p class="-mt-3">{artist1Name} & {artist2Name}</p>
+		{/if}
 		<p>{releaseDate}</p>
 	</div>
 	{#if audioUrl}
